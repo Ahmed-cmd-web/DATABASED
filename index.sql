@@ -181,7 +181,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             CONSTRAINT course_FK FOREIGN KEY(course_id) REFERENCES Course
             ON UPDATE CASCADE,
         )
-
+    
         CREATE TABLE Exam_Student(
             student_id INT NOT NULL,
             exam_id INT  NOT NULL,
