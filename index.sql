@@ -251,4 +251,3 @@ CREATE OR ALTER PROCEDURE DropAllTables
     GO
 
 
--- EXEC DropAllTables;
