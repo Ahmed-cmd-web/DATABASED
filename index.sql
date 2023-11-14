@@ -6,27 +6,26 @@ GO
 CREATE OR ALTER PROCEDURE CreateAllTables
     AS
         CREATE TABLE Advisor (
-            advisor_id INT PRIMARY KEY,
-            name DATE NOT NULL,
+            advisor_id INT IDENTITY(1,1) PRIMARY KEY,
+            name VARCHAR(40) NOT NULL,
             email VARCHAR(40) NOT NULL ,
             office VARCHAR(40) NOT NULL ,
             password VARCHAR(40) NOT NULL
         )
 
         CREATE TABLE Student (
-            student_id INT PRIMARY KEY,
-            f_name VARCHAR(40) NOT NULL,
-            l_name VARCHAR(40) NOT NULL,
-            gpa DECIMAL(2,2) NOT NULL CHECK (gpa<=5.0 AND gpa>=0.7),
-            faculty VARCHAR(40) NOT NULL,
-            email VARCHAR(40) NOT NULL ,
-            major VARCHAR(40) NOT NULL,
-            password VARCHAR(40) NOT NULL,
-            financial_status BIT ,
-            semester INT NOT NULL,
-            acquired_hours INT NOT NULL,
-            assigned_hours INT NOT NULL,
-            advisor_id INT NOT NULL,
+            student_id INT  IDENTITY(1,1) PRIMARY KEY,
+            f_name VARCHAR(40) ,
+            l_name VARCHAR(40) ,
+            gpa DECIMAL(2,2)  CHECK (gpa<=5.0 AND gpa>=0.7),
+            faculty VARCHAR(40) ,
+            email VARCHAR(40)  ,
+            major VARCHAR(40) ,
+            password VARCHAR(40) ,
+            semester INT ,
+            acquired_hours INT ,
+            assigned_hours INT ,
+            advisor_id INT ,
             CONSTRAINT advisor_FK FOREIGN KEY (advisor_id) REFERENCES Advisor
             ON UPDATE CASCADE,
         )
@@ -264,3 +263,40 @@ CREATE OR ALTER PROCEDURE clearAllTables
         EXEC DropAllTables
         EXEC CreateAllTables
     GO
+
+
+-- All Other Requirements
+
+
+CREATE OR ALTER PROCEDURE Procedures_StudentRegistration
+    @first_name VARCHAR(40),
+    @last_name VARCHAR(40),
+    @password VARCHAR(40),
+    @faculty VARCHAR(40),
+    @email VARCHAR(40),
+    @major VARCHAR(40),
+    @Semester int,
+    @id INT OUTPUT
+    AS
+        INSERT INTO Student(f_name,l_name,password,faculty,email,major,semester) VALUES (@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
+        SET @id=SCOPE_IDENTITY()
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
+    @advisor_name VARCHAR(40),
+    @password VARCHAR(40),
+    @email VARCHAR(40),
+    @office VARCHAR(40),
+    @id INT OUTPUT
+    AS
+        INSERT INTO Advisor(name,password,email,office) VALUES (@advisor_name,@password,@email,@office)
+        SET @id=SCOPE_IDENTITY()
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
+    AS
+    SELECT * FROM Student
+    GO
+
+
