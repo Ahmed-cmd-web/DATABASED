@@ -1,6 +1,7 @@
 --CREATE DATABASE Advising_Team_119;
 
-
+USE Advising_Team_119;
+GO
 
 CREATE OR ALTER PROCEDURE CreateAllTables
     AS
@@ -228,10 +229,10 @@ CREATE OR ALTER PROCEDURE DROPALLKEYCONSTRAINTS
             BEGIN
                 EXEC(@command) -- exceute the command
                 FETCH NEXT FROM pointer INTO @command  -- set the next result in teh command
-            END
+            END;
         CLOSE pointer -- closse the cursor
         DEALLOCATE pointer -- remove it from memory
-    GO;
+    GO
 
 CREATE OR ALTER PROCEDURE DropAllTables
     AS
@@ -255,4 +256,11 @@ CREATE OR ALTER PROCEDURE DropAllTables
             Exam_Student,
             Payment,
             Installment
+    GO
+
+
+CREATE OR ALTER PROCEDURE clearAllTables
+    AS
+        EXEC DropAllTables
+        EXEC CreateAllTables
     GO
