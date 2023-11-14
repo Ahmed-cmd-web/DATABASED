@@ -170,7 +170,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             course_id INT NOT NULL,
             CONSTRAINT course_FK_MakeUp_Exam FOREIGN KEY(course_id) REFERENCES Course,
         )
-    
+
         CREATE TABLE Exam_Student(
             student_id INT NOT NULL,
             exam_id INT  NOT NULL,
@@ -213,10 +213,29 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         )
     GO
 
+CREATE OR ALTER PROCEDURE DROPALLKEYCONSTRAINTS
+    AS
+        DECLARE @command VARCHAR(255)   -- variable to store the command
+        DECLARE pointer CURSOR FAST_FORWARD READ_ONLY FOR -- declaring the row pointer
+            SELECT CONCAT('ALTER TABLE ', TABLE_SCHEMA, '.[', TABLE_NAME, '] DROP CONSTRAINT [', CONSTRAINT_NAME, ']') AS Name
+            FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+            WHERE CONSTRAINT_TYPE = 'FOREIGN KEY'
+        OPEN pointer -- intializing the pointer
 
+        FETCH NEXT FROM pointer INTO @command -- store teh row result in the command variable
+
+        WHILE @@FETCH_STATUS=0 -- while there are still results(rows)
+            BEGIN
+                EXEC(@command) -- exceute the command
+                FETCH NEXT FROM pointer INTO @command  -- set the next result in teh command
+            END
+        CLOSE pointer -- closse the cursor
+        DEALLOCATE pointer -- remove it from memory
+    GO;
 
 CREATE OR ALTER PROCEDURE DropAllTables
     AS
+        EXEC DROPALLKEYCONSTRAINTS;
         DROP TABLE
             Student,
             Advisor,
