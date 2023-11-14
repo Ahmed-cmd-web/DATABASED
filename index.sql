@@ -170,7 +170,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             course_id INT NOT NULL,
             CONSTRAINT course_FK_MakeUp_Exam FOREIGN KEY(course_id) REFERENCES Course,
         )
-
+    
         CREATE TABLE Exam_Student(
             student_id INT NOT NULL,
             exam_id INT  NOT NULL,
