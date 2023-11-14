@@ -1,7 +1,6 @@
 --CREATE DATABASE Advising_Team_119;
 
-USE Advising_Team_119;
-GO
+
 
 CREATE OR ALTER PROCEDURE CreateAllTables
     AS
@@ -32,7 +31,6 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         )
 
 
-
         CREATE TABLE Course (
                 course_id INT PRIMARY KEY,
                 name VARCHAR(40) NOT NULL,
@@ -55,12 +53,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
                 prerequisite_course_id INT NOT NULL,
                 course_id INT NOT NULL,
                 CONSTRAINT prerequisite_course_id_course_id_pk_constraint PRIMARY KEY(prerequisite_course_id,course_id),
-                CONSTRAINT prerequisite_course_id_FK FOREIGN KEY (prerequisite_course_id) REFERENCES Course
-                ON UPDATE CASCADE
-                ON DELETE CASCADE,
+                CONSTRAINT prerequisite_course_id_FK FOREIGN KEY (prerequisite_course_id) REFERENCES Course,
                 CONSTRAINT course_id_FK FOREIGN KEY (course_id) REFERENCES Course
-                ON UPDATE CASCADE
-                ON DELETE CASCADE,
+
         );
         CREATE TABLE Instructor(
                 instructor_id INT PRIMARY KEY,
@@ -73,10 +68,10 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         CREATE TABLE Instructor_Course(
                 course_id INT NOT NULL,
                 instructor_id INT NOT NULL,
-                CONSTRAINT prerequisite_course_id_course_id_pk_constraint PRIMARY KEY(instructor_id,course_id),
-                CONSTRAINT course_id_FK FOREIGN KEY (course_id) REFERENCES Course
+                CONSTRAINT instructor_id_course_id_pk_constraint PRIMARY KEY(instructor_id,course_id),
+                CONSTRAINT course_id_FK_Instructor_Course FOREIGN KEY (course_id) REFERENCES Course
                 ON UPDATE CASCADE,
-                CONSTRAINT instructor_id_FK FOREIGN KEY (instructor_id) REFERENCES Instructor
+                CONSTRAINT instructor_id_FK_Instructor_Course FOREIGN KEY (instructor_id) REFERENCES Instructor
                 ON UPDATE CASCADE
                 ON DELETE CASCADE,
         );
@@ -89,9 +84,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             exam_type VARCHAR(40)  default 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
             grade DECIMAL(3,2) DEFAULT NULL,
             CONSTRAINT course_id_instructor_id_student_id PRIMARY KEY(instructor_id,course_id,student_id),
-            CONSTRAINT course_id_FK FOREIGN KEY (course_id) REFERENCES Course,
-            CONSTRAINT instructor_id_FK FOREIGN KEY (instructor_id) REFERENCES Instructor,
-            CONSTRAINT student_id_FK FOREIGN KEY (student_id) REFERENCES Student
+            CONSTRAINT course_id_FK_Student_Instructor_Course_Take FOREIGN KEY (course_id) REFERENCES Course,
+            CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
+            CONSTRAINT student_id_FK_Student_Instructor_Course_Take FOREIGN KEY (student_id) REFERENCES Student
         )
 
         CREATE TABLE Semester (
@@ -118,9 +113,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             location VARCHAR(40) NOT NULL ,
             course_id INT NOT NULL,
             instructor_id INT NOT NULL,
-            CONSTRAINT course_FK FOREIGN KEY(course_id) REFERENCES Course
+            CONSTRAINT course_FK_Slot FOREIGN KEY(course_id) REFERENCES Course
             ON UPDATE CASCADE,
-            CONSTRAINT instructor_FK FOREIGN KEY(instructor_id) REFERENCES Instructor
+            CONSTRAINT instructor_FK_Slot FOREIGN KEY(instructor_id) REFERENCES Instructor
             ON UPDATE CASCADE,
         );
 
@@ -137,10 +132,8 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id INT NOT NULL,
             CONSTRAINT PK_Content PRIMARY KEY (plan_id, semester_code),
             FOREIGN Key(semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE,
-            CONSTRAINT advisor_FK FOREIGN KEY(advisor_id) REFERENCES Advisor
-            ON UPDATE CASCADE,
-            CONSTRAINT student_FK FOREIGN KEY(student_id) REFERENCES Student
-            ON UPDATE CASCADE,
+            CONSTRAINT advisor_FK_Graduation_plan FOREIGN KEY(advisor_id) REFERENCES Advisor,
+            CONSTRAINT student_FK_Graduation_plan FOREIGN KEY(student_id) REFERENCES Student,
         );
 
 
@@ -149,10 +142,10 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             semester_code INT NOT NULL,
             student_id INT NOT NULL,
             CONSTRAINT plan_id_course_code_student_id PRIMARY KEY(plan_id,semester_code,student_id),
-            CONSTRAINT student_id_FK FOREIGN KEY (student_id) REFERENCES Student
+            CONSTRAINT student_id_FK_GradPlan_Course FOREIGN KEY (student_id) REFERENCES Student
                 ON UPDATE CASCADE
                 ON DELETE CASCADE,
-            CONSTRAINT grad_plan_FK FOREIGN KEY (plan_id,semester_code) REFERENCES Graduation_plan
+            CONSTRAINT grad_plan_FK_GradPlan_Course FOREIGN KEY (plan_id,semester_code) REFERENCES Graduation_plan
                 ON UPDATE CASCADE
                 ON DELETE CASCADE,
         );
@@ -165,12 +158,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             advisor_id INT NOT NULL,
             student_id INT NOT NULL,
             course_id INT NOT NULL,
-            CONSTRAINT advisor_FK FOREIGN KEY(advisor_id) REFERENCES Advisor
-            ON UPDATE CASCADE,
-            CONSTRAINT student_FK FOREIGN KEY(student_id) REFERENCES Student
-            ON UPDATE CASCADE,
-            CONSTRAINT course_FK FOREIGN KEY(course_id) REFERENCES Course
-            ON UPDATE CASCADE,
+            CONSTRAINT advisor_FK_Request FOREIGN KEY(advisor_id) REFERENCES Advisor,
+            CONSTRAINT student_FK_Request FOREIGN KEY(student_id) REFERENCES Student,
+            CONSTRAINT course_FK_Request FOREIGN KEY(course_id) REFERENCES Course,
         );
 
         CREATE TABLE MakeUp_Exam(
@@ -178,8 +168,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             date DATE NOT NULL,
             type VARCHAR(40),
             course_id INT NOT NULL,
-            CONSTRAINT course_FK FOREIGN KEY(course_id) REFERENCES Course
-            ON UPDATE CASCADE,
+            CONSTRAINT course_FK_MakeUp_Exam FOREIGN KEY(course_id) REFERENCES Course,
         )
 
         CREATE TABLE Exam_Student(
@@ -187,11 +176,11 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             exam_id INT  NOT NULL,
             course_id INT NOT NULL,
             CONSTRAINT student_id_course_id_exam_id PRIMARY KEY(student_id,exam_id,course_id),
-            CONSTRAINT exam_FK FOREIGN KEY(exam_id) REFERENCES MakeUp_Exam
+            CONSTRAINT exam_FK_Exam_Student FOREIGN KEY(exam_id) REFERENCES MakeUp_Exam
                 ON UPDATE CASCADE,
-            CONSTRAINT student_FK FOREIGN KEY(student_id) REFERENCES Student
+            CONSTRAINT student_FK_Exam_Student FOREIGN KEY(student_id) REFERENCES Student
                 ON UPDATE CASCADE,
-            CONSTRAINT course_FK FOREIGN KEY(course_id) REFERENCES Course
+            CONSTRAINT course_FK_Exam_Student FOREIGN KEY(course_id) REFERENCES Course
                 ON UPDATE CASCADE,
         )
 
@@ -205,9 +194,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             fund_percentage DECIMAL(3,2) CHECK ( fund_percentage<=100 AND fund_percentage>=0),
             student_id INT NOT NULL,
             semester_code INT NOT NULL,
-            CONSTRAINT student_FK FOREIGN KEY(student_id) REFERENCES Student
+            CONSTRAINT student_FK_Payment FOREIGN KEY(student_id) REFERENCES Student
                 ON UPDATE CASCADE,
-            CONSTRAINT semester_code_FK FOREIGN KEY(semester_code) REFERENCES Semester
+            CONSTRAINT semester_code_FK_Payment FOREIGN KEY(semester_code) REFERENCES Semester
                 ON UPDATE CASCADE,
         )
 
@@ -219,13 +208,12 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             status BIT not NULL,
             start_date DATE NOT NULL,
             CONSTRAINT payment_id_deadline_PK PRIMARY KEY(payment_id,deadline),
-            CONSTRAINT payment_id_FK FOREIGN KEY(payment_id) REFERENCES Payment
+            CONSTRAINT payment_id_FK_Installment FOREIGN KEY(payment_id) REFERENCES Payment
                 ON UPDATE CASCADE,
         )
     GO
 
-EXEC CreateAllTables;
-GO
+
 
 CREATE OR ALTER PROCEDURE DropAllTables
     AS
@@ -249,5 +237,3 @@ CREATE OR ALTER PROCEDURE DropAllTables
             Payment,
             Installment
     GO
-
-
