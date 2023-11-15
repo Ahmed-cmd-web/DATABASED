@@ -339,3 +339,7 @@ As
     FROM Graduation_plan g FULL OUTER JOIN Advisor a ON g.advisor_id = a.Advisor_id
     Go
 
+CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
+AS 
+SELECT * 
+From Advisor
