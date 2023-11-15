@@ -303,6 +303,7 @@ CREATE VIEW view_Students
 AS
 SELECT * 
 From Student
+go
 
 CREATE VIEW Students_Courses_transcript
 AS
@@ -311,9 +312,10 @@ From Student_Instructor_Course_Take x
      FULL OUTER JOIN Student s On (x.student_id= s.student_id) 
      FULL OUTER JOIN Instructor i on (x.instructor_id = i.instructor_id) 
      FULL OUTER JOIN Course c on (x.course_id= c.course_id)
-
+go
 CREATE VIEW Semster_offered_Courses
 AS
 SELECT s.course_id, s.semester_code, c.name
 FROM Course_Semester s
      FULL OUTER JOIN Course c on s.course_id = s.course_id 
+go     
