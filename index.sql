@@ -299,23 +299,28 @@ CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     SELECT * FROM Student
     GO
 
-CREATE VIEW view_Students
+CREATE OR ALTER VIEW view_Students
 AS
-SELECT * 
+SELECT *
 From Student
 go
 
-CREATE VIEW Students_Courses_transcript
+CREATE OR ALTER VIEW Students_Courses_transcript
 AS
-SELECT x.student_id, s.f_name,s.l_name,x.course_id,c.name, s.semester,x.exam_type,i.f_name,i.l_name
-From Student_Instructor_Course_Take x 
-     FULL OUTER JOIN Student s On (x.student_id= s.student_id) 
-     FULL OUTER JOIN Instructor i on (x.instructor_id = i.instructor_id) 
+SELECT x.student_id, s.f_name,s.l_name,x.course_id,c.name AS Course_NAME, s.semester,x.exam_type,i.name AS INSTRUCOTR_NAME
+From Student_Instructor_Course_Take x
+     FULL OUTER JOIN Student s On (x.student_id= s.student_id)
+     FULL OUTER JOIN Instructor i on (x.instructor_id = i.instructor_id)
      FULL OUTER JOIN Course c on (x.course_id= c.course_id)
 go
-CREATE VIEW Semster_offered_Courses
+
+
+CREATE OR ALTER VIEW Semster_offered_Courses
 AS
 SELECT s.course_id, s.semester_code, c.name
 FROM Course_Semester s
-     FULL OUTER JOIN Course c on s.course_id = s.course_id 
-go     
+     FULL OUTER JOIN Course c on s.course_id = s.course_id
+go
+
+
+SELECT * FROM Students_Courses_transcript
