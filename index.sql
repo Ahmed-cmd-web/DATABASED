@@ -337,9 +337,16 @@ As
     Select g.plan_id, g.semester_code, g.major, g.expected_grad_semester, g.semester_credit_hours, g.course_name, g.offered, a.advisor_id, student_id, a.name AS Advisor_name
 
     FROM Graduation_plan g FULL OUTER JOIN Advisor a ON g.advisor_id = a.Advisor_id
-    Go
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
-AS 
-SELECT * 
-From Advisor
+AS
+SELECT *
+FROM Advisor
+    GO
+
+CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
+AS
+SELECT *
+FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
