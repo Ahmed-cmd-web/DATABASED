@@ -316,4 +316,4 @@ CREATE VIEW Semster_offered_Courses
 AS
 SELECT s.course_id, s.semester_code, c.name
 FROM Course_Semester s
-     FULL OUTER JOIN Course c on (s.course_id = s.course_id)
+     FULL OUTER JOIN Course c on s.course_id = s.course_id 
