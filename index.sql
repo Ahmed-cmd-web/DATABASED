@@ -299,4 +299,11 @@ CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     SELECT * FROM Student
     GO
 
+Go;
+CREATE VIEW Advisors_Graduation_Plan
+As
+Select 
 
+
+
+Go;
