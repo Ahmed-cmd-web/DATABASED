@@ -189,7 +189,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
                 payment_id INT           NOT NULL,
                 deadline   DATE          NOT NULL,
                 amount     DECIMAL(10,5) NOT NULL,
-                status     BIT           NOT NULL,
+                status     VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
                 start_date DATE          NOT NULL,
                 CONSTRAINT payment_id_deadline_PK_Installment    PRIMARY KEY (payment_id,deadline),
                 CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
@@ -440,5 +440,3 @@ CREATE OR ALTER VIEW all_Pending_Requests
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
     GO
-exec DropAllTables
-exec CreateAllTables
