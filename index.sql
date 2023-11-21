@@ -247,9 +247,9 @@ CREATE OR ALTER PROCEDURE DropAllTables
     GO
 
 CREATE OR ALTER PROCEDURE clearAllTables
-    AS
-        EXEC DropAllTables
-        EXEC CreateAllTables
+AS
+EXEC DropAllTables
+EXEC CreateAllTables
     GO
 
 CREATE VIEW view_Course_prerequisites
