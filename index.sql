@@ -405,3 +405,11 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
             PRINT @courseID
             INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
         GO
+
+CREATE VIEW all_Pending_Requests
+As
+    Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+    from Request r inner join Student s on (r.student_id = s.student_id)
+                   inner join Advisor a on (a.advisor_id = r.advisor_id)
+    where r.status='pending';
+go
