@@ -133,7 +133,7 @@ CREATE TABLE Slot
 
 CREATE TABLE Graduation_plan
 (
-    plan_id INT NOT NULL,
+    plan_id INT IDENTITY NOT NULL,
     semester_code INT NOT NULL,
     major VARCHAR(40) NOT NULL,
     expected_grad_semester INT NOT NULL,
@@ -383,3 +383,18 @@ FROM Course c
     ON sict.course_id=c.course_id
 WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
+    @semester_code Varchar(40),
+    @expected_graduation_date date,
+    @semester_credit_hours int,
+    @advisor_id int,
+    @student_id int
+as
+Insert into Graduation_plan (semester_code,expected_grad_semester,semester_credit_hours,advisor_id,student_id) VALUES (@semester_code,(select semester_code from Semester where start_date <= @expected_graduation_date and end_date >= @expected_graduation_date)
+,@semester_credit_hours,@advisor_id,@student_id)   
+GO
+
+exec DropAllTables
+exec CreateAllTables
+exec Procedures_AdvisorCreateGP @semester_code='1',@expected_graduation_date='1991',@semester_credit_hours=6,@advisor_id=1,@student_id=9
