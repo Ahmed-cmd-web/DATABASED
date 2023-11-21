@@ -350,3 +350,13 @@ AS
 SELECT *
 FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
+    @major varchar (40), 
+    @semester int, 
+    @credit_hours int,
+    @course_name varchar (40),
+    @offered bit
+    AS
+    INSERT INTO Course (major,semester,credit_hours,course_name,offered)
+    VALUES()
