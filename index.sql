@@ -179,7 +179,7 @@ CREATE TABLE Request
 
 CREATE TABLE MakeUp_Exam
 (
-    exam_id INT PRIMARY KEY NOT NULL,
+    exam_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
     date DATE NOT NULL,
     type VARCHAR(40),
     course_id INT NOT NULL,
@@ -324,6 +324,16 @@ SET @id=SCOPE_IDENTITY()
     GO
 
 
+CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
+    @Type VARCHAR(40),
+    @date DATETIME,
+    @courseID INT
+    AS
+        INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
+    GO
+
+
+
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
 AS
 SELECT *
@@ -349,7 +359,7 @@ AS
 SELECT *
 FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
-    
+
 
 CREATE OR ALTER VIEW view_Students
 AS
@@ -411,8 +421,5 @@ As
     Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
     from Request r inner join Student s on (r.student_id = s.student_id)
                    inner join Advisor a on (a.advisor_id = r.advisor_id)
-    where r.status='pending';               
+    where r.status='pending';
 go
-
-
-
