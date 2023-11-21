@@ -1,4 +1,4 @@
---CREATE DATABASE Advising_Team_119;
+-- CREATE DATABASE Advising_Team_119;
 
 USE Advising_Team_119;
 GO
@@ -19,7 +19,7 @@ CREATE TABLE Student
     student_id INT IDENTITY(1,1) PRIMARY KEY,
     f_name VARCHAR(40) ,
     l_name VARCHAR(40) ,
-    gpa DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7),
+    gpa DECIMAL(3,2) CHECK (gpa<=5.0 AND gpa>=0.7),
     faculty VARCHAR(40) ,
     email VARCHAR(40)  ,
     major VARCHAR(40) ,
@@ -261,7 +261,7 @@ DEALLOCATE pointer -- remove it from memory
 CREATE OR ALTER PROCEDURE DropAllTables
 AS
 EXEC DROPALLKEYCONSTRAINTS;
-DROP TABLE
+DROP TABLE IF EXISTS
             Student,
             Advisor,
             Student_Phone,
@@ -383,3 +383,25 @@ FROM Course c
     ON sict.course_id=c.course_id
 WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
+    @StudentID INT,
+    @courseID INT,
+    @Student_Current_Semester VARCHAR(40)
+        AS
+            DECLARE @sem_start_date DATE;
+            DECLARE @sem_end_date DATE;
+            SELECT @sem_start_date=start_date , @sem_end_date=end_date FROM Semester
+                WHERE semester_code=@Student_Current_Semester
+
+            DECLARE @exam INT;
+            SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
+                WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
+                            AND ME.course_id=@courseID AND ME.type='First_makeup'
+            PRINT @StudentID
+            PRINT @exam
+            PRINT @courseID
+            INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
+        GO
