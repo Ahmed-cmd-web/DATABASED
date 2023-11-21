@@ -304,7 +304,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
     @Current_semester_code Varchar (40)
     AS
-        SELECT * FROM Course c
+        SELECT c.* FROM Course c
         JOIN Student_Instructor_Course_Take sict
             ON sict.course_id=c.course_id
         WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
