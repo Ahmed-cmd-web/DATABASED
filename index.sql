@@ -331,6 +331,30 @@ SELECT *
 FROM Student
     GO
 
+CREATE OR ALTER VIEW view_Students
+AS
+    SELECT *
+    From Student
+go
+
+CREATE OR ALTER VIEW Students_Courses_transcript
+AS
+SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name,x.course_id,c.name AS Course_NAME, s.semester,x.exam_type,i.name AS INSTRUCTOR_NAME
+From Student_Instructor_Course_Take x
+     inner JOIN Student s On (x.student_id= s.student_id)
+     inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
+     inner JOIN Course c on (x.course_id= c.course_id)
+go
+
+CREATE OR ALTER VIEW Semster_offered_Courses
+AS
+SELECT s.course_id, s.semester_code, c.name
+FROM Course_Semester s
+     inner JOIN Course c on s.course_id = s.course_id
+go
+
+
+
 
 CREATE OR ALTER PROCEDURE AdminAddingSemester
     @start_date date,
@@ -342,5 +366,7 @@ INSERT INTO Semester
 VALUES
     (@start_date, @end_date, @semester_code)
 
-go    
+go 
+
+
 
