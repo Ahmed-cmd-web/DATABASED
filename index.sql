@@ -357,3 +357,16 @@ go
 
 
 SELECT * FROM Students_Courses_transcript
+
+CREATE OR ALTER PROCEDURE AdminAddingSemester
+    @start_date VARCHAR(40),
+    @start_date VARCHAR(40),
+    @semester_code VARCHAR(40),
+    @office VARCHAR(40),
+    @id INT OUTPUT
+AS
+INSERT INTO Semester
+    (name,password,email,office)
+VALUES
+    (@advisor_name, @password, @email, @office)
+    GO
