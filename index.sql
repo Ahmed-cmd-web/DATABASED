@@ -88,7 +88,7 @@ CREATE TABLE Student_Instructor_Course_Take
     course_id INT NOT NULL,
     instructor_id INT NOT NULL,
     student_id INT NOT NULL,
-    semester_code INT ,
+    semester_code VARCHAR(40) ,
     exam_type VARCHAR(40) default 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
     grade DECIMAL(3,2) DEFAULT NULL,
     CONSTRAINT course_id_instructor_id_student_id PRIMARY KEY(instructor_id,course_id,student_id),
@@ -350,3 +350,70 @@ AS
 SELECT *
 FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
+    
+
+CREATE OR ALTER VIEW view_Students
+AS
+    SELECT *
+    From Student
+go
+
+CREATE OR ALTER VIEW Students_Courses_transcript
+AS
+
+    SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type, i.name AS INSTRUCTOR_NAME
+    From Student_Instructor_Course_Take x
+        inner JOIN Student s On (x.student_id= s.student_id)
+        inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
+        inner JOIN Course c on (x.course_id= c.course_id)
+
+go
+
+CREATE OR ALTER VIEW Semster_offered_Courses
+AS
+    SELECT s.course_id, s.semester_code, c.name
+    FROM Course_Semester s
+        inner JOIN Course c on s.course_id = s.course_id
+go
+
+
+
+
+
+CREATE OR ALTER PROCEDURE AdminAddingSemester
+    @start_date date,
+    @end_date date,
+    @semester_code VARCHAR(40)
+As
+INSERT INTO Semester
+    (start_date,end_date,semester_code)
+VALUES
+    (@start_date, @end_date, @semester_code)
+
+go
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
+    @StudentID INT,
+    @Current_semester_code Varchar (40)
+AS
+SELECT c.*
+FROM Course c
+    JOIN Student_Instructor_Course_Take sict
+    ON sict.course_id=c.course_id
+WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
+    GO
+
+
+CREATE VIEW all_Pending_Requests
+
+As
+    Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+    from Request r inner join Student s on (r.student_id = s.student_id)
+                   inner join Advisor a on (a.advisor_id = r.advisor_id)
+    where r.status='pending';               
+go
+
+
+
