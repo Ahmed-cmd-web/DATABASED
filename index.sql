@@ -25,7 +25,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id       INT PRIMARY KEY IDENTITY,
             f_name           VARCHAR(40)  NOT NULL,
             l_name           VARCHAR(40)  NOT NULL,
-            gpa              DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7),
+            gpa              DECIMAL(3,2) CHECK (gpa<=5.0 AND gpa>=0.7),
             faculty          VARCHAR(40)  NOT NULL,
             email            VARCHAR(40)  NOT NULL,
             major            VARCHAR(40)  NOT NULL,
@@ -143,7 +143,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: ‘pending’(default), ‘accepted’ or ‘rejected’.
+            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: ï¿½pendingï¿½(default), ï¿½acceptedï¿½ or ï¿½rejectedï¿½.
             credit_hours INT,
             student_id   INT NOT NULL,
             advisor_id   INT NOT NULL,
@@ -323,7 +323,7 @@ CREATE VIEW Courses_MakeupExams
         INNER Join MakeUp_Exam ME
         ON (C.course_id = ME.course_id);
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_StudentRegistration
     @first_name VARCHAR(40),
     @last_name VARCHAR(40),
@@ -359,8 +359,8 @@ CREATE OR ALTER VIEW Advisors_Graduation_Plan
         Select  g.*,
                 a.advisor_id,
                 a.name AS Advisor_name
-        FROM Graduation_plan g 
-        FULL OUTER JOIN Advisor a 
+        FROM Graduation_plan g
+        FULL OUTER JOIN Advisor a
         ON g.advisor_id = a.Advisor_id
     GO
 
