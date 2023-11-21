@@ -331,42 +331,16 @@ SELECT *
 FROM Student
     GO
 
-CREATE OR ALTER VIEW view_Students
-AS
-    SELECT *
-    From Student
-go
-
-CREATE OR ALTER VIEW Students_Courses_transcript
-AS
-SELECT x.student_id, s.f_name,s.l_name,x.course_id,c.name AS Course_NAME, s.semester,x.exam_type,i.name AS INSTRUCOTR_NAME
-From Student_Instructor_Course_Take x
-     inner JOIN Student s On (x.student_id= s.student_id)
-     inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
-     inner JOIN Course c on (x.course_id= c.course_id)
-go
-
-
-
-CREATE OR ALTER VIEW Semster_offered_Courses
-AS
-SELECT s.course_id, s.semester_code, c.name
-FROM Course_Semester s
-     inner JOIN Course c on s.course_id = s.course_id
-go
-
-
-SELECT * FROM Students_Courses_transcript
 
 CREATE OR ALTER PROCEDURE AdminAddingSemester
-    @start_date VARCHAR(40),
-    @start_date VARCHAR(40),
-    @semester_code VARCHAR(40),
-    @office VARCHAR(40),
-    @id INT OUTPUT
-AS
+    @start_date date,
+    @end_date date,
+    @semester_code VARCHAR(40)
+As
 INSERT INTO Semester
-    (name,password,email,office)
+    (start_date,end_date,semester_code)
 VALUES
-    (@advisor_name, @password, @email, @office)
-    GO
+    (@start_date, @end_date, @semester_code)
+
+go    
+
