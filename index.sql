@@ -40,7 +40,6 @@ CREATE TABLE Course
     major VARCHAR(40) NOT NULL,
     semester INT NOT NULL,
     credit_hours INT NOT NULL,
-    course_name VARCHAR(40) NOT NULL ,
     offered BIT NOT NULL,
 );
 CREATE TABLE Student_Phone
