@@ -395,6 +395,3 @@ Insert into Graduation_plan (semester_code,expected_grad_semester,semester_credi
 ,@semester_credit_hours,@advisor_id,@student_id)   
 GO
 
-exec DropAllTables
-exec CreateAllTables
-exec Procedures_AdvisorCreateGP @semester_code='1',@expected_graduation_date='1991',@semester_credit_hours=6,@advisor_id=1,@student_id=9
