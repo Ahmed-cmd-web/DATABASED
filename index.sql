@@ -383,3 +383,15 @@ FROM Course c
     ON sict.course_id=c.course_id
 WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
+
+CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
+    @student_id int
+ AS
+    UPDATE p  
+          set i.status= 0  
+          from Payment p inner join Installment i on(i.payment_id = p.payment_id)
+            
+    where p.status='NotPaid' and p.deadline<CURRENT_DATE() and p.student_id=@student_id             
+ GO
+
+
