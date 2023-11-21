@@ -24,16 +24,16 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id       INT PRIMARY KEY IDENTITY,
             f_name           VARCHAR(40)  NOT NULL,
             l_name           VARCHAR(40)  NOT NULL,
-            gpa              DECIMAL(2,2) NOT NULL CHECK (gpa<=5.0 AND gpa>=0.7),
+            gpa              DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7),
             faculty          VARCHAR(40)  NOT NULL,
             email            VARCHAR(40)  NOT NULL,
             major            VARCHAR(40)  NOT NULL,
             password         VARCHAR(40)  NOT NULL,
-            financial_status BIT          NOT NULL, --NOTE: Is it Complex Check Constraint (the Dr mentioned it in the Lecture which require another table "Installment" to be checked for)?! ""Where student.financial_status = (current_timestamp > Installment.deadline AND Installment.status = 1)""
+            financial_status BIT          ,
             semester         INT          NOT NULL,
-            acquired_hours   INT          NOT NULL,
-            assigned_hours   INT          NOT NULL,
-            advisor_id       INT          NOT NULL,
+            acquired_hours   INT          ,
+            assigned_hours   INT          ,
+            advisor_id       INT          ,
             CONSTRAINT advisor_FK_Student FOREIGN KEY (advisor_id) REFERENCES Advisor ON UPDATE CASCADE ON DELETE CASCADE
         );
 
@@ -83,8 +83,8 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             course_id     INT NOT NULL,
             instructor_id INT NOT NULL,
             semester_code VARCHAR(40)  NOT NULL,
-            exam_type     VARCHAR(40)  default 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
-            grade         DECIMAL(3,2) DEFAULT NULL,
+            exam_type     VARCHAR(40)  DEFAULT 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
+            grade         DECIMAL(3,2),
             CONSTRAINT course_id_instructor_id_student_id              PRIMARY KEY (instructor_id,course_id,student_id),
             CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course,
             CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
@@ -135,13 +135,11 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             semester_code VARCHAR(40) NOT NULL,
             course_id     INT         NOT NULL,
             CONSTRAINT plan_id_semester_code_course_id_PK_GradPlan_Course PRIMARY KEY (plan_id,semester_code,course_id),
-            CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE,
-            CONSTRAINT course_id_FK_GradPlan_Course                       FOREIGN KEY (course_id)              REFERENCES Course          (course_id)              ON UPDATE CASCADE ON DELETE CASCADE,
-
+            CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE
         );
 
         CREATE TABLE Request (
-            request_id INT PRIMARY KEY IDENTITY ,
+            request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
             status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: ‘pending’(default), ‘accepted’ or ‘rejected’.
@@ -157,7 +155,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         CREATE TABLE MakeUp_Exam (
             exam_id   INT PRIMARY KEY NOT NULL,
             date      DATE            NOT NULL,
-            type      VARCHAR(40),
+            type      VARCHAR(40)     NOT NULL,
             course_id INT             NOT NULL,
             CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course,
         );
@@ -174,13 +172,13 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         CREATE TABLE Payment (
             payment_id      INT PRIMARY KEY,
             amount          DECIMAL(10,5) NOT NULL,
-            deadline        DATE          NOT NULL,
+            deadline        DATETIME      NOT NULL,
             n_installments  INT           NOT NULL,
             status          VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
             fund_percentage DECIMAL(3,2)  CHECK (fund_percentage<=100.00 AND fund_percentage>=0.00),
             student_id      INT           NOT NULL,
             semester_code   VARCHAR(40)   NOT NULL,
-            start_date      DATE          NOT NULL,
+            start_date      DATETIME      NOT NULL,
             CONSTRAINT student_FK_Payment       FOREIGN KEY (student_id)    REFERENCES Student (student_id) ON UPDATE CASCADE, --NOTE: Should we add "ON DELETE CASCADE" also?!
             CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE, --NOTE: Should we add "ON DELETE CASCADE" also?!
         );
@@ -280,7 +278,7 @@ CREATE VIEW Instructors_AssignedCourses
                 I.office,
                 IC.course_id
         FROM Instructor I
-        LEFT JOIN Instructor_Course IC
+        INNER JOIN Instructor_Course IC
         ON (I.instructor_id = IC.instructor_id);
     GO
 
@@ -296,7 +294,7 @@ CREATE VIEW Student_Payment
                P.status,
                S.*
         FROM Payment P
-        LEFT Join Student S
+        INNER Join Student S
         ON (P.payment_id = S.student_id);
     GO
 
@@ -313,7 +311,7 @@ CREATE VIEW Courses_Slots_Instructor
         INNER Join Slot S
         ON (C.course_id = S.course_id)
             INNER Join Instructor I
-            ON (C.course_id  = S.course_id AND I.instructor_id = S.instructor_id);
+            ON (I.instructor_id = S.instructor_id);
     GO
 
 CREATE VIEW Courses_MakeupExams
@@ -325,7 +323,7 @@ CREATE VIEW Courses_MakeupExams
                ME.exam_id,
                ME.type
         FROM Course C
-        LEFT Join MakeUp_Exam ME
+        INNER Join MakeUp_Exam ME
         ON (C.course_id = ME.course_id);
     GO
 
@@ -339,12 +337,9 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegistration
     @major VARCHAR(40),
     @Semester int,
     @id INT OUTPUT
-AS
-INSERT INTO Student
-    (f_name,l_name,password,faculty,email,major,semester)
-VALUES
-    (@first_name, @last_name, @password, @faculty, @email, @major, @Semester)
-SET @id=SCOPE_IDENTITY()
+    AS
+        INSERT INTO Student (f_name,l_name,password,faculty,email,major,semester) VALUES (@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
+        SET @id = SCOPE_IDENTITY()
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
@@ -353,18 +348,14 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
     @email VARCHAR(40),
     @office VARCHAR(40),
     @id INT OUTPUT
-AS
-INSERT INTO Advisor
-    (name,password,email,office)
-VALUES
-    (@advisor_name, @password, @email, @office)
-SET @id=SCOPE_IDENTITY()
+    AS
+        INSERT INTO Advisor (name,password,email,office) VALUES (@advisor_name,@password,@email,@office)
+        SET @id = SCOPE_IDENTITY()
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
-AS
-SELECT *
-FROM Student
+    AS
+        SELECT * FROM Student
     GO
 
 
