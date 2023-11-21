@@ -3,11 +3,11 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-1
 
+CREATE DATABASE Advising_Team_119;
+
 USE Advising_Team_119;
     GO
 
---2.1 Basic Structure of the Database
-    
 CREATE DATABASE Advising_Team_119;
     GO
 
@@ -25,7 +25,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id       INT PRIMARY KEY IDENTITY,
             f_name           VARCHAR(40)  NOT NULL,
             l_name           VARCHAR(40)  NOT NULL,
-            gpa              DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7), 
+            gpa              DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7),
             faculty          VARCHAR(40)  NOT NULL,
             email            VARCHAR(40)  NOT NULL,
             major            VARCHAR(40)  NOT NULL,
@@ -41,7 +41,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         CREATE TABLE Course (
                 course_id    INT PRIMARY KEY IDENTITY,
                 name         VARCHAR(40) NOT NULL,
-                major        VARCHAR(40) NOT NULL,               
+                major        VARCHAR(40) NOT NULL,
                 is_offered   BIT         NOT NULL,
                 credit_hours INT         NOT NULL,
                 semester     INT         NOT NULL,
@@ -51,7 +51,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id   INT         NOT NULL,
             phone_number VARCHAR(40) NOT NULL,
             CONSTRAINT student_id_phone_number_PK_Student_Phone PRIMARY KEY (student_id,phone_number),
-            CONSTRAINT student_id_FK_Student_Phone              FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE ON DELETE CASCADE,  
+            CONSTRAINT student_id_FK_Student_Phone              FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE ON DELETE CASCADE,
         );
 
         CREATE TABLE PreqCourse_course (
@@ -67,7 +67,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
                 instructor_id INT PRIMARY KEY,
                 name          VARCHAR(40) NOT NULL,
                 email         VARCHAR(40) NOT NULL,
-                faculty       VARCHAR(40) NOT NULL,         
+                faculty       VARCHAR(40) NOT NULL,
                 office        VARCHAR(40) NOT NULL,
         );
 
@@ -98,12 +98,12 @@ CREATE OR ALTER PROCEDURE CreateAllTables
                 end_date      DATE NOT NULL,
         );
 
-        CREATE TABLE Course_Semester (  
+        CREATE TABLE Course_Semester (
                 course_id     INT,
                 semester_code VARCHAR(40) NOT NULL,
                 CONSTRAINT course_id_semester_code_PK_Course_Semester PRIMARY KEY (course_id,semester_code),
                 CONSTRAINT course_id_FK_Course_Semester               FOREIGN Key (course_id)     REFERENCES Course   (course_id)     ON UPDATE CASCADE ON DELETE CASCADE,
-                CONSTRAINT semester_code_FK_Course_Semester           FOREIGN Key (semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE ON DELETE CASCADE,        
+                CONSTRAINT semester_code_FK_Course_Semester           FOREIGN Key (semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE ON DELETE CASCADE,
         );
 
         CREATE TABLE Slot (
@@ -134,7 +134,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         CREATE TABLE GradPlan_Course (  --NOTE: I think here we should think about "ON DELETE/UPDATE CASCADE" cases ...
             plan_id       INT         NOT NULL,
             semester_code VARCHAR(40) NOT NULL,
-            course_id     INT         NOT NULL, 
+            course_id     INT         NOT NULL,
             CONSTRAINT plan_id_semester_code_course_id_PK_GradPlan_Course PRIMARY KEY (plan_id,semester_code,course_id),
             CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE
         );
@@ -143,11 +143,11 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: â€˜pendingâ€™(default), â€˜acceptedâ€™ or â€˜rejectedâ€™.
+            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: ‘pending’(default), ‘accepted’ or ‘rejected’.
             credit_hours INT,
             student_id   INT NOT NULL,
-            advisor_id   INT NOT NULL,            
-            course_id    INT NOT NULL,         
+            advisor_id   INT NOT NULL,
+            course_id    INT NOT NULL,
             CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
             CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
             CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
@@ -163,7 +163,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
 
         CREATE TABLE Exam_Student (
             exam_id    INT NOT NULL,
-            student_id INT NOT NULL,           
+            student_id INT NOT NULL,
             course_id  INT NOT NULL,
             CONSTRAINT student_id_exam_id_PK_Exam_Student PRIMARY KEY (student_id,exam_id),
             CONSTRAINT exam_id_FK_Exam_Student            FOREIGN KEY (exam_id)    REFERENCES MakeUp_Exam          ON UPDATE CASCADE,
@@ -184,120 +184,73 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE, --NOTE: Should we add "ON DELETE CASCADE" also?!
         );
 
+
         CREATE TABLE Installment(
-            payment_id INT           NOT NULL,
-            deadline   DATETIME      NOT NULL,
-            amount     INT                   ,
-            status     VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
-            start_date DATETIME      NOT NULL,
-            CONSTRAINT payment_id_deadline_PK_Installment    PRIMARY KEY (payment_id,deadline),
-            CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
-        );
+                payment_id INT           NOT NULL,
+                deadline   DATE          NOT NULL,
+                amount     DECIMAL(10,5) NOT NULL,
+                status     BIT           NOT NULL,
+                start_date DATE          NOT NULL,
+                CONSTRAINT payment_id_deadline_PK_Installment    PRIMARY KEY (payment_id,deadline),
+                CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
+            );
+    GO
+
+CREATE OR ALTER PROCEDURE DROPALLKEYCONSTRAINTS
+    AS
+        DECLARE @command VARCHAR(255)
+        -- variable to store the command
+        DECLARE pointer CURSOR FAST_FORWARD READ_ONLY FOR -- declaring the row pointer
+                    SELECT CONCAT('ALTER TABLE ', TABLE_SCHEMA, '.[', TABLE_NAME, '] DROP CONSTRAINT [', CONSTRAINT_NAME, ']') AS Name
+        FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+        WHERE CONSTRAINT_TYPE = 'FOREIGN KEY'
+        OPEN pointer
+        -- intializing the pointer
+
+        FETCH NEXT FROM pointer INTO @command
+        -- store teh row result in the command variable
+
+        WHILE @@FETCH_STATUS=0 -- while there are still results(rows)
+                    BEGIN
+            EXEC(@command)
+            -- exceute the command
+            FETCH NEXT FROM pointer INTO @command
+        -- set the next result in teh command
+        END;
+        CLOSE pointer
+        -- closse the cursor
+        DEALLOCATE pointer -- remove it from memory
     GO
 
 CREATE OR ALTER PROCEDURE DropAllTables
     AS
-        ALTER TABLE Student                        DROP CONSTRAINT advisor_FK_Student;
-        ALTER TABLE Payment                        DROP CONSTRAINT student_FK_Payment, semester_code_FK_Payment;
-        ALTER TABLE MakeUP_Exam                    DROP CONSTRAINT course_id_FK_MakeUp_Exam;
-        ALTER TABLE Graduation_Plan                DROP CONSTRAINT advisor_FK_Graduation_plan, student_FK_Graduation_plan;
-        ALTER TABLE Student_Phone                  DROP CONSTRAINT student_id_FK_Student_Phone;  
-        ALTER TABLE PreqCourse_course              DROP CONSTRAINT course_id_FK_PreqCourse_course, prerequisite_course_id_FK_PreqCourse_course;     
-        ALTER TABLE Instructor_Course              DROP CONSTRAINT course_id_FK_Instructor_Course, instructor_id_FK_Instructor_Course;         
-        ALTER TABLE Student_Instructor_Course_Take DROP CONSTRAINT course_id_FK_Student_Instructor_Course_Take, instructor_id_FK_Student_Instructor_Course_Take, student_id_FK_Student_Instructor_Course_Take;
-        ALTER TABLE Course_Semester                DROP CONSTRAINT course_id_FK_Course_Semester, semester_code_FK_Course_Semester;
-        ALTER TABLE Slot                           DROP CONSTRAINT course_id_FK_Slot,instructor_id_FK_Slot;     
-        ALTER TABLE GradPlan_Course                DROP CONSTRAINT plan_id_semester_code_FK_GradPlan_Course;
-        ALTER TABLE Request                        DROP CONSTRAINT student_id_FK_Request,advisor_id_FK_Request ,course_id_FK_Request ;
-        ALTER TABLE Exam_Student                   DROP CONSTRAINT exam_id_FK_Exam_Student,student_id_FK_Exam_Student;
-        ALTER TABLE Installment                    DROP CONSTRAINT payment_id_FK_Installment;
-
+        EXEC DROPALLKEYCONSTRAINTS;
         DROP TABLE IF EXISTS
-            Student,
-            Advisor,
-            Student_Phone,
-            Course,
-            PreqCourse_course,
-            Instructor,
-            Instructor_Course,
-            Student_Instructor_Course_Take,
-            Semester,
-            Course_Semester,
-            Slot,
-            Graduation_plan,
-            GradPlan_Course,
-            Request,
-            MakeUp_Exam,
-            Exam_Student,
-            Payment,
-            Installment
+                    Student,
+                    Advisor,
+                    Student_Phone,
+                    Course,
+                    PreqCourse_course,
+                    Instructor,
+                    Instructor_Course,
+                    Student_Instructor_Course_Take,
+                    Semester,
+                    Course_Semester,
+                    Slot,
+                    Graduation_plan,
+                    GradPlan_Course,
+                    Request,
+                    MakeUp_Exam,
+                    Exam_Student,
+                    Payment,
+                    Installment
     GO
 
-CREATE OR ALTER PROCEDURE clearAllTables 
+CREATE OR ALTER PROCEDURE clearAllTables
     AS
-        ALTER TABLE Student                        DROP CONSTRAINT advisor_FK_Student;
-        ALTER TABLE Payment                        DROP CONSTRAINT student_FK_Payment, semester_code_FK_Payment;
-        ALTER TABLE MakeUP_Exam                    DROP CONSTRAINT course_id_FK_MakeUp_Exam;
-        ALTER TABLE Graduation_Plan                DROP CONSTRAINT advisor_FK_Graduation_plan, student_FK_Graduation_plan;
-        ALTER TABLE Student_Phone                  DROP CONSTRAINT student_id_FK_Student_Phone;  
-        ALTER TABLE PreqCourse_course              DROP CONSTRAINT course_id_FK_PreqCourse_course, prerequisite_course_id_FK_PreqCourse_course;     
-        ALTER TABLE Instructor_Course              DROP CONSTRAINT course_id_FK_Instructor_Course, instructor_id_FK_Instructor_Course;         
-        ALTER TABLE Student_Instructor_Course_Take DROP CONSTRAINT course_id_FK_Student_Instructor_Course_Take, instructor_id_FK_Student_Instructor_Course_Take, student_id_FK_Student_Instructor_Course_Take;
-        ALTER TABLE Course_Semester                DROP CONSTRAINT course_id_FK_Course_Semester, semester_code_FK_Course_Semester;
-        ALTER TABLE Slot                           DROP CONSTRAINT course_id_FK_Slot,instructor_id_FK_Slot;     
-        ALTER TABLE GradPlan_Course                DROP CONSTRAINT plan_id_semester_code_FK_GradPlan_Course;
-        ALTER TABLE Request                        DROP CONSTRAINT student_id_FK_Request,advisor_id_FK_Request ,course_id_FK_Request ;
-        ALTER TABLE Exam_Student                   DROP CONSTRAINT exam_id_FK_Exam_Student,student_id_FK_Exam_Student;
-        ALTER TABLE Installment                    DROP CONSTRAINT payment_id_FK_Installment;
-
-        TRUNCATE TABLE Student;
-        TRUNCATE TABLE Advisor;
-        TRUNCATE TABLE Student_Phone;
-        TRUNCATE TABLE Course;
-        TRUNCATE TABLE PreqCourse_course;
-        TRUNCATE TABLE Instructor;
-        TRUNCATE TABLE Instructor_Course;
-        TRUNCATE TABLE Student_Instructor_Course_Take;
-        TRUNCATE TABLE Semester;
-        TRUNCATE TABLE Course_Semester;
-        TRUNCATE TABLE Slot;
-        TRUNCATE TABLE Graduation_plan;
-        TRUNCATE TABLE GradPlan_Course;
-        TRUNCATE TABLE Request;
-        TRUNCATE TABLE MakeUp_Exam;
-        TRUNCATE TABLE Exam_Student;
-        TRUNCATE TABLE Payment;
-        TRUNCATE TABLE Installment;
-        
-        ALTER TABLE Student                        ADD CONSTRAINT advisor_FK_Student FOREIGN KEY (advisor_id) REFERENCES Advisor ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Payment                        ADD CONSTRAINT student_FK_Payment FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE;
-        ALTER TABLE Payment                        ADD CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester ON UPDATE CASCADE;
-        ALTER TABLE MakeUP_Exam                    ADD CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course;
-        ALTER TABLE Graduation_Plan                ADD CONSTRAINT advisor_FK_Graduation_plan FOREIGN KEY (advisor_id) REFERENCES Advisor; 
-        ALTER TABLE Graduation_Plan                ADD CONSTRAINT student_FK_Graduation_plan FOREIGN KEY (student_id) REFERENCES Student (student_id);
-        ALTER TABLE Student_Phone                  ADD CONSTRAINT student_id_FK_Student_Phone FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE ON DELETE CASCADE;  
-        ALTER TABLE PreqCourse_course              ADD CONSTRAINT course_id_FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id) REFERENCES Course;
-        ALTER TABLE PreqCourse_course              ADD CONSTRAINT prerequisite_course_id_FK_PreqCourse_course FOREIGN KEY (course_id) REFERENCES Course;
-        ALTER TABLE Instructor_Course              ADD CONSTRAINT course_id_FK_Instructor_Course FOREIGN KEY (course_id) REFERENCES Course ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Instructor_Course              ADD CONSTRAINT instructor_id_FK_Instructor_Course FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Student_Instructor_Course_Take ADD CONSTRAINT course_id_FK_Student_Instructor_Course_Take FOREIGN KEY (course_id) REFERENCES Course;
-        ALTER TABLE Student_Instructor_Course_Take ADD CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor;
-        ALTER TABLE Student_Instructor_Course_Take ADD CONSTRAINT student_id_FK_Student_Instructor_Course_Take FOREIGN KEY (student_id) REFERENCES Student (student_id);
-        ALTER TABLE Course_Semester                ADD CONSTRAINT course_id_FK_Course_Semester FOREIGN Key (course_id) REFERENCES Course (course_id) ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Course_Semester                ADD CONSTRAINT semester_code_FK_Course_Semester FOREIGN Key (semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Slot                           ADD CONSTRAINT course_id_FK_Slot FOREIGN KEY (course_id) REFERENCES Course ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Slot                           ADD CONSTRAINT instructor_id_FK_Slot FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE GradPlan_Course                ADD CONSTRAINT plan_id_semester_code_FK_GradPlan_Course FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE;
-        ALTER TABLE Request                        ADD CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id);
-        ALTER TABLE Request                        ADD CONSTRAINT course_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor;
-        ALTER TABLE Request                        ADD CONSTRAINT advisor_id_FK_Request FOREIGN KEY (course_id) REFERENCES Course;
-        ALTER TABLE Exam_Student                   ADD CONSTRAINT exam_id_FK_Exam_Student FOREIGN KEY (exam_id) REFERENCES MakeUp_Exam ON UPDATE CASCADE;
-        ALTER TABLE Exam_Student                   ADD CONSTRAINT student_id_FK_Exam_Student FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE;
-        ALTER TABLE Installment                    ADD CONSTRAINT payment_id_FK_Installment FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE;
+        EXEC DropAllTables
+        EXEC CreateAllTables
     GO
-
-
---2.2 Basic Data Retrieval
 
 CREATE VIEW view_Course_prerequisites
     AS
@@ -308,10 +261,10 @@ CREATE VIEW view_Course_prerequisites
                C.credit_hours,
                C.semester,
                PC.prerequisite_course_id
-        FROM Course C 
-        LEFT JOIN PreqCourse_course PC 
-        ON (C.course_id = PC.course_id);        
-    GO  
+        FROM Course C
+        LEFT JOIN PreqCourse_course PC
+        ON (C.course_id = PC.course_id);
+    GO
 
 CREATE VIEW Instructors_AssignedCourses
     AS
@@ -321,12 +274,12 @@ CREATE VIEW Instructors_AssignedCourses
                 I.faculty,
                 I.office,
                 IC.course_id
-        FROM Instructor I 
-        INNER JOIN Instructor_Course IC 
-        ON (I.instructor_id = IC.instructor_id);  
+        FROM Instructor I
+        INNER JOIN Instructor_Course IC
+        ON (I.instructor_id = IC.instructor_id);
     GO
 
-CREATE VIEW Student_Payment 
+CREATE VIEW Student_Payment
     AS
         SELECT P.amount,
                P.deadline,
@@ -338,11 +291,11 @@ CREATE VIEW Student_Payment
                P.status,
                S.*
         FROM Payment P
-        INNER Join Student S 
+        INNER Join Student S
         ON (P.payment_id = S.student_id);
     GO
 
-CREATE VIEW Courses_Slots_Instructor 
+CREATE VIEW Courses_Slots_Instructor
     AS
         SELECT  C.course_id,
                 C.name as course_name,
@@ -352,28 +305,25 @@ CREATE VIEW Courses_Slots_Instructor
                 S.location,
                 I.name as instructor_name
         FROM Course C
-        INNER Join Slot S 
+        INNER Join Slot S
         ON (C.course_id = S.course_id)
             INNER Join Instructor I
             ON (I.instructor_id = S.instructor_id);
     GO
 
-CREATE VIEW Courses_MakeupExams 
+CREATE VIEW Courses_MakeupExams
     AS
         SELECT C.name,
                C.semester,
                ME.course_id,
                ME.date,
                ME.exam_id,
-               ME.type             
+               ME.type
         FROM Course C
-        INNER Join MakeUp_Exam ME 
+        INNER Join MakeUp_Exam ME
         ON (C.course_id = ME.course_id);
     GO
-
-
---2.3 All Other Requirements
-
+    
 CREATE OR ALTER PROCEDURE Procedures_StudentRegistration
     @first_name VARCHAR(40),
     @last_name VARCHAR(40),
@@ -402,4 +352,79 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
         SELECT * FROM Student
+    GO
+
+CREATE OR ALTER VIEW Advisors_Graduation_Plan
+    As
+        Select  g.*,
+                a.advisor_id,
+                a.name AS Advisor_name
+        FROM Graduation_plan g 
+        FULL OUTER JOIN Advisor a 
+        ON g.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
+AS
+SELECT *
+FROM Advisor
+    GO
+
+CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
+AS
+SELECT *
+FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER VIEW view_Students
+    AS
+        SELECT *
+        From Student
+    GO
+
+CREATE OR ALTER VIEW Students_Courses_transcript
+    AS
+
+        SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type, i.name AS INSTRUCTOR_NAME
+        From Student_Instructor_Course_Take x
+            inner JOIN Student s On (x.student_id= s.student_id)
+            inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
+            inner JOIN Course c on (x.course_id= c.course_id)
+    GO
+
+CREATE OR ALTER VIEW Semster_offered_Courses
+AS
+    SELECT s.course_id, s.semester_code, c.name
+    FROM Course_Semester s
+        inner JOIN Course c on s.course_id = s.course_id
+    GO
+
+CREATE OR ALTER PROCEDURE AdminAddingSemester
+    @start_date date,
+    @end_date date,
+    @semester_code VARCHAR(40)
+As
+INSERT INTO Semester
+    (start_date,end_date,semester_code)
+VALUES
+    (@start_date, @end_date, @semester_code)
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
+    @StudentID INT,
+    @Current_semester_code Varchar (40)
+    AS
+        SELECT c.*
+        FROM Course c
+        JOIN Student_Instructor_Course_Take sict
+        ON sict.course_id=c.course_id
+        WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
+    GO
+
+CREATE VIEW all_Pending_Requests
+    AS
+        Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+        from Request r inner join Student s on (r.student_id = s.student_id)
+                       inner join Advisor a on (a.advisor_id = r.advisor_id)
+        where r.status = 'pending';
     GO
