@@ -334,7 +334,7 @@ FROM Student
 
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
 As
-    Select g.plan_id, g.semester_code, g.major, g.expected_grad_semester, g.semester_credit_hours, g.course_name, g.offered, a.advisor_id, student_id, a.name AS Advisor_name
+    Select g.plan_id, g.semester_code, g.major, g.expected_grad_semester, g.semester_credit_hours, g.course_name, g.offered, g.student_id, a.advisor_id, a.name AS Advisor_name
 
     FROM Graduation_plan g FULL OUTER JOIN Advisor a ON g.advisor_id = a.Advisor_id
     GO
