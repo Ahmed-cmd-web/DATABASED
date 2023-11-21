@@ -400,9 +400,6 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
             SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
                 WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
                             AND ME.course_id=@courseID AND ME.type='First_makeup'
-            PRINT @StudentID
-            PRINT @exam
-            PRINT @courseID
             INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
         GO
 
