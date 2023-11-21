@@ -428,3 +428,11 @@ CREATE VIEW all_Pending_Requests
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor --NOTE: Semster_code COULD be NULL here ?!
+    @Student_ID INT,
+    @Instructor_ID INT, 
+    @Course_ID INT
+    AS
+        INSERT INTO Student_Instructor_Course_Take (student_id,instructor_id,course_iD) VALUES (@Student_ID,@Instructor_ID,@Course_ID);
+    GO
