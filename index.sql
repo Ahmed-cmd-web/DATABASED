@@ -1,4 +1,4 @@
--- CREATE DATABASE Advising_Team_119;
+CREATE DATABASE Advising_Team_119;
 
 USE Advising_Team_119;
 GO
@@ -40,7 +40,6 @@ CREATE TABLE Course
     major VARCHAR(40) NOT NULL,
     semester INT NOT NULL,
     credit_hours INT NOT NULL,
-    course_name VARCHAR(40) NOT NULL ,
     offered BIT NOT NULL,
 );
 CREATE TABLE Student_Phone
@@ -330,6 +329,27 @@ AS
 SELECT *
 FROM Student
     GO
+
+
+CREATE OR ALTER VIEW Advisors_Graduation_Plan
+As
+    Select g.plan_id, g.semester_code, g.major, g.expected_grad_semester, g.semester_credit_hours, g.course_name, g.offered, g.student_id, a.advisor_id, a.name AS Advisor_name
+
+    FROM Graduation_plan g FULL OUTER JOIN Advisor a ON g.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
+AS
+SELECT *
+FROM Advisor
+    GO
+
+CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
+AS
+SELECT *
+FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
+
 
 CREATE OR ALTER VIEW view_Students
 AS
