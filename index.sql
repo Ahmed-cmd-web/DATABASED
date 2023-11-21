@@ -80,7 +80,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             course_id INT NOT NULL,
             instructor_id INT NOT NULL,
             student_id INT NOT NULL,
-            semester_code INT ,
+            semester_code VARCHAR(40) ,
             exam_type VARCHAR(40)  default 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
             grade DECIMAL(3,2) DEFAULT NULL,
             CONSTRAINT course_id_instructor_id_student_id PRIMARY KEY(instructor_id,course_id,student_id),
@@ -299,4 +299,14 @@ CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     SELECT * FROM Student
     GO
 
+
+CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
+    @StudentID INT,
+    @Current_semester_code Varchar (40)
+    AS
+        SELECT * FROM Course c
+        JOIN Student_Instructor_Course_Take sict
+            ON sict.course_id=c.course_id
+        WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
+    GO
 
