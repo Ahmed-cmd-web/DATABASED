@@ -108,9 +108,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
 
         CREATE TABLE Slot (
             slot_id       INT PRIMARY KEY,
-            day           VARCHAR(40) NOT NULL,
-            time          INT         NOT NULL CHECK(time IN (1,2,3,4,5)),
-            location      VARCHAR(40) NOT NULL,
+            day           VARCHAR(40),
+            time          INT         CHECK(time IN (1,2,3,4,5)),
+            location      VARCHAR(40),
             course_id     INT         NOT NULL,
             instructor_id INT         NOT NULL,
             CONSTRAINT course_id_FK_Slot     FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE ON DELETE CASCADE,
