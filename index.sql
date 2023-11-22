@@ -442,3 +442,14 @@ RETURNS BIT
     GO
 
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
+    @current_semester VARCHAR(40)
+    AS
+        DELETE s FROM Slot s
+        JOIN Course c
+            ON c.course_id=s.course_id
+        JOIN Course_Semester cs
+            ON  cs.course_id=c.course_id
+        WHERE cs.semester_code=@current_semester AND c.is_offered=0
+    GO
