@@ -349,6 +349,17 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
         SET @id = SCOPE_IDENTITY()
     GO
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
+    @Type VARCHAR(40),
+    @date DATETIME,
+    @courseID INT
+    AS
+        INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
+    GO
+
+
+
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
         SELECT * FROM Student
@@ -377,17 +388,17 @@ FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
-    @major varchar (40), 
-    @semester int, 
+    @major varchar (40),
+    @semester int,
     @credit_hours int,
     @course_name varchar (40),
     @offered bit
     AS
-        INSERT INTO Course 
+        INSERT INTO Course
             (major,semester,credit_hours,name,is_offered)
         VALUES
             (@major,@semester,@credit_hours,@course_name,@offered)
-    GO        
+    GO
 
 CREATE OR ALTER VIEW view_Students
     AS
