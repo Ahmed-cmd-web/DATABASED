@@ -147,18 +147,18 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             credit_hours INT,
             student_id   INT NOT NULL,
             advisor_id   INT NOT NULL,
-            course_id    INT NOT NULL,
+            course_id    INT ,
             CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
             CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
-            CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
+            CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
         );
 
         CREATE TABLE MakeUp_Exam (
             exam_id   INT PRIMARY KEY NOT NULL,
             date      DATE            NOT NULL,
             type      VARCHAR(40)     NOT NULL,
-            course_id INT             NOT NULL,
-            CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course,
+            course_id INT                          ,
+            CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course  ON DELETE SET NULL,
         );
 
         CREATE TABLE Exam_Student (
@@ -427,4 +427,11 @@ CREATE VIEW all_Pending_Requests
         from Request r inner join Student s on (r.student_id = s.student_id)
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteCourse
+    @courseID INT
+    AS
+        DELETE FROM Course WHERE course_id=@courseID
     GO
