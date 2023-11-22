@@ -25,7 +25,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             student_id       INT PRIMARY KEY IDENTITY,
             f_name           VARCHAR(40)  NOT NULL,
             l_name           VARCHAR(40)  NOT NULL,
-            gpa              DECIMAL(2,2) CHECK (gpa<=5.0 AND gpa>=0.7),
+            gpa              DECIMAL(3,2) CHECK (gpa<=5.0 AND gpa>=0.7),
             faculty          VARCHAR(40)  NOT NULL,
             email            VARCHAR(40)  NOT NULL,
             major            VARCHAR(40)  NOT NULL,
@@ -387,6 +387,18 @@ SELECT *
 FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
 
+CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
+    @major varchar (40),
+    @semester int,
+    @credit_hours int,
+    @course_name varchar (40),
+    @offered bit
+    AS
+        INSERT INTO Course
+            (major,semester,credit_hours,name,is_offered)
+        VALUES
+            (@major,@semester,@credit_hours,@course_name,@offered)
+    GO
 
 CREATE OR ALTER VIEW view_Students
     AS
@@ -439,4 +451,16 @@ CREATE VIEW all_Pending_Requests
         from Request r inner join Student s on (r.student_id = s.student_id)
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
+    @current_semester VARCHAR(40)
+    AS
+        DELETE s FROM Slot s
+        JOIN Course c
+            ON c.course_id=s.course_id
+        JOIN Course_Semester cs
+            ON  cs.course_id=c.course_id
+        WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
