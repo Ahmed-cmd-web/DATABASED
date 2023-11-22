@@ -247,9 +247,9 @@ CREATE OR ALTER PROCEDURE DropAllTables
     GO
 
 CREATE OR ALTER PROCEDURE clearAllTables
-AS
-EXEC DropAllTables
-EXEC CreateAllTables
+    AS
+        EXEC DropAllTables
+        EXEC CreateAllTables
     GO
 
 CREATE VIEW view_Course_prerequisites
@@ -355,7 +355,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     GO
 
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
-    As
+    AS
         Select  g.*,
                 a.advisor_id,
                 a.name AS Advisor_name
@@ -365,15 +365,16 @@ CREATE OR ALTER VIEW Advisors_Graduation_Plan
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
-AS
-SELECT *
-FROM Advisor
+    AS
+        SELECT *
+        FROM Advisor
     GO
 
 CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
-AS
-SELECT *
-FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    AS
+        SELECT *
+        FROM Student s LEFT OUTER JOIN Advisor a 
+        ON s.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER VIEW view_Students
@@ -393,21 +394,20 @@ CREATE OR ALTER VIEW Students_Courses_transcript
     GO
 
 CREATE OR ALTER VIEW Semster_offered_Courses
-AS
-    SELECT s.course_id, s.semester_code, c.name
-    FROM Course_Semester s
-        inner JOIN Course c on s.course_id = s.course_id
+    AS
+        SELECT s.course_id, s.semester_code, c.name
+        FROM Course_Semester s
+            inner JOIN Course c on s.course_id = s.course_id
     GO
 
 CREATE OR ALTER PROCEDURE AdminAddingSemester
     @start_date date,
     @end_date date,
     @semester_code VARCHAR(40)
-As
-INSERT INTO Semester
-    (start_date,end_date,semester_code)
-VALUES
-    (@start_date, @end_date, @semester_code)
+    As
+        INSERT INTO Semester (start_date,end_date,semester_code)
+        VALUES
+            (@start_date, @end_date, @semester_code)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
@@ -429,10 +429,11 @@ CREATE VIEW all_Pending_Requests
         where r.status = 'pending';
     GO
 
-CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor --NOTE: Semster_code COULD be NULL here ?!
+CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor 
     @Student_ID INT,
     @Instructor_ID INT, 
     @Course_ID INT
     AS
-        INSERT INTO Student_Instructor_Course_Take (student_id,instructor_id,course_iD) VALUES (@Student_ID,@Instructor_ID,@Course_ID);
+        INSERT INTO Student_Instructor_Course_Take (student_id,instructor_id,course_iD) 
+        VALUES (@Student_ID,@Instructor_ID,@Course_ID);
     GO
