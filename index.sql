@@ -428,3 +428,17 @@ CREATE VIEW all_Pending_Requests
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
     GO
+
+CREATE FUNCTION FN_AdvisorLogin(
+    @ID INT,
+    @password VARCHAR(40)
+)
+RETURNS BIT
+    AS
+        BEGIN
+            RETURN IIF (EXISTS (SELECT * FROM Advisor
+                            WHERE advisor_id=@ID AND password=@password),1,0)
+        END
+    GO
+
+
