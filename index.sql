@@ -384,7 +384,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
     @offered bit
     AS
         INSERT INTO Course 
-            (major,semester,credit_hours,name,offered)
+            (major,semester,credit_hours,name,is_offered)
         VALUES
             (@major,@semester,@credit_hours,@course_name,@offered)
     GO        
