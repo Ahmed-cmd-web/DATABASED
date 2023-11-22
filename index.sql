@@ -464,3 +464,20 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
+    @InstructorId int,
+    @courseId int,
+    @slotID int
+    AS
+        INSERT INTO Slot
+            (instructor_id,course_id,slot_id)
+        VALUES
+            (@InstructorId,@courseId,@slotID)
+
+        INSERT INTO Instructor_Course
+            (instructor_id,course_id)
+        VALUES
+            (@InstructorId,@courseId)
+    GO        
+            
