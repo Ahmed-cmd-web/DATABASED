@@ -73,8 +73,9 @@ VALUES (1, 1, 1);
 
 -- Insert into Payment
 INSERT INTO Payment (payment_id, amount, deadline, n_installments, status, fund_percentage, student_id, semester_code, start_date)
-VALUES (1, 1000.00, '2022-01-01', 2, 'notPaid', 50.00, 1, '2021 Fall', '2021-09-01');
+VALUES (1, 10000.00, '2022-01-01', 2, 'notPaid', 1.00, 1, '2021 Fall', '2021-09-01');
 
 -- Insert into Installment
 INSERT INTO Installment (payment_id, deadline, amount, status, start_date)
 VALUES (1, '2022-01-01', 500.00, 0, '2021-09-01');
+
