@@ -349,6 +349,17 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
         SET @id = SCOPE_IDENTITY()
     GO
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
+    @Type VARCHAR(40),
+    @date DATETIME,
+    @courseID INT
+    AS
+        INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
+    GO
+
+
+
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
         SELECT * FROM Student
@@ -374,6 +385,19 @@ CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
 AS
 SELECT *
 FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
+    @major varchar (40),
+    @semester int,
+    @credit_hours int,
+    @course_name varchar (40),
+    @offered bit
+    AS
+        INSERT INTO Course
+            (major,semester,credit_hours,name,is_offered)
+        VALUES
+            (@major,@semester,@credit_hours,@course_name,@offered)
     GO
 
 CREATE OR ALTER VIEW view_Students
@@ -447,4 +471,14 @@ CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
                                     (@paymentID,DATEADD(MONTH,1,@start_date),@installment_amount,'notPaid',@start_date)
                 SET @start_date=DATEADD(MONTH,1,@start_date)
             END
+    GO
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
+    @current_semester VARCHAR(40)
+    AS
+        DELETE s FROM Slot s
+        JOIN Course c
+            ON c.course_id=s.course_id
+        JOIN Course_Semester cs
+            ON  cs.course_id=c.course_id
+        WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO

@@ -77,5 +77,4 @@ VALUES (1, 10000.00, '2022-01-01', 2, 'notPaid', 1.00, 1, '2021 Fall', '2021-09-
 
 -- Insert into Installment
 INSERT INTO Installment (payment_id, deadline, amount, status, start_date)
-VALUES (1, '2022-01-01', 500.00, 0, '2021-09-01');
-
+VALUES (1, '2022-01-01', 500.00, 'PAID', '2021-09-01');
