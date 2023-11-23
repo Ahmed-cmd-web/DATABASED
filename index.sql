@@ -464,3 +464,13 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
+    @studentID INT,
+    @advisorID INT
+    AS
+        UPDATE Student
+            SET advisor_id=@advisorID
+            WHERE student_id=@studentID
+    GO
