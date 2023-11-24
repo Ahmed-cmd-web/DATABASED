@@ -355,10 +355,6 @@ AS
         inner JOIN Course c on s.course_id = s.course_id
 go
 
-
-
-
-
 CREATE OR ALTER PROCEDURE AdminAddingSemester
     @start_date date,
     @end_date date,
@@ -368,10 +364,7 @@ INSERT INTO Semester
     (start_date,end_date,semester_code)
 VALUES
     (@start_date, @end_date, @semester_code)
-
 go
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
@@ -385,13 +378,33 @@ WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
-    @semester_code Varchar(40),
-    @expected_graduation_date date,
-    @semester_credit_hours int,
-    @advisor_id int,
-    @student_id int
-as
-Insert into Graduation_plan (semester_code,expected_grad_semester,semester_credit_hours,advisor_id,student_id) VALUES (@semester_code,(select semester_code from Semester where start_date <= @expected_graduation_date and end_date >= @expected_graduation_date)
-,@semester_credit_hours,@advisor_id,@student_id)   
-GO
-
+    @semester_code VARCHAR(40),
+    @expected_graduation_date DATE,
+    @semester_credit_hours INT,
+    @advisor_id INT,
+    @student_id INT
+    AS
+    BEGIN
+        IF EXISTS(
+            SELECT *
+            FROM Student
+            WHERE student_id=@student_id AND acquired_hours > 157
+        ) AND EXISTS(
+            SELECT *
+            FROM Advisor
+            WHERE advisor_id=@advisor_id 
+        )AND NOT EXISTS(
+            SELECT *
+            FROM Graduation_Plan GP
+            WHERE GP.advisor_id=@advisor_id AND GP.semester_code=@semester_code AND GP.student_id=@student_id
+        )
+        BEGIN
+            INSERT INTO Graduation_plan (semester_code,expected_grad_date,semester_credit_hours,advisor_id,student_id) 
+            VALUES (@semester_code,@expected_graduation_date,@semester_credit_hours,@advisor_id,@student_id)   
+        END
+        ELSE
+        BEGIN
+            PRINT 'ERROR'
+        END
+    END
+    GO
