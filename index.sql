@@ -453,6 +453,19 @@ CREATE OR ALTER VIEW all_Pending_Requests
         where r.status = 'pending';
     GO
 
+CREATE FUNCTION FN_AdvisorLogin(
+    @ID INT,
+    @password VARCHAR(40)
+)
+RETURNS BIT
+    AS
+        BEGIN
+            RETURN IIF (EXISTS (SELECT * FROM Advisor
+                            WHERE advisor_id=@ID AND password=@password),1,0)
+        END
+    GO
+
+
 
 
 CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
