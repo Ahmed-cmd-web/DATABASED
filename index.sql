@@ -445,7 +445,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
         WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
-CREATE VIEW all_Pending_Requests
+CREATE OR ALTER VIEW all_Pending_Requests
     AS
         Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
         from Request r inner join Student s on (r.student_id = s.student_id)
@@ -454,6 +454,24 @@ CREATE VIEW all_Pending_Requests
     GO
 
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
+    @paymentID INT
+    AS
+        DECLARE @installment_amount DECIMAL(10,2);
+        DECLARE @start_date DATETIME;
+        DECLARE @deadline DATETIME;
+
+        SELECT @installment_amount=amount/n_installments,@start_date=start_date,@deadline=deadline
+            FROM Payment WHERE payment_id=@paymentID
+
+        WHILE (@start_date<=@deadline)
+            BEGIN
+                INSERT INTO Installment VALUES
+                                    (@paymentID,DATEADD(MONTH,1,@start_date),@installment_amount,'notPaid',@start_date)
+                SET @start_date=DATEADD(MONTH,1,@start_date)
+            END
+    GO
 CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
     @current_semester VARCHAR(40)
     AS
