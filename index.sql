@@ -122,9 +122,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             plan_id                INT         NOT NULL,
             semester_code          VARCHAR(40) NOT NULL,
             semester_credit_hours  INT         NOT NULL,
-            expected_grad_semester INT         NOT NULL,
-            advisor_id             INT         NOT NULL,
-            student_id             INT         NOT NULL,
+            expected_grad_date    date                     ,
+            advisor_id               INT         NOT NULL,
+            student_id              INT         NOT NULL,
             CONSTRAINT plan_id_semester_code_PK_Graduation_plan PRIMARY KEY (plan_id, semester_code),
             CONSTRAINT advisor_FK_Graduation_plan               FOREIGN KEY (advisor_id)    REFERENCES Advisor,
             CONSTRAINT student_FK_Graduation_plan               FOREIGN KEY (student_id)    REFERENCES Student (student_id),
@@ -481,4 +481,16 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
         JOIN Course_Semester cs
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
+    GO
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
+    @expected_grad_semster VARCHAR(40),
+    @studentID INT
+    AS
+
+        UPDATE Graduation_plan
+        SET expected_grad_date=(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
+        WHERE student_id=@studentID
     GO
