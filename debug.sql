@@ -19,6 +19,9 @@ VALUES ('Jane', 'Doe', 3.5, 'Engineering', 'janedoe@example.com', 'Computer Scie
 INSERT INTO Course (name, major, is_offered, credit_hours, semester)
 VALUES ('Database Systems', 'Computer Science', 1, 3, 1);
 
+INSERT INTO Course (name, major, is_offered, credit_hours, semester)
+VALUES ('Theory of Computation', 'Computer Science', 1, 3, 1);
+
 -- Insert into Student_Phone
 INSERT INTO Student_Phone (student_id, phone_number)
 VALUES (1, '1234567890');
@@ -37,7 +40,7 @@ VALUES (1, 1);
 
 -- Insert into Student_Instructor_Course_Take
 INSERT INTO Student_Instructor_Course_Take (student_id, course_id, instructor_id, semester_code, exam_type, grade)
-VALUES (1, 1, 1, '2021 Fall', 'Normal', 85);
+VALUES (1, 1, 1, '2021 Fall', 'Normal', 2.20);
 
 -- Insert into Semester
 INSERT INTO Semester (semester_code, start_date, end_date)
@@ -52,8 +55,8 @@ INSERT INTO Slot (slot_id, day, time, location, course_id, instructor_id)
 VALUES (1, 'Monday', 1, 'Room 101', 1, 1);
 
 -- Insert into Graduation_plan
-INSERT INTO Graduation_plan (plan_id, semester_code, semester_credit_hours, expected_grad_semester, advisor_id, student_id)
-VALUES (1, '2021 Fall', 15, 2024, 1, 1);
+INSERT INTO Graduation_plan (plan_id, semester_code, semester_credit_hours, expected_grad_date, advisor_id, student_id)
+VALUES (1, '2021 Fall', 15, '2024', 1, 1);
 
 -- Insert into GradPlan_Course
 INSERT INTO GradPlan_Course (plan_id, semester_code, course_id)
