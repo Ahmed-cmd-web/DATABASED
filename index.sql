@@ -507,14 +507,14 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
             FROM Graduation_Plan GP 
             INNER JOIN GradPlan_Course GPC 
             ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
-            WHERE GP.student_id = 1 
+            WHERE GP.student_id = @StudentID 
         ),
         MissingCourses AS (
             SELECT ac.course_id
             FROM AllCourses_InStudentGradPlan ac
             LEFT JOIN TakenCourses tc 
             ON ac.course_id = tc.course_id
-            WHERE tc.grade IN ('F','FF') OR tc.grade IS NULL                 
+            WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL                 
         )
         SELECT
             mc.course_id,
