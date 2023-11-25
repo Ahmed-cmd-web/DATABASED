@@ -349,6 +349,17 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
         SET @id = SCOPE_IDENTITY()
     GO
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
+    @Type VARCHAR(40),
+    @date DATETIME,
+    @courseID INT
+    AS
+        INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
+    GO
+
+
+
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
         SELECT * FROM Student
@@ -373,6 +384,19 @@ CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
     AS
         SELECT *
         FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
+    @major varchar (40),
+    @semester int,
+    @credit_hours int,
+    @course_name varchar (40),
+    @offered bit
+    AS
+        INSERT INTO Course
+            (major,semester,credit_hours,name,is_offered)
+        VALUES
+            (@major,@semester,@credit_hours,@course_name,@offered)
     GO
 
 CREATE OR ALTER VIEW view_Students
@@ -418,13 +442,57 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
         WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
-CREATE VIEW all_Pending_Requests
+CREATE OR ALTER VIEW all_Pending_Requests
     AS
         SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
         FROM Request r inner join Student s on (r.student_id = s.student_id) 
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
-        WHERE r.status = 'pending'; 
+        where r.status = 'pending';
     GO
+
+CREATE FUNCTION FN_AdvisorLogin(
+    @ID INT,
+    @password VARCHAR(40)
+)
+RETURNS BIT
+    AS
+        BEGIN
+            RETURN IIF (EXISTS (SELECT * FROM Advisor
+                            WHERE advisor_id=@ID AND password=@password),1,0)
+        END
+    GO
+
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
+    @paymentID INT
+    AS
+        DECLARE @installment_amount DECIMAL(10,2);
+        DECLARE @start_date DATETIME;
+        DECLARE @deadline DATETIME;
+
+        SELECT @installment_amount=amount/n_installments,@start_date=start_date,@deadline=deadline
+            FROM Payment WHERE payment_id=@paymentID
+
+        WHILE (@start_date<=@deadline)
+            BEGIN
+                INSERT INTO Installment VALUES
+                                    (@paymentID,DATEADD(MONTH,1,@start_date),@installment_amount,'notPaid',@start_date)
+                SET @start_date=DATEADD(MONTH,1,@start_date)
+            END
+    GO
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
+    @current_semester VARCHAR(40)
+    AS
+        DELETE s FROM Slot s
+        JOIN Course c
+            ON c.course_id=s.course_id
+        JOIN Course_Semester cs
+            ON  cs.course_id=c.course_id
+        WHERE cs.semester_code=@current_semester AND c.is_offered=0
+    GO
+      
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
     @StudentID INT    
