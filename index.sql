@@ -131,7 +131,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
 
-        CREATE TABLE GradPlan_Course (  
+        CREATE TABLE GradPlan_Course (
             plan_id       INT         NOT NULL,
             semester_code VARCHAR(40) NOT NULL,
             course_id     INT         NOT NULL,
@@ -143,7 +143,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   
+            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
             credit_hours INT,
             student_id   INT NOT NULL,
             advisor_id   INT NOT NULL,
@@ -445,7 +445,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
 CREATE OR ALTER VIEW all_Pending_Requests
     AS
         SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
-        FROM Request r inner join Student s on (r.student_id = s.student_id) 
+        FROM Request r inner join Student s on (r.student_id = s.student_id)
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
     GO
@@ -492,29 +492,39 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
-      
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
+    @studentID INT,
+    @advisorID INT
+    AS
+        UPDATE Student
+            SET advisor_id=@advisorID
+            WHERE student_id=@studentID
+    GO
+
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
-    @StudentID INT    
+    @StudentID INT
     AS
         WITH TakenCourses AS (
             SELECT sict.course_id,sict.grade
             FROM Student_Instructor_Course_Take sict
-            WHERE sict.student_id = @StudentID       
+            WHERE sict.student_id = @StudentID
         ),
         AllCourses_InStudentGradPlan AS (
             SELECT GPC.course_id
-            FROM Graduation_Plan GP 
-            INNER JOIN GradPlan_Course GPC 
+            FROM Graduation_Plan GP
+            INNER JOIN GradPlan_Course GPC
             ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
-            WHERE GP.student_id = @StudentID 
+            WHERE GP.student_id = @StudentID
         ),
         MissingCourses AS (
             SELECT ac.course_id
             FROM AllCourses_InStudentGradPlan ac
-            LEFT JOIN TakenCourses tc 
+            LEFT JOIN TakenCourses tc
             ON ac.course_id = tc.course_id
-            WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL                 
+            WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL
         )
         SELECT
             mc.course_id,
@@ -523,7 +533,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
             c.is_offered,
             c.credit_hours,
             c.semester
-        FROM MissingCourses mc 
-        INNER JOIN Course c 
+        FROM MissingCourses mc
+        INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
