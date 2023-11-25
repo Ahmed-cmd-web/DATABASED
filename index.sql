@@ -464,3 +464,19 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
+
+CREATE FUNCTION[FN_StudentViewSlot]
+    (@CourseID int,
+    @InstructorID int
+    )
+    RETURNS Table
+    AS
+    RETURN
+    (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name,Course.name
+    from Slot
+    inner join Instructor on Slot.instructor_id = Instructor.instructor_id
+    inner join Course on Slot.course_id = Course.course_id
+    );
+    GO
+
+Select * from dbo.FN_StudentViewSlot
