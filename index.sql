@@ -55,16 +55,15 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
         CREATE TABLE PreqCourse_course (
-                prerequisite_course_id INT NOT NULL,
-                course_id              INT NOT NULL,
+                prerequisite_course_id INT ,
+                course_id              INT ,
                 CONSTRAINT prerequisite_course_id_course_id_PK_PreqCourse_course PRIMARY KEY (prerequisite_course_id,course_id),
                 CONSTRAINT prerequisite_course_id_FK_PreqCourse_course           FOREIGN KEY (prerequisite_course_id) REFERENCES Course,
                 CONSTRAINT course_id_FK_PreqCourse_course                        FOREIGN KEY (course_id)              REFERENCES Course
-
         );
 
         CREATE TABLE Instructor (
-                instructor_id INT PRIMARY KEY,
+                instructor_id INT PRIMARY KEY IDENTITY,
                 name          VARCHAR(40) NOT NULL,
                 email         VARCHAR(40) NOT NULL,
                 faculty       VARCHAR(40) NOT NULL,
@@ -84,8 +83,9 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             course_id     INT NOT NULL,
             instructor_id INT NOT NULL,
             semester_code VARCHAR(40)  NOT NULL,
-            exam_type     VARCHAR(40)  DEFAULT 'Normal' CHECK (exam_type in ('Normal','First_makeup','Second_makeup')),
-            grade         DECIMAL(3,2),
+            exam_type     VARCHAR(40)  DEFAULT 'Normal' CHECK (exam_type IN ('Normal','First_makeup','Second_makeup')),
+            grade         VARCHAR(40)  DEFAULT  NULL     CHECK (grade     IN ('A','A+','A-','B','B+','B-',
+                                                                              'C','C+','C-','D','D+','F','FF')),
             CONSTRAINT course_id_instructor_id_student_id              PRIMARY KEY (instructor_id,course_id,student_id),
             CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course,
             CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
@@ -107,7 +107,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
         CREATE TABLE Slot (
-            slot_id       INT PRIMARY KEY,
+            slot_id       INT PRIMARY KEY IDENTITY,
             day           VARCHAR(40) NOT NULL,
             time          INT         NOT NULL CHECK(time IN (1,2,3,4,5)),
             location      VARCHAR(40) NOT NULL,
@@ -119,10 +119,10 @@ CREATE OR ALTER PROCEDURE CreateAllTables
 
 
         CREATE TABLE Graduation_plan (
-            plan_id                INT         NOT NULL,
+            plan_id                INT IDENTITY NOT NULL,
             semester_code          VARCHAR(40) NOT NULL,
             semester_credit_hours  INT         NOT NULL,
-            expected_grad_semester INT         NOT NULL,
+            expected_grad_date     DATE        NOT NULL,
             advisor_id             INT         NOT NULL,
             student_id             INT         NOT NULL,
             CONSTRAINT plan_id_semester_code_PK_Graduation_plan PRIMARY KEY (plan_id, semester_code),
@@ -131,7 +131,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
 
-        CREATE TABLE GradPlan_Course (  --NOTE: I think here we should think about "ON DELETE/UPDATE CASCADE" cases ...
+        CREATE TABLE GradPlan_Course (  
             plan_id       INT         NOT NULL,
             semester_code VARCHAR(40) NOT NULL,
             course_id     INT         NOT NULL,
@@ -143,7 +143,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   --NOTE: �pending�(default), �accepted� or �rejected�.
+            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   
             credit_hours INT,
             student_id   INT NOT NULL,
             advisor_id   INT NOT NULL,
@@ -154,7 +154,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
         CREATE TABLE MakeUp_Exam (
-            exam_id   INT PRIMARY KEY NOT NULL,
+            exam_id   INT PRIMARY KEY IDENTITY NOT NULL,
             date      DATE            NOT NULL,
             type      VARCHAR(40)     NOT NULL,
             course_id INT             NOT NULL,
@@ -171,15 +171,15 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
         CREATE TABLE Payment (
-            payment_id      INT PRIMARY KEY,
-            amount          DECIMAL(10,5) NOT NULL,
+            payment_id      INT PRIMARY KEY IDENTITY,
+            amount          DECIMAL       NOT NULL,
             deadline        DATETIME      NOT NULL,
             n_installments  INT           NOT NULL,
             status          VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
-            fund_percentage DECIMAL(3,2)  CHECK (fund_percentage<=100.00 AND fund_percentage>=0.00),
+            fund_percentage DECIMAL(5,2)  CHECK (fund_percentage<=100.00 AND fund_percentage>=0.00),
+            start_date      DATETIME      NOT NULL,
             student_id      INT           NOT NULL,
             semester_code   VARCHAR(40)   NOT NULL,
-            start_date      DATETIME      NOT NULL,
             CONSTRAINT student_FK_Payment       FOREIGN KEY (student_id)    REFERENCES Student (student_id) ON UPDATE CASCADE, --NOTE: Should we add "ON DELETE CASCADE" also?!
             CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE, --NOTE: Should we add "ON DELETE CASCADE" also?!
         );
@@ -187,10 +187,10 @@ CREATE OR ALTER PROCEDURE CreateAllTables
 
         CREATE TABLE Installment(
                 payment_id INT           NOT NULL,
-                deadline   DATE          NOT NULL,
-                amount     DECIMAL(10,5) NOT NULL,
-                status          VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
-                start_date DATE          NOT NULL,
+                deadline   DATETIME      NOT NULL,
+                amount     INT           NOT NULL,
+                status     VARCHAR(40)   DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
+                start_date DATETIME      NOT NULL,
                 CONSTRAINT payment_id_deadline_PK_Installment    PRIMARY KEY (payment_id,deadline),
                 CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
             );
@@ -247,9 +247,9 @@ CREATE OR ALTER PROCEDURE DropAllTables
     GO
 
 CREATE OR ALTER PROCEDURE clearAllTables
-AS
-EXEC DropAllTables
-EXEC CreateAllTables
+    AS
+        EXEC DropAllTables
+        EXEC CreateAllTables
     GO
 
 CREATE VIEW view_Course_prerequisites
@@ -368,7 +368,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
     As
         Select  g.*,
-                a.advisor_id,
                 a.name AS Advisor_name
         FROM Graduation_plan g
         FULL OUTER JOIN Advisor a
@@ -376,15 +375,15 @@ CREATE OR ALTER VIEW Advisors_Graduation_Plan
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
-AS
-SELECT *
-FROM Advisor
+    AS
+        SELECT *
+        FROM Advisor
     GO
 
 CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
-AS
-SELECT *
-FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    AS
+        SELECT *
+        FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
@@ -424,19 +423,17 @@ AS
     GO
 
 CREATE OR ALTER PROCEDURE AdminAddingSemester
-    @start_date date,
-    @end_date date,
+    @start_date DATE,
+    @end_date DATE,
     @semester_code VARCHAR(40)
-As
-INSERT INTO Semester
-    (start_date,end_date,semester_code)
-VALUES
-    (@start_date, @end_date, @semester_code)
+    AS
+        INSERT INTO Semester (start_date,end_date,semester_code)
+        VALUES (@start_date, @end_date, @semester_code)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
-    @Current_semester_code Varchar (40)
+    @Current_semester_code Varchar(40)
     AS
         SELECT c.*
         FROM Course c
@@ -447,8 +444,8 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
 
 CREATE OR ALTER VIEW all_Pending_Requests
     AS
-        Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
-        from Request r inner join Student s on (r.student_id = s.student_id)
+        SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+        FROM Request r inner join Student s on (r.student_id = s.student_id) 
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
         where r.status = 'pending';
     GO
@@ -494,4 +491,39 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
         JOIN Course_Semester cs
             ON  cs.course_id=c.course_id
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
+    GO
+      
+
+CREATE OR ALTER PROCEDURE Procedures_ViewMS
+    @StudentID INT    
+    AS
+        WITH TakenCourses AS (
+            SELECT sict.course_id,sict.grade
+            FROM Student_Instructor_Course_Take sict
+            WHERE sict.student_id = @StudentID       
+        ),
+        AllCourses_InStudentGradPlan AS (
+            SELECT GPC.course_id
+            FROM Graduation_Plan GP 
+            INNER JOIN GradPlan_Course GPC 
+            ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
+            WHERE GP.student_id = 1 
+        ),
+        MissingCourses AS (
+            SELECT ac.course_id
+            FROM AllCourses_InStudentGradPlan ac
+            LEFT JOIN TakenCourses tc 
+            ON ac.course_id = tc.course_id
+            WHERE tc.grade IN ('F','FF') OR tc.grade IS NULL                 
+        )
+        SELECT
+            mc.course_id,
+            c.name AS course_name,
+            c.major,
+            c.is_offered,
+            c.credit_hours,
+            c.semester
+        FROM MissingCourses mc 
+        INNER JOIN Course c 
+        ON mc.course_id = c.course_id;
     GO
