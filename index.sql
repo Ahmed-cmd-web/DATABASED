@@ -8,9 +8,6 @@ CREATE DATABASE Advising_Team_119;
 USE Advising_Team_119;
     GO
 
-CREATE DATABASE Advising_Team_119;
-    GO
-
 CREATE OR ALTER PROCEDURE CreateAllTables
     AS
         CREATE TABLE Advisor (
@@ -129,6 +126,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             CONSTRAINT advisor_FK_Graduation_plan               FOREIGN KEY (advisor_id)    REFERENCES Advisor,
             CONSTRAINT student_FK_Graduation_plan               FOREIGN KEY (student_id)    REFERENCES Student (student_id),
         );
+
 
 
         CREATE TABLE GradPlan_Course (  
@@ -349,6 +347,14 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
         SET @id = SCOPE_IDENTITY()
     GO
 
+CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
+    @Type VARCHAR(40),
+    @date DATETIME,
+    @courseID INT
+    AS
+        INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
+    GO
+
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
         SELECT * FROM Student
@@ -373,6 +379,19 @@ CREATE OR ALTER PROCEDURE AdminListStudentsWithAdvisors
     AS
         SELECT *
         FROM Student s LEFT OUTER JOIN Advisor a ON s.advisor_id = a.Advisor_id
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
+    @major varchar (40),
+    @semester int,
+    @credit_hours int,
+    @course_name varchar (40),
+    @offered bit
+    AS
+        INSERT INTO Course
+            (major,semester,credit_hours,name,is_offered)
+        VALUES
+            (@major,@semester,@credit_hours,@course_name,@offered)
     GO
 
 CREATE OR ALTER VIEW view_Students
@@ -418,7 +437,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
         WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
-CREATE VIEW all_Pending_Requests
+CREATE OR ALTER VIEW all_Pending_Requests
     AS
         SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
         FROM Request r inner join Student s on (r.student_id = s.student_id) 
@@ -455,4 +474,88 @@ CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor
          END
          
     END;
+    GO
+
+CREATE FUNCTION FN_AdvisorLogin(
+    @ID INT,
+    @password VARCHAR(40)
+)
+RETURNS BIT
+    AS
+        BEGIN
+            RETURN IIF (EXISTS (SELECT * FROM Advisor
+                            WHERE advisor_id=@ID AND password=@password),1,0)
+        END
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
+    @paymentID INT
+    AS
+        DECLARE @installment_amount DECIMAL(10,2);
+        DECLARE @start_date DATETIME;
+        DECLARE @deadline DATETIME;
+
+        SELECT @installment_amount=amount/n_installments,@start_date=start_date,@deadline=deadline
+            FROM Payment WHERE payment_id=@paymentID
+
+        WHILE (@start_date<=@deadline)
+            BEGIN
+                INSERT INTO Installment VALUES
+                                    (@paymentID,DATEADD(MONTH,1,@start_date),@installment_amount,'notPaid',@start_date)
+                SET @start_date=DATEADD(MONTH,1,@start_date)
+            END
+    GO
+    
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
+    @current_semester VARCHAR(40)
+    AS
+        DELETE s FROM Slot s
+        JOIN Course c
+            ON c.course_id=s.course_id
+        JOIN Course_Semester cs
+            ON  cs.course_id=c.course_id
+        WHERE cs.semester_code=@current_semester AND c.is_offered=0
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
+    @studentID INT,
+    @advisorID INT
+    AS
+        UPDATE Student
+            SET advisor_id=@advisorID
+            WHERE student_id=@studentID
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_ViewMS
+    @StudentID INT
+    AS
+        WITH TakenCourses AS (
+            SELECT sict.course_id,sict.grade
+            FROM Student_Instructor_Course_Take sict
+            WHERE sict.student_id = @StudentID
+        ),
+        AllCourses_InStudentGradPlan AS (
+            SELECT GPC.course_id
+            FROM Graduation_Plan GP
+            INNER JOIN GradPlan_Course GPC
+            ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
+            WHERE GP.student_id = @StudentID
+        ),
+        MissingCourses AS (
+            SELECT ac.course_id
+            FROM AllCourses_InStudentGradPlan ac
+            LEFT JOIN TakenCourses tc
+            ON ac.course_id = tc.course_id
+            WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL
+        )
+        SELECT
+            mc.course_id,
+            c.name AS course_name,
+            c.major,
+            c.is_offered,
+            c.credit_hours,
+            c.semester
+        FROM MissingCourses mc
+        INNER JOIN Course c
+        ON mc.course_id = c.course_id;
     GO
