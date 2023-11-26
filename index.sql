@@ -537,3 +537,12 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+
+Create FUNCTION FN_Advisors_Requests (@advisor_id int)
+returns TABLE
+as
+    return (select * from Request where advisor_id =@advisor_id)
+GO
+
+
+
