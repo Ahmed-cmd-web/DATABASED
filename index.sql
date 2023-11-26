@@ -538,11 +538,18 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         ON mc.course_id = c.course_id;
     GO
 
+CREATE or alter PROCEDURE Procedures_AdvisorDeleteFromGP
+@student_id int,
+@semester_code varchar(40),
+@course_id int
+AS
+    DECLARE @Plan_id INT
+    select @Plan_id = GP.plan_id from Graduation_plan GP where GP.semester_code= @semester_code and  GP.student_id = @student_id
+
+    DELETE FROM GradPlan_Course WHERE GradPlan_Course.course_id=@course_id and GradPlan_Course.plan_id = @Plan_id and GradPlan_Course.semester_code=@semester_code
+ go
 Create FUNCTION FN_Advisors_Requests (@advisor_id int)
 returns TABLE
 as
     return (select * from Request where advisor_id =@advisor_id)
 GO
-
-
-
