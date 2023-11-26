@@ -537,3 +537,28 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+
+--NOTE: Optional Courses: courses from the current semester or upcoming semesters 
+--  (Student is allowed to take the optional course if he/she satisfied their prerequisites).
+
+CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse 
+    @StudentID INT,
+    @Current_semester_code VARCHAR(40)
+    AS
+        WITH Taken_Courses AS(
+            SELECT SICT.course_id
+            FROM Student_Instructor_Course_Take SICT
+            WHERE SICT.student_id = @StudentID 
+        ),
+        Planned_Courses AS(
+            SELECT GPC.course_id
+            FROM Graduation_Plan GP
+            INNER JOIN GradPlan_Course GPC
+            ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
+            WHERE GP.student_id = @StudentID
+        )
+
+        -- TODO: GET COURSES WHICH IS NOT TAKEN BEFORE IN ORDER TO GRADUATE
+        --       WHICH THAT STUDENT TAKEN THIER PREQ. 
+
+    GO
