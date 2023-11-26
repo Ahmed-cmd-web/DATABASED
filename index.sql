@@ -394,6 +394,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminAddingCourse
             (@major,@semester,@credit_hours,@course_name,@offered)
     GO
 
+
 CREATE OR ALTER VIEW view_Students
     AS
         SELECT *
@@ -488,6 +489,31 @@ RETURNS BIT
         END
     GO
 
+CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
+    @StudentID INT,
+    @courseID INT,
+    @Student_Current_Semester VARCHAR(40)
+        AS
+            DECLARE @sem_start_date DATE;
+            DECLARE @sem_end_date DATE;
+            SELECT @sem_start_date=start_date , @sem_end_date=end_date FROM Semester
+                WHERE semester_code=@Student_Current_Semester
+
+            DECLARE @exam INT;
+            SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
+                WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
+                            AND ME.course_id=@courseID AND ME.type='First_makeup'
+            INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
+        GO
+
+CREATE VIEW all_Pending_Requests
+As
+    Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+    from Request r inner join Student s on (r.student_id = s.student_id)
+                   inner join Advisor a on (a.advisor_id = r.advisor_id)
+    where r.status='pending';
+go
+
 CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
     @paymentID INT
     AS
@@ -559,3 +585,19 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+
+CREATE or alter PROCEDURE Procedures_AdvisorDeleteFromGP
+@student_id int,
+@semester_code varchar(40),
+@course_id int
+AS
+    DECLARE @Plan_id INT
+    select @Plan_id = GP.plan_id from Graduation_plan GP where GP.semester_code= @semester_code and  GP.student_id = @student_id
+
+    DELETE FROM GradPlan_Course WHERE GradPlan_Course.course_id=@course_id and GradPlan_Course.plan_id = @Plan_id and GradPlan_Course.semester_code=@semester_code
+ go
+Create FUNCTION FN_Advisors_Requests (@advisor_id int)
+returns TABLE
+as
+    return (select * from Request where advisor_id =@advisor_id)
+GO

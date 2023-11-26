@@ -24,13 +24,13 @@ INSERT INTO Course VALUES ('Database 1', 'MET', 1, 6, 5),
 
 INSERT INTO Student_Phone (student_id, phone_number) VALUES (1, '01129069797');
 
-INSERT INTO PreqCourse_course VALUES 
+INSERT INTO PreqCourse_course VALUES
 									 (2, 1),
 									 (4, 3),
 									 (5, 4),
 									 (6, 5),
 									 (7, 6);
-									 
+
 INSERT INTO Instructor VALUES ('Bill Tin', 'instructor@example.com', 'Engineering', 'C7.202');
 
 INSERT INTO Instructor_Course VALUES (1, 1),
@@ -92,6 +92,7 @@ INSERT INTO GradPlan_Course (plan_id, semester_code, course_id) VALUES (1, 'Wint
 																	   (1, 'Winter 2018 à W18', 8);
 
 
+
 INSERT INTO Request (type, comment, status, credit_hours, student_id, advisor_id, course_id)
 VALUES ('Type 1', 'Comment 1', 'pending', 3, 1, 1, 1);
 
@@ -102,7 +103,8 @@ INSERT INTO Exam_Student (exam_id, student_id, course_id)
 VALUES (1, 1, 1);
 
 INSERT INTO Payment (amount, deadline, n_installments, status, fund_percentage, student_id, semester_code, start_date)
-VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à W18', '2018-09-01 10:34:23.55');
+
+VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 � W18', '2018-09-01 10:34:23.55');
 
 INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2018-09-01 10:34:23.55'),
 								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22');
