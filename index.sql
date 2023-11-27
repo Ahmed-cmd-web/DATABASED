@@ -3,7 +3,7 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-1
 
-CREATE DATABASE Advising_Team_119;
+--CREATE DATABASE Advising_Team_119;
 
 USE Advising_Team_119;
     GO
@@ -543,6 +543,24 @@ CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
 
+
+CREATE FUNCTION[FN_StudentViewSlot]
+    (@CourseID int,
+    @InstructorID int
+    )
+    RETURNS Table
+    AS
+    RETURN
+    (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name,Course.name
+    from Slot
+    inner join Instructor on Slot.instructor_id = Instructor.instructor_id
+    inner join Course on Slot.course_id = Course.course_id
+    );
+    GO
+
+
+      
+
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
     @advisorID INT
@@ -585,6 +603,20 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+    CREATE FUNCTION[FN_StudentViewGP]
+           (@Student_id int)
+           RETURNS TABLE
+           AS
+           RETURN
+           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Student.advisor_id,Graduation_plan.plan_id,Graduation_plan.semester_credit_hours,Graduation_plan.expected_grad_date,Course.course_id,
+           Course.name,Graduation_Plan.semester_code
+           from Student
+           inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
+           inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
+           inner join Course on Course.course_id = Gradplan_Course.course_id
+)
+    GO
+
 
 CREATE or alter PROCEDURE Procedures_AdvisorDeleteFromGP
 @student_id int,
