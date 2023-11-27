@@ -8,9 +8,6 @@
 USE Advising_Team_119;
     GO
 
-CREATE DATABASE Advising_Team_119;
-    GO
-
 CREATE OR ALTER PROCEDURE CreateAllTables
     AS
         CREATE TABLE Advisor (
@@ -131,7 +128,8 @@ CREATE OR ALTER PROCEDURE CreateAllTables
         );
 
 
-        CREATE TABLE GradPlan_Course (
+
+        CREATE TABLE GradPlan_Course (  
             plan_id       INT         NOT NULL,
             semester_code VARCHAR(40) NOT NULL,
             course_id     INT         NOT NULL,
@@ -143,7 +141,7 @@ CREATE OR ALTER PROCEDURE CreateAllTables
             request_id   INT PRIMARY KEY IDENTITY ,
             type         VARCHAR(40),
             comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
+            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),   
             credit_hours INT,
             student_id   INT NOT NULL,
             advisor_id   INT NOT NULL,
@@ -349,7 +347,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorRegistration
         SET @id = SCOPE_IDENTITY()
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
     @Type VARCHAR(40),
     @date DATETIME,
@@ -357,8 +354,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
     AS
         INSERT INTO MakeUp_Exam(date,type,course_id) VALUES (@date,@Type,@courseID)
     GO
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
     AS
@@ -446,9 +441,40 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
 CREATE OR ALTER VIEW all_Pending_Requests
     AS
         SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
-        FROM Request r inner join Student s on (r.student_id = s.student_id)
+        FROM Request r inner join Student s on (r.student_id = s.student_id) 
                        inner join Advisor a on (a.advisor_id = r.advisor_id)
-        where r.status = 'pending';
+        WHERE r.status = 'pending'; 
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor 
+    @Student_ID INT,
+    @Instructor_ID INT, 
+    @Course_ID INT
+    AS
+    BEGIN
+       IF EXISTS(
+               SELECT *
+                FROM Instructor_Course IC
+                WHERE IC.course_id = @Course_ID AND IC.instructor_id = @Instructor_ID              
+               )
+         BEGIN   
+                DECLARE @semester_code VARCHAR(40);
+                
+                SELECT @semester_code = GP.semester_code
+                FROM Graduation_plan GP
+                INNER JOIN GradPlan_Course GPC
+                ON GP.plan_id=GPC.plan_id AND GP.semester_code=GPC.semester_code
+                WHERE GP.student_id=@Student_ID AND GPC.course_id=@Course_ID                
+
+                INSERT INTO Student_Instructor_Course_Take (student_id,course_iD,instructor_id,semester_code) 
+                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@semester_code);
+         END
+         ELSE
+         BEGIN
+            PRINT 'The choosen instructor does not teach that specified course'
+         END
+         
+    END;
     GO
 
 CREATE FUNCTION FN_AdvisorLogin(
@@ -462,8 +488,6 @@ RETURNS BIT
                             WHERE advisor_id=@ID AND password=@password),1,0)
         END
     GO
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
     @StudentID INT,
@@ -507,6 +531,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
                 SET @start_date=DATEADD(MONTH,1,@start_date)
             END
     GO
+    
 CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
     @current_semester VARCHAR(40)
     AS
@@ -544,7 +569,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
             SET advisor_id=@advisorID
             WHERE student_id=@studentID
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
     @StudentID INT
