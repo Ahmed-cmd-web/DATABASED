@@ -8,8 +8,8 @@ EXEC CreateAllTables
 INSERT INTO Advisor (name, email, office, password)
 VALUES ('John Doe', 'johndoe@example.com', 'Office 1', 'password123');
 
-INSERT INTO Student (f_name, l_name, gpa, faculty, email, major, password, financial_status, semester, acquired_hours, assigned_hours, advisor_id)
-VALUES ('Marc', 'Bass', 3.5, 'Engineering', 'janedoe@example.com', 'MET', 'password123', 1, 1, 30, 30, 1);
+INSERT INTO Student (f_name, l_name, gpa, faculty, email, major, password, semester, acquired_hours, assigned_hours, advisor_id)
+VALUES ('Marc', 'Bass', 3.5, 'Engineering', 'janedoe@example.com', 'MET', 'password123', 1, 30, 30, 1);
 
 INSERT INTO Course VALUES ('Database 1', 'MET', 1, 6, 5),
 						  ('Database 2', 'MET', 1, 6, 6),
@@ -62,12 +62,12 @@ INSERT INTO Semester (semester_code, start_date, end_date) VALUES ('Winter 2018 
 																  ('Winter 2024 à W24',   '2024-09-01', '2025-1-1');
 
 
-INSERT INTO Course_Semester VALUES  (1, 'Winter 2018 à W18'),  
-									(2, 'Spring 2019 à S19'), 
+INSERT INTO Course_Semester VALUES  (1, 'Winter 2018 à W18'),
+									(2, 'Spring 2019 à S19'),
 									(1, 'Winter 2021 à W21'),
 									(2, 'Spring 2022 à S22'),
 									(1, 'Winter 2024 à W24'),
-									
+
 									(3, 'Winter 2018 à W18'), --math1
 									(4, 'Spring 2019 à S19'), --math2
 									(5, 'Winter 2021 à W21'), --math3
@@ -104,7 +104,8 @@ VALUES (1, 1, 1);
 
 INSERT INTO Payment (amount, deadline, n_installments, status, fund_percentage, student_id, semester_code, start_date)
 
-VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 � W18', '2018-09-01 10:34:23.55');
+VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à W18', '2018-09-01 10:34:23.55');
 
 INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2018-09-01 10:34:23.55'),
-								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22');
+								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22'),
+								(1, '2018-06-01 10:34:23.55', 500.00, 'notPaid', '2018-10-01 10:43:20.22')
