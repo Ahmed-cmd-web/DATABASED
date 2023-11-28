@@ -613,6 +613,17 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
             WHERE slot_id = @slotID
     GO        
 
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
+    @Instructor_Id int,
+    @student_ID int,
+    @course_ID int,
+    @semester_code varchar (40)
+    AS
+        INSERT INTO Student_Instructor_Course_Take(student_id, course_id, instructor_id, semester_code)
+        VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
+    GO
+
+
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
