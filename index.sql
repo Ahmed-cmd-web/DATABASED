@@ -3,7 +3,8 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-1
 
-CREATE DATABASE Advising_Team_119;
+--CREATE DATABASE Advising_Team_119;
+
 USE Advising_Team_119;
 
     GO
@@ -372,7 +373,6 @@ VALUES
 SET @id = SCOPE_IDENTITY()
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_AdminAddExam
     @Type VARCHAR(40),
     @date DATETIME,
@@ -383,8 +383,6 @@ INSERT INTO MakeUp_Exam
 VALUES
     (@date, @Type, @courseID)
     GO
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListStudents
 AS
@@ -425,6 +423,7 @@ INSERT INTO Course
 VALUES
     (@major, @semester, @credit_hours, @course_name, @offered)
     GO
+
 
 CREATE OR ALTER VIEW view_Students
 AS
@@ -472,11 +471,42 @@ WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
 CREATE OR ALTER VIEW all_Pending_Requests
-AS
-    SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
-    FROM Request r inner join Student s on (r.student_id = s.student_id)
-        inner join Advisor a on (a.advisor_id = r.advisor_id)
-    where r.status = 'pending';
+    AS
+        SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+        FROM Request r inner join Student s on (r.student_id = s.student_id) 
+                       inner join Advisor a on (a.advisor_id = r.advisor_id)
+        WHERE r.status = 'pending'; 
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor 
+    @Student_ID INT,
+    @Instructor_ID INT, 
+    @Course_ID INT
+    AS
+    BEGIN
+       IF EXISTS(
+               SELECT *
+                FROM Instructor_Course IC
+                WHERE IC.course_id = @Course_ID AND IC.instructor_id = @Instructor_ID              
+               )
+         BEGIN   
+                DECLARE @semester_code VARCHAR(40);
+                
+                SELECT @semester_code = GP.semester_code
+                FROM Graduation_plan GP
+                INNER JOIN GradPlan_Course GPC
+                ON GP.plan_id=GPC.plan_id AND GP.semester_code=GPC.semester_code
+                WHERE GP.student_id=@Student_ID AND GPC.course_id=@Course_ID                
+
+                INSERT INTO Student_Instructor_Course_Take (student_id,course_iD,instructor_id,semester_code) 
+                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@semester_code);
+         END
+         ELSE
+         BEGIN
+            PRINT 'The choosen instructor does not teach that specified course'
+         END
+         
+    END;
     GO
 
 CREATE FUNCTION FN_AdvisorLogin(
@@ -491,8 +521,30 @@ RETURNS BIT
 END
     GO
 
+CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
+    @StudentID INT,
+    @courseID INT,
+    @Student_Current_Semester VARCHAR(40)
+        AS
+            DECLARE @sem_start_date DATE;
+            DECLARE @sem_end_date DATE;
+            SELECT @sem_start_date=start_date , @sem_end_date=end_date FROM Semester
+                WHERE semester_code=@Student_Current_Semester
 
+            DECLARE @exam INT;
+            SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
+                WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
+                            AND ME.course_id=@courseID AND ME.type='First_makeup'
+            INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
+        GO
 
+CREATE VIEW all_Pending_Requests
+As
+    Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
+    from Request r inner join Student s on (r.student_id = s.student_id)
+                   inner join Advisor a on (a.advisor_id = r.advisor_id)
+    where r.status='pending';
+go
 
 CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
     @paymentID INT
@@ -513,6 +565,7 @@ WHILE (@start_date<=@deadline)
     SET @start_date=DATEADD(MONTH,1,@start_date)
 END
     GO
+    
 CREATE OR ALTER PROCEDURE Procedures_AdminDeleteSlots
     @current_semester VARCHAR(40)
 AS
@@ -524,6 +577,32 @@ DELETE s FROM Slot s
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
 
+
+CREATE FUNCTION[FN_StudentViewSlot]
+    (@CourseID int,
+    @InstructorID int
+    )
+    RETURNS Table
+    AS
+    RETURN
+    (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name,Course.name
+    from Slot
+    inner join Instructor on Slot.instructor_id = Instructor.instructor_id
+    inner join Course on Slot.course_id = Course.course_id
+    );
+    GO
+
+
+      
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
+    @studentID INT,
+    @advisorID INT
+    AS
+        UPDATE Student
+            SET advisor_id=@advisorID
+            WHERE student_id=@studentID
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
     @StudentID INT
@@ -590,3 +669,34 @@ GO
 
 
 
+   
+CREATE FUNCTION[FN_StudentViewGP]
+           (@Student_id int)
+           RETURNS TABLE
+           AS
+           RETURN
+           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Student.advisor_id,Graduation_plan.plan_id,Graduation_plan.semester_credit_hours,Graduation_plan.expected_grad_date,Course.course_id,
+           Course.name,Graduation_Plan.semester_code
+           from Student
+           inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
+           inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
+           inner join Course on Course.course_id = Gradplan_Course.course_id
+)
+    GO
+
+
+CREATE or alter PROCEDURE Procedures_AdvisorDeleteFromGP
+@student_id int,
+@semester_code varchar(40),
+@course_id int
+AS
+    DECLARE @Plan_id INT
+    select @Plan_id = GP.plan_id from Graduation_plan GP where GP.semester_code= @semester_code and  GP.student_id = @student_id
+
+    DELETE FROM GradPlan_Course WHERE GradPlan_Course.course_id=@course_id and GradPlan_Course.plan_id = @Plan_id and GradPlan_Course.semester_code=@semester_code
+ go
+Create FUNCTION FN_Advisors_Requests (@advisor_id int)
+returns TABLE
+as
+    return (select * from Request where advisor_id =@advisor_id)
+GO
