@@ -121,8 +121,8 @@ CREATE TABLE Slot
     day VARCHAR(40) NOT NULL,
     time INT NOT NULL CHECK(time IN (1,2,3,4,5)),
     location VARCHAR(40) NOT NULL,
-    course_id INT NOT NULL,
-    instructor_id INT NOT NULL,
+    course_id INT,
+    instructor_id INT,
     CONSTRAINT course_id_FK_Slot     FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Slot FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE,
 );
@@ -603,7 +603,15 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         );
     GO
 
-
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
+    @InstructorId int, 
+    @courseId int,
+    @slotID int
+    AS
+        UPDATE Slot 
+            SET instructor_id = @InstructorId , course_id = @courseId
+            WHERE slot_id = @slotID
+    GO        
 
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
@@ -707,3 +715,4 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     AS
         return (select * from Request where advisor_id =@advisor_id)
     GO
+
