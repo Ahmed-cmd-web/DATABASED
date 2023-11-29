@@ -499,10 +499,16 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
     @expected_grad_semster VARCHAR(40),
     @studentID INT
     AS
+        DECLARE @student_and_sem_exists BIT;
+        SET @student_and_sem_exists=IIF(EXISTS(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
+                                                AND EXISTS(SELECT * FROM Graduation_Plan WHERE  student_id=@studentID),1,0)
 
-        UPDATE Graduation_plan
-        SET expected_grad_date=(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
-        WHERE student_id=@studentID
+        IF @student_and_sem_exists=1
+            UPDATE Graduation_plan
+            SET expected_grad_date=(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
+            WHERE student_id=@studentID
+        ELSE
+            PRINT 'expected semester or student doesnot exist'
     GO
 
 
