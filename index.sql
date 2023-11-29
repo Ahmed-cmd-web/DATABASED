@@ -487,6 +487,38 @@ FROM Course c
 WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
     GO
 
+CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
+    @semester_code VARCHAR(40),
+    @expected_graduation_date DATE,
+    @semester_credit_hours INT,
+    @advisor_id INT,
+    @student_id INT
+    AS
+    BEGIN
+        IF EXISTS(
+            SELECT *
+            FROM Student
+            WHERE student_id=@student_id AND acquired_hours > 157
+        ) AND EXISTS(
+            SELECT *
+            FROM Advisor
+            WHERE advisor_id=@advisor_id 
+        )AND NOT EXISTS(
+            SELECT *
+            FROM Graduation_Plan GP
+            WHERE GP.advisor_id=@advisor_id AND GP.semester_code=@semester_code AND GP.student_id=@student_id
+        )
+        BEGIN
+            INSERT INTO Graduation_plan (semester_code,expected_grad_date,semester_credit_hours,advisor_id,student_id) 
+            VALUES (@semester_code,@expected_graduation_date,@semester_credit_hours,@advisor_id,@student_id)   
+        END
+        ELSE
+        BEGIN
+            PRINT 'ERROR'
+        END
+    END
+    GO
+
 CREATE OR ALTER VIEW all_Pending_Requests
     AS
         SELECT r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
