@@ -523,7 +523,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
             SELECT ac.course_id
             FROM AllCourses_InStudentGradPlan ac
             LEFT JOIN TakenCourses tc
-            ON ac.course_id = tc.course_id
+            ON ac.course_id = tc.course_id 
             WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL
         )
         SELECT
@@ -539,7 +539,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
     GO
 
 --NOTE: Optional Courses: courses from the current semester or upcoming semesters 
---  (Student is allowed to take the optional course if he/she satisfied their prerequisites).
+--  (Student is allowed to take the opt`ional course if he/she satisfied their prerequisites).
 
 CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse 
     @StudentID INT,
@@ -548,7 +548,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
         WITH Taken_Courses AS(
             SELECT SICT.course_id
             FROM Student_Instructor_Course_Take SICT
-            WHERE SICT.student_id = @StudentID 
+            WHERE SICT.student_id = @StudentID AND (SICT.grade NOT IN ('F','FF','FA') AND SICT.grade IS NOT NULL)           
         ),
         Planned_Courses AS(
             SELECT GPC.course_id
@@ -556,9 +556,24 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
             INNER JOIN GradPlan_Course GPC
             ON GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code
             WHERE GP.student_id = @StudentID
+        ),
+        Optional_Courses AS(
+            SELECT PC.course_id
+            FROM Planned_Courses PC
+            WHERE NOT EXISTS (
+                SELECT PreC.course_id
+                FROM PreqCourse_course PreC
+                INNER JOIN Taken_Courses TC
+                ON TC.course_id = PreC.prerequisite_course_id
+                WHERE EXISTS(
+                    SELECT TC.course_id
+                    FROM Taken_Courses TC
+                    ) 
+            )
         )
-
-        -- TODO: GET COURSES WHICH IS NOT TAKEN BEFORE IN ORDER TO GRADUATE
-        --       WHICH THAT STUDENT TAKEN THIER PREQ. 
-
+        SELECT * 
+        FROM Optional_Courses OC
+        INNER JOIN Course C
+        ON OC.course_id = C.course_id
     GO
+    

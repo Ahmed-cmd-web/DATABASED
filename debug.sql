@@ -37,8 +37,8 @@ INSERT INTO Instructor_Course VALUES (1, 1),
 									 (6, 1),
 									 (7, 1);
 
-INSERT INTO Student_Instructor_Course_Take VALUES (1, 1, 1, 'Winter 2018 à W18', 'Normal', 'A'),
-												  (1, 2, 1, 'Spring 2019 à S19', 'Normal', 'F'),
+INSERT INTO Student_Instructor_Course_Take VALUES (1, 1, 1, 'Winter 2018 à W18', 'Normal', 'F'),
+												  (1, 2, 1, 'Spring 2019 à S19', 'Normal', NULL),
 												  (1, 3, 1, 'Winter 2018 à W18', 'Normal', 'C'),
 												  (1, 4, 1, 'Spring 2019 à S19', 'Normal', 'A'),
 												  (1, 5, 1, 'Winter 2021 à W21', 'Normal', 'B'),
