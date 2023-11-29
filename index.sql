@@ -119,7 +119,7 @@ CREATE TABLE Slot
 (
     slot_id INT PRIMARY KEY IDENTITY,
     day VARCHAR(40) NOT NULL,
-    time INT NOT NULL CHECK(time IN (1,2,3,4,5)),
+    time VARCHAR(40) NOT NULL CHECK(time IN ('First','Second','Third','Fourth','Fifth')),
     location VARCHAR(40) NOT NULL,
     course_id INT NOT NULL,
     instructor_id INT NOT NULL,
@@ -745,4 +745,15 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     RETURNS TABLE
     AS
         return (select * from Request where advisor_id =@advisor_id)
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
+    @Advisor_ID INT --{this advisor should be the one advising the student}??? WHAT IS THIS ???
+    AS
+        SELECT R.*
+        FROM Request R
+        INNER JOIN Graduation_plan GP
+        ON R.student_id = GP.student_id AND R.advisor_id = R.advisor_id
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
+        AND R.student_id IS NOT NULL        
     GO
