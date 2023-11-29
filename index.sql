@@ -502,15 +502,15 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
         ) AND EXISTS(
             SELECT *
             FROM Advisor
-            WHERE advisor_id=@advisor_id 
+            WHERE advisor_id=@advisor_id
         )AND NOT EXISTS(
             SELECT *
             FROM Graduation_Plan GP
             WHERE GP.advisor_id=@advisor_id AND GP.semester_code=@semester_code AND GP.student_id=@student_id
         )
         BEGIN
-            INSERT INTO Graduation_plan (semester_code,expected_grad_date,semester_credit_hours,advisor_id,student_id) 
-            VALUES (@semester_code,@expected_graduation_date,@semester_credit_hours,@advisor_id,@student_id)   
+            INSERT INTO Graduation_plan (semester_code,expected_grad_date,semester_credit_hours,advisor_id,student_id)
+            VALUES (@semester_code,@expected_graduation_date,@semester_credit_hours,@advisor_id,@student_id)
         END
         ELSE
         BEGIN
@@ -626,16 +626,15 @@ DELETE s FROM Slot s
 
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
-    @expected_grad_semster VARCHAR(40),
+    @expected_grad_date DATE,
     @studentID INT
     AS
-        DECLARE @student_and_sem_exists BIT;
-        SET @student_and_sem_exists=IIF(EXISTS(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
-                                                AND EXISTS(SELECT * FROM Graduation_Plan WHERE  student_id=@studentID),1,0)
+        DECLARE @student_exists BIT;
+        SET @student_exists=IIF(EXISTS(SELECT * FROM Graduation_Plan WHERE  student_id=@studentID),1,0)
 
-        IF @student_and_sem_exists=1
+        IF @student_exists=1
             UPDATE Graduation_plan
-            SET expected_grad_date=(SELECT start_date FROM Semester WHERE semester_code=@expected_grad_semster)
+            SET expected_grad_date=@expected_grad_date
             WHERE student_id=@studentID
         ELSE
             PRINT 'expected semester or student doesnot exist'
