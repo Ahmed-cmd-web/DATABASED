@@ -391,7 +391,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
     @advisor_id int,
     @student_id int
 as
-Insert into Graduation_plan (semester_code,expected_grad_semester,semester_credit_hours,advisor_id,student_id) VALUES (@semester_code,(select semester_code from Semester where start_date <= @expected_graduation_date and end_date >= @expected_graduation_date)
-,@semester_credit_hours,@advisor_id,@student_id)   
+Insert into Graduation_plan (semester_code,expected_grad_semester,semester_credit_hours,advisor_id,student_id) VALUES (@semester_code, @expected_graduation_date,@semester_credit_hours,@advisor_id,@student_id)   
 GO
 
