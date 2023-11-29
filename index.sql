@@ -679,6 +679,8 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         FROM MissingCourses mc
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
+    GO
+    
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
