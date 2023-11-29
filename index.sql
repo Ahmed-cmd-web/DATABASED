@@ -128,42 +128,6 @@ CREATE TABLE Slot
 );
 
 
-<<<<<<< HEAD
-        CREATE TABLE Graduation_plan (
-            plan_id                INT IDENTITY NOT NULL,
-            semester_code          VARCHAR(40) NOT NULL,
-            semester_credit_hours  INT         NOT NULL,
-            expected_grad_date    date                     ,
-            advisor_id               INT         NOT NULL,
-            student_id              INT         NOT NULL,
-            CONSTRAINT plan_id_semester_code_PK_Graduation_plan PRIMARY KEY (plan_id, semester_code),
-            CONSTRAINT advisor_FK_Graduation_plan               FOREIGN KEY (advisor_id)    REFERENCES Advisor,
-            CONSTRAINT student_FK_Graduation_plan               FOREIGN KEY (student_id)    REFERENCES Student (student_id),
-        );
-
-
-        CREATE TABLE GradPlan_Course (
-            plan_id       INT         NOT NULL,
-            semester_code VARCHAR(40) NOT NULL,
-            course_id     INT         NOT NULL,
-            CONSTRAINT plan_id_semester_code_course_id_PK_GradPlan_Course PRIMARY KEY (plan_id,semester_code,course_id),
-            CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE
-        );
-
-        CREATE TABLE Request (
-            request_id   INT PRIMARY KEY IDENTITY ,
-            type         VARCHAR(40),
-            comment      VARCHAR(40),
-            status       VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
-            credit_hours INT,
-            student_id   INT NOT NULL,
-            advisor_id   INT NOT NULL,
-            course_id    INT NOT NULL,
-            CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
-            CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
-            CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
-        );
-=======
 CREATE TABLE Graduation_plan
 (
     plan_id INT IDENTITY NOT NULL,
@@ -201,7 +165,6 @@ CREATE TABLE Request
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
 );
->>>>>>> main
 
 CREATE TABLE MakeUp_Exam
 (
@@ -680,7 +643,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
-    
+
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
