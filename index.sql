@@ -31,7 +31,7 @@ CREATE TABLE Student
     email VARCHAR(40) NOT NULL,
     major VARCHAR(40) NOT NULL,
     password VARCHAR(40) NOT NULL,
-    financial_status BIT          ,
+    financial_status  AS dbo.is_blocked(student_id) ,
     semester INT NOT NULL,
     acquired_hours INT          ,
     assigned_hours INT          ,
