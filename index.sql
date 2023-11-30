@@ -753,4 +753,14 @@ CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
     return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
     
 GO
+CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
+    RETURNS BIT
+    BEGIN
+     DECLARE @OUTPUT BIT
+     if exists (select * from Student where student_id = @Student_id and password = @password)
+     set @OUTPUT = '1'
+     ELSE
+     set @OUTPUT = '0'
+    RETURN @OUTPUT 
+    END
 
