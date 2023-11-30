@@ -747,6 +747,12 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
         return (select * from Request where advisor_id =@advisor_id)
     GO
 
+CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
+    RETURNS Table
+    as
+    return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+    
+GO
 CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
     RETURNS BIT
     BEGIN
@@ -757,5 +763,4 @@ CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40)
      set @OUTPUT = '0'
     RETURN @OUTPUT 
     END
-GO
 
