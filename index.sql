@@ -746,3 +746,16 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     AS
         return (select * from Request where advisor_id =@advisor_id)
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
+    @AdvisorID INT,
+    @major VARCHAR(40)
+    AS
+        SELECT s.*,c.*
+        FROM Student s
+        INNER JOIN Student_Instructor_Course_Take sict
+            ON s.student_id = sict.student_id
+        INNER JOIN Course c
+            ON sict.course_id = c.course_id
+        WHERE s.advisor_id = @AdvisorID AND s.major = @major;
+    GO
