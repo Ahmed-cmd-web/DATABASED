@@ -159,8 +159,8 @@ CREATE TABLE Request
     status VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
     credit_hours INT,
     student_id INT NOT NULL,
-    advisor_id INT NOT NULL,
-    course_id INT NOT NULL,
+    advisor_id INT,
+    course_id INT,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
@@ -759,19 +759,37 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
             ON sict.course_id = c.course_id
         WHERE s.advisor_id = @AdvisorID AND s.major = @major;
     GO
+
+
 CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
     RETURNS Table
-    as
-    return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+    AS
+        return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+    GO
 
-GO
+
 CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
     RETURNS BIT
-    BEGIN
-     DECLARE @OUTPUT BIT
-     if exists (select * from Student where student_id = @Student_id and password = @password)
-     set @OUTPUT = '1'
-     ELSE
-     set @OUTPUT = '0'
-    RETURN @OUTPUT
-    END
+    AS
+        BEGIN
+        DECLARE @OUTPUT BIT
+        if exists (select * from Student where student_id = @Student_id and password = @password)
+        set @OUTPUT = '1'
+        ELSE
+        set @OUTPUT = '0'
+        RETURN @OUTPUT
+        END
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
+    @StudentID INT,
+    @credit_hours INT,
+    @type VARCHAR(40),
+    @comment VARCHAR(40)
+    AS
+        INSERT INTO Request
+            (type,comment,credit_hours,student_id,advisor_id)
+        VALUES
+            (@type,@comment,@credit_hours,@StudentID,(SELECT advisor_id FROM Student WHERE student_id=@StudentID))
+    GO
