@@ -494,14 +494,14 @@ CREATE OR ALTER FUNCTION FN_StudentCheckSMEligiability(
     )
     RETURNS BIT
         AS BEGIN
-        DECLARE @grade DECIMAL;
+        DECLARE @grade VARCHAR(40);
         DECLARE @failed_courses_count INT;
         SET @grade=(SELECT grade FROM Student_Instructor_Course_Take
             WHERE course_id=@CourseID AND student_id=@StudentID AND exam_type='First_makeup')
 
         SET @failed_courses_count=(SELECT COUNT(*) FROM Student_Instructor_Course_Take
-                                        WHERE student_id=@StudentID AND grade<50)
-        RETURN IIF((@grade=NULL OR @grade<50) AND @failed_courses_count<=2,1,0)
+                                        WHERE student_id=@StudentID AND grade IN ('F','FF'))
+        RETURN IIF((@grade=NULL OR @grade IN ('F','FF')) AND @failed_courses_count<=2,1,0)
     END
     GO
 CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
