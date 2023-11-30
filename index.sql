@@ -476,15 +476,55 @@ VALUES
     (@start_date, @end_date, @semester_code)
     GO
 
+CREATE OR ALTER FUNCTION get_Unattended_Courses
+    (@StudentID INT,
+    @Current_semester_code VARCHAR(40))
+    RETURNS TABLE
+    AS
+        BEGIN
+            DECLARE @sem_start_date DATE;
+            SELECT @sem_start_date=start_date FROM Semester
+                WHERE semester_code=@Current_semester_code
+            WITH previous_semesters AS (
+                SELECT * FROM Semester
+                WHERE start_date < @sem_start_date
+            )
+            WITH previous_semesters_courses AS (
+                SELECT cs.*
+                FROM previous_semesters ps
+                INNER JOIN Course_Semester cs
+                ON ps.semester_code=cs.semester_code
+            )
+            WITH unattended_courses_ids AS (
+                SELECT psc.course_id
+                FROM previous_semesters_courses psc
+                EXCEPT (
+                    SELECT sic.course_id
+                    FROM Student_Instructor_Course_Take sic
+                    WHERE sic.student_id=@StudentID
+                )
+            )
+            WITH unattended_courses AS (
+            SELECT * FROM Course, unattended_courses_ids
+            WHERE Course.course_id=unattended_courses_ids.course_id
+            )
+            RETURN unattended_courses
+        END
+    GO
+
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
     @Current_semester_code Varchar(40)
-AS
-SELECT c.*
-FROM Course c
-    JOIN Student_Instructor_Course_Take sict
-    ON sict.course_id=c.course_id
-WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
+    AS
+        -- SELECT c.*
+        -- FROM Course c
+        --     JOIN Student_Instructor_Course_Take sict
+        --     ON sict.course_id=c.course_id
+        -- WHERE sict.student_id=@StudentID AND (sict.grade IN ('F','FF','FA') AND -- not eligible for second
+        -- )
+
+        SELECT * FROM dbo.get_Unattended_Courses(@StudentID,@Current_semester_code)
+
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
