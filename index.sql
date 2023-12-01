@@ -653,10 +653,24 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
     @courseId int,
     @slotID int
     AS
-        UPDATE Slot 
-            SET instructor_id = @InstructorId , course_id = @courseId
-            WHERE slot_id = @slotID
-    GO        
+        IF EXISTS (SELECT * FROM Instructor_Course WHERE course_id = @courseId AND instructor_id = @InstructorId )
+            BEGIN
+                UPDATE Slot 
+                SET instructor_id = @InstructorId , course_id = @courseId
+                WHERE slot_id = @slotID
+            END
+
+        ELSE
+            BEGIN
+                INSERT INTO Instructor_Course(course_id,instructor_id)
+                VALUES(@courseId,@InstructorId)
+                UPDATE Slot 
+                SET instructor_id = @InstructorId , course_id = @courseId
+                WHERE slot_id = @slotID
+            END            
+
+    GO      
+
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
