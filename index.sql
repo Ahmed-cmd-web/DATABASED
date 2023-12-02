@@ -31,7 +31,7 @@ CREATE TABLE Student
     email VARCHAR(40) NOT NULL,
     major VARCHAR(40) NOT NULL,
     password VARCHAR(40) NOT NULL,
-    financial_status BIT          ,
+    financial_status  AS dbo.is_blocked(student_id) ,
     semester INT NOT NULL,
     acquired_hours INT          ,
     assigned_hours INT          ,
@@ -761,3 +761,33 @@ CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
         RETURN @output_datetime
     END
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
+    @AdvisorID INT,
+    @major VARCHAR(40)
+    AS
+        SELECT s.*,c.*
+        FROM Student s
+        INNER JOIN Student_Instructor_Course_Take sict
+            ON s.student_id = sict.student_id
+        INNER JOIN Course c
+            ON sict.course_id = c.course_id
+        WHERE s.advisor_id = @AdvisorID AND s.major = @major;
+    GO
+CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
+    RETURNS Table
+    as
+    return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+
+GO
+CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
+    RETURNS BIT
+    BEGIN
+     DECLARE @OUTPUT BIT
+     if exists (select * from Student where student_id = @Student_id and password = @password)
+     set @OUTPUT = '1'
+     ELSE
+     set @OUTPUT = '0'
+    RETURN @OUTPUT
+    END
+
