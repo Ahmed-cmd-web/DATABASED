@@ -635,6 +635,8 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
         IF @student_exists=1
             UPDATE Graduation_plan
             SET expected_grad_date=@expected_grad_date
+        ELSE
+            PRINT 'expected semester or student does not exist'    
     GO
             
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
@@ -691,8 +693,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
         UPDATE Student
             SET advisor_id=@advisorID
             WHERE student_id=@studentID
-        ELSE
-            PRINT 'expected semester or student doesnot exist'
     GO
 
 
