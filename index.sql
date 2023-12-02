@@ -635,6 +635,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
         IF @student_exists=1
             UPDATE Graduation_plan
             SET expected_grad_date=@expected_grad_date
+            WHERE student_id=@studentID
         ELSE
             PRINT 'expected semester or student does not exist'    
     GO
