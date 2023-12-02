@@ -748,12 +748,10 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
-    @Advisor_ID INT --{this advisor should be the one advising the student}??? WHAT IS THIS ???
+    @Advisor_ID INT 
     AS
         SELECT R.*
         FROM Request R
-        INNER JOIN Graduation_plan GP
-        ON R.student_id = GP.student_id AND R.advisor_id = R.advisor_id
         WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
         AND R.student_id IS NOT NULL        
     GO
