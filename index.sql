@@ -513,11 +513,14 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
         FROM Course c
             JOIN Student_Instructor_Course_Take sict
             ON sict.course_id=c.course_id
-        WHERE sict.student_id=@StudentID AND (sict.grade IN ('F','FF','FA') AND dbo.FN_StudentCheckSMEligiability(c.course_id,@StudentID)=0)
+        WHERE sict.student_id=@StudentID AND
+            (sict.grade IN ('F','FF','FA') AND dbo.FN_StudentCheckSMEligiability(c.course_id,@StudentID)=0) AND
+            c.major=(SELECT major FROM Student WHERE student_id=@StudentID)
         UNION
         SELECT c.* FROM Course c
             INNER JOIN unattended_courses_ids
-                ON c.course_id=unattended_courses_ids.course_id)
+                ON c.course_id=unattended_courses_ids.course_id
+            WHERE c.major=(SELECT major FROM Student WHERE student_id=@StudentID))
 
     GO
 
@@ -787,12 +790,12 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
 CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
     @student_id int
  AS
-    UPDATE s  
-          set s.financial_status= 0  
+    UPDATE s
+          set s.financial_status= 0
           from Payment p inner join Installment i on(i.payment_id = p.payment_id)
                inner join Student s on (s.student_id = p.student_id)
-            
-    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
+
+    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id
  GO
 
 
@@ -899,13 +902,13 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     GO
 
 CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
-    RETURNS DATETIME 
+    RETURNS DATETIME
     AS
     BEGIN
             DECLARE @output_datetime DATETIME
-            SELECT TOP 1 @output_datetime=I.deadline 
+            SELECT TOP 1 @output_datetime=I.deadline
             FROM Payment P
-            INNER JOIN Installment I 
+            INNER JOIN Installment I
             ON P.payment_id = I.payment_id
             WHERE P.student_id = @StudentID AND I.status='notPaid'
             ORDER BY P.deadline ,I.deadline
@@ -913,14 +916,14 @@ CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
     END
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
-    @Advisor_ID INT 
+    @Advisor_ID INT
     AS
         SELECT R.*
         FROM Request R
-        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
-        AND R.student_id IS NOT NULL        
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID
+        AND R.student_id IS NOT NULL
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @StudentID INT,
     @mobile_number VARCHAR(40)
