@@ -835,8 +835,8 @@ CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
            from Student
            inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
            inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
-           inner join Course on Course.course_id = Gradplan_Course.course_id)
-           where Student.student_id = @Student_id
+           inner join Course on Course.course_id = Gradplan_Course.course_id
+           where Student.student_id = @Student_id)
         GO
 
 
