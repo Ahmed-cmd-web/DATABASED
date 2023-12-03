@@ -28,8 +28,7 @@ CREATE TABLE Student
     email VARCHAR(40) NOT NULL,
     major VARCHAR(40) NOT NULL,
     password VARCHAR(40) NOT NULL,
---  financial_status  AS dbo.is_blocked(student_id),
-    financial_status BIT,
+    financial_status BIT default 1,
     semester INT NOT NULL,
     acquired_hours INT,
     assigned_hours INT,
@@ -196,9 +195,8 @@ CREATE TABLE Payment
     student_id INT NOT NULL,
     semester_code VARCHAR(40) NOT NULL,
     CONSTRAINT student_FK_Payment       FOREIGN KEY (student_id)    REFERENCES Student (student_id) ON UPDATE CASCADE,
-    --NOTE: Should we add "ON DELETE CASCADE" also?!
     CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE,
-    --NOTE: Should we add "ON DELETE CASCADE" also?!
+
 );
 
 
@@ -345,21 +343,20 @@ CREATE OR ALTER VIEW Courses_MakeupExams
         ON (C.course_id = ME.course_id);
     GO
 
---Create OR ALTER FUNCTION is_blocked(@student_id int) RETURNS BIT
---AS
---    BEGIN
---        RETURN IIF(EXISTS(SELECT * FROM Installment i
---        INNER JOIN Payment p ON p.payment_id=i.payment_id
---        WHERE p.student_id=@student_id AND GETDATE() > i.deadline AND i.status='notPaid'),0,1)
---    END
---GO
+Create OR ALTER FUNCTION is_blocked(@student_id int) RETURNS BIT
+    AS
+        BEGIN
+            RETURN IIF(EXISTS(SELECT * FROM Installment i
+            INNER JOIN Payment p ON p.payment_id=i.payment_id
+            WHERE p.student_id=@student_id AND GETDATE() > i.deadline AND i.status='notPaid'),0,1)
+        END
+    GO
 
-
---CREATE OR ALTER TRIGGER set_student_status ON Installment FOR INSERT,UPDATE,DELETE
---AS
---    UPDATE Student
---    SET financial_status=dbo.is_blocked(student_id)
---GO
+CREATE OR ALTER TRIGGER set_student_status ON Installment FOR INSERT,UPDATE,DELETE
+    AS
+        UPDATE Student
+        SET financial_status=dbo.is_blocked(student_id)
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_StudentRegistration
     @first_name VARCHAR(40),
@@ -410,12 +407,12 @@ FROM Student
     GO
 
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
-As
-    Select g.*,
-        a.name AS Advisor_name
-    FROM Graduation_plan g
-        FULL OUTER JOIN Advisor a
-        ON g.advisor_id = a.Advisor_id
+    AS
+        Select g.*,
+            a.name AS Advisor_name
+        FROM Graduation_plan g
+            FULL OUTER JOIN Advisor a
+            ON g.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
@@ -442,7 +439,6 @@ INSERT INTO Course
 VALUES
     (@major, @semester, @credit_hours, @course_name, @offered)
     GO
-
 
 CREATE OR ALTER VIEW view_Students
 AS
@@ -477,7 +473,6 @@ INSERT INTO Semester
 VALUES
     (@start_date, @end_date, @semester_code)
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
@@ -522,9 +517,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
             INNER JOIN unattended_courses_ids
                 ON c.course_id=unattended_courses_ids.course_id
             WHERE c.major=(SELECT major FROM Student WHERE student_id=@StudentID))
-
     GO
-
 
 CREATE OR ALTER FUNCTION FN_StudentCheckSMEligiability(
     @CourseID INT,
@@ -542,6 +535,7 @@ CREATE OR ALTER FUNCTION FN_StudentCheckSMEligiability(
         RETURN IIF((@grade=NULL OR @grade IN ('F','FF')) AND @failed_courses_count<=2,1,0)
     END
     GO
+
 CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
     @semester_code VARCHAR(40),
     @expected_graduation_date DATE,
@@ -628,19 +622,21 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
     @Student_Current_Semester VARCHAR(40)
         AS
             DECLARE @sem_start_date DATE;
-            DECLARE @sem_end_date DATE;
-            SELECT @sem_start_date=start_date , @sem_end_date=end_date FROM Semester
+            SELECT @sem_start_date=start_date FROM Semester
                 WHERE semester_code=@Student_Current_Semester
 
             DECLARE @exam INT;
             SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
-                WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
-                            AND ME.course_id=@courseID AND ME.type='First_makeup'
+                WHERE (ME.date >= @sem_start_date
+                            AND ME.course_id=@courseID AND ME.type='First_makeup')
+            IF @exam IS NULL
+                BEGIN
+                    PRINT 'No first makeup exam for this course'
+                    RETURN
+                END
             INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
-        GO
-
-
-
+            INSERT INTO Student_Instructor_Course_Take VALUES (@StudentID,@courseID,NULL,@Student_Current_Semester,'First_makeup',NULL);
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminDeleteCourse
     @courseID INT
@@ -681,8 +677,6 @@ DELETE s FROM Slot s
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
 
-
-
 CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
     @expected_grad_date DATE,
     @studentID INT
@@ -696,7 +690,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
             WHERE student_id=@studentID
         ELSE
             PRINT 'expected semester or student does not exist'
-
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
@@ -719,10 +712,8 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
                 SET instructor_id = @InstructorId , course_id = @courseId
                 WHERE slot_id = @slotID
             END
-
     GO
     
-
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
     @student_ID int,
@@ -733,8 +724,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
         VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
     GO
 
-
-
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
     @advisorID INT
@@ -743,7 +732,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
             SET advisor_id=@advisorID
             WHERE student_id=@studentID
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
     @StudentID INT
@@ -839,7 +827,6 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
             FROM Courses_in_his_major CM 
             INNER JOIN Course C 
             ON CM.course_id=C.course_id;
-
     GO
 
 CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
@@ -851,7 +838,7 @@ CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
               inner join Student s on (s.student_id = p.student_id)
             
     where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
- GO
+    GO
 
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
@@ -878,7 +865,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
             END
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
     @student_ID int,
@@ -888,8 +874,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
         INSERT INTO Student_Instructor_Course_Take(student_id, course_id, instructor_id, semester_code)
         VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
     GO
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
@@ -919,7 +903,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorAddCourseGP
             (plan_id,semester_code,course_id)
         values
             (@Plan_id, @semester_code, @course_id)
-
     GO
 
 CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
@@ -933,8 +916,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
            inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
            inner join Course on Course.course_id = Gradplan_Course.course_id
            where Student.student_id = @Student_id)
-        GO
-
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorDeleteFromGP
     @student_id int,
@@ -982,7 +964,6 @@ CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @mobile_number VARCHAR(40)
     AS
         INSERT INTO Student_Phone VALUES (@StudentID,@mobile_number);
-
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
@@ -998,13 +979,11 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
         WHERE s.advisor_id = @AdvisorID AND s.major = @major;
     GO
 
-
 CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
     RETURNS Table
     AS
         return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
     GO
-
 
 CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
     RETURNS BIT
@@ -1019,7 +998,6 @@ CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40)
         END
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
     @StudentID INT,
     @credit_hours INT,
@@ -1031,7 +1009,6 @@ CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
         VALUES
             (@type,@comment,@credit_hours,@StudentID,(SELECT advisor_id FROM Student WHERE student_id=@StudentID))
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_StudentSendingCourseRequest
     @StudentID INT,
@@ -1097,13 +1074,9 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
             END
     GO
     
-CREATE PROC[Procedures_AdvisorApproveRejectCHRequest]
-@RequestID int,
-@Current_semester_code varchar (40)
-AS
-
-
-
-
-GO
+CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
+    @RequestID int,
+    @Current_semester_code varchar (40)
+    AS
+    GO
 
