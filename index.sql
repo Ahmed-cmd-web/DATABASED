@@ -1189,12 +1189,12 @@ SELECT * FROM all_Pending_Requests --2.3.o
 EXEC Procedures_AdminDeleteSlots @current_semester='W23' --2.3.p
 
 DECLARE @output BIT --2.3.q
-SET @output = dbo.FN_AdvisorLogin(1,'password')
+SET @output = dbo.FN_AdvisorLogin(1,'password1')
 PRINT (@output)
 
-EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@sem_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
+EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@semester_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
 
-EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
+EXEC Procedures_AdvisorAddCourseGP @student_id=1, @semester_code='W23',@course_name ='CSEN 2' --2.3.s
 EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.t
 
 
@@ -1202,7 +1202,6 @@ EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --
 
 
 
-
-EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=2,@Course_ID=3  --2.3.oo
+EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=1,@Course_ID=1,@current_semester_code='W23'  --2.3.oo
 EXEC Procedures_ViewMS @Student_ID=1 --2.3.nn
-EXEC Procedures_ViewOptionalCourse  @Student_ID=1,@Current_Semester_Code='W23' -- 2.3.mm
+EXEC Procedures_ViewOptionalCourse  @StudentID=1,@Current_Semester_Code='W23' -- 2.3.mm
