@@ -1198,8 +1198,7 @@ SET @output3 = dbo.FN_AdvisorLogin(1,'password1')
 PRINT (@output3)
 
 EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@semester_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
-
-EXEC Procedures_AdvisorAddCourseGP @student_id=1, @semester_code='W23',@course_name ='CSEN 2' --2.3.s
+EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
 EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.t
 
 EXEC Procedures_AdvisorDeleteFromGP @student_id=1, @semester_code='W23' , @course_ID=1 --2.3.u
