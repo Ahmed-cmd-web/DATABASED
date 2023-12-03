@@ -36,7 +36,7 @@ CREATE TABLE Student
     acquired_hours INT          ,
     assigned_hours INT          ,
     advisor_id INT          ,
-    CONSTRAINT advisor_FK_Student FOREIGN KEY (advisor_id) REFERENCES Advisor ON UPDATE CASCADE
+    CONSTRAINT advisor_FK_Student FOREIGN KEY (advisor_id) REFERENCES Advisor ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE Course
@@ -54,7 +54,7 @@ CREATE TABLE Student_Phone
     student_id INT NOT NULL,
     phone_number VARCHAR(40) NOT NULL,
     CONSTRAINT student_id_phone_number_PK_Student_Phone PRIMARY KEY (student_id,phone_number),
-    CONSTRAINT student_id_FK_Student_Phone              FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE,
+    CONSTRAINT student_id_FK_Student_Phone              FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE PreqCourse_course
@@ -80,8 +80,8 @@ CREATE TABLE Instructor_Course
     course_id INT NOT NULL,
     instructor_id INT NOT NULL,
     CONSTRAINT instructor_id_course_id_pk_constraint PRIMARY KEY (instructor_id,course_id),
-    CONSTRAINT course_id_FK_Instructor_Course        FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE,
-    CONSTRAINT instructor_id_FK_Instructor_Course    FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE,
+    CONSTRAINT course_id_FK_Instructor_Course        FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT instructor_id_FK_Instructor_Course    FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE Student_Instructor_Course_Take
@@ -94,7 +94,7 @@ CREATE TABLE Student_Instructor_Course_Take
     grade VARCHAR(40) DEFAULT  NULL CHECK (grade     IN ('A','A+','A-','B','B+','B-',
                                                                               'C','C+','C-','D','D+','F','FF')),
     CONSTRAINT course_id_instructor_id_student_id              PRIMARY KEY (instructor_id,course_id,student_id),
-    CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course,
+    CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
     CONSTRAINT student_id_FK_Student_Instructor_Course_Take    FOREIGN KEY (student_id)    REFERENCES Student (student_id)
 );
@@ -111,8 +111,8 @@ CREATE TABLE Course_Semester
     course_id INT,
     semester_code VARCHAR(40) NOT NULL,
     CONSTRAINT course_id_semester_code_PK_Course_Semester PRIMARY KEY (course_id,semester_code),
-    CONSTRAINT course_id_FK_Course_Semester               FOREIGN Key (course_id)     REFERENCES Course   (course_id)     ON UPDATE CASCADE,
-    CONSTRAINT semester_code_FK_Course_Semester           FOREIGN Key (semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE,
+    CONSTRAINT course_id_FK_Course_Semester               FOREIGN Key (course_id)     REFERENCES Course   (course_id)     ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT semester_code_FK_Course_Semester           FOREIGN Key (semester_code) REFERENCES Semester (semester_code) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE Slot
@@ -123,8 +123,8 @@ CREATE TABLE Slot
     location VARCHAR(40) NOT NULL,
     course_id INT NOT NULL,
     instructor_id INT NOT NULL,
-    CONSTRAINT course_id_FK_Slot     FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE,
-    CONSTRAINT instructor_id_FK_Slot FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE,
+    CONSTRAINT course_id_FK_Slot     FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT instructor_id_FK_Slot FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 
@@ -148,7 +148,7 @@ CREATE TABLE GradPlan_Course
     semester_code VARCHAR(40) NOT NULL,
     course_id INT NOT NULL,
     CONSTRAINT plan_id_semester_code_course_id_PK_GradPlan_Course PRIMARY KEY (plan_id,semester_code,course_id),
-    CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE
+    CONSTRAINT plan_id_semester_code_FK_GradPlan_Course           FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_plan (plan_id, semester_code) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE Request
@@ -172,7 +172,7 @@ CREATE TABLE MakeUp_Exam
     date DATE NOT NULL,
     type VARCHAR(40) NOT NULL,
     course_id INT ,
-    CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course,
+    CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course ON DELETE CASCADE,
 );
 
 CREATE TABLE Exam_Student
@@ -181,7 +181,7 @@ CREATE TABLE Exam_Student
     student_id INT NOT NULL,
     course_id INT NOT NULL,
     CONSTRAINT student_id_exam_id_PK_Exam_Student PRIMARY KEY (student_id,exam_id),
-    CONSTRAINT exam_id_FK_Exam_Student            FOREIGN KEY (exam_id)    REFERENCES MakeUp_Exam          ON UPDATE CASCADE,
+    CONSTRAINT exam_id_FK_Exam_Student            FOREIGN KEY (exam_id)    REFERENCES MakeUp_Exam          ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT student_id_FK_Exam_Student         FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE,
 );
 
@@ -197,9 +197,9 @@ CREATE TABLE Payment
     student_id INT NOT NULL,
     semester_code VARCHAR(40) NOT NULL,
     CONSTRAINT student_FK_Payment       FOREIGN KEY (student_id)    REFERENCES Student (student_id) ON UPDATE CASCADE,
-    --NOTE: Should we add " also?!
+    --NOTE: Should we add "ON DELETE CASCADE" also?!
     CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE,
-    --NOTE: Should we add " also?!
+    --NOTE: Should we add "ON DELETE CASCADE" also?!
 );
 
 
@@ -211,7 +211,7 @@ CREATE TABLE Installment
     status VARCHAR(40) DEFAULT 'notPaid' CHECK (status IN ('notPaid','Paid')),
     start_date DATETIME NOT NULL,
     CONSTRAINT payment_id_deadline_PK_Installment    PRIMARY KEY (payment_id,deadline),
-    CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE,
+    CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
 );
     GO
 

@@ -113,3 +113,8 @@ VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à 
 INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2018-09-01 10:34:23.55'),
 								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22'),
 								(1, '2018-06-01 10:34:23.55', 500.00, 'notPaid', '2018-10-01 10:43:20.22')
+
+
+SELECT * from slot
+EXEC Procedures_AdminDeleteCourse @courseID=1
+SELECT * from slot
