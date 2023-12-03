@@ -579,25 +579,18 @@ CREATE OR ALTER VIEW all_Pending_Requests
 CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor
     @Student_ID INT,
     @Instructor_ID INT,
-    @Course_ID INT
+    @Course_ID INT,
+    @current_semester_code VARCHAR(40)
     AS
     BEGIN
        IF EXISTS(
-               SELECT *
+                SELECT *
                 FROM Instructor_Course IC
                 WHERE IC.course_id = @Course_ID AND IC.instructor_id = @Instructor_ID
                )
          BEGIN
-                DECLARE @semester_code VARCHAR(40);
-
-                SELECT @semester_code = GP.semester_code
-                FROM Graduation_plan GP
-                INNER JOIN GradPlan_Course GPC
-                ON GP.plan_id=GPC.plan_id AND GP.semester_code=GPC.semester_code
-                WHERE GP.student_id=@Student_ID AND GPC.course_id=@Course_ID
-
                 INSERT INTO Student_Instructor_Course_Take (student_id,course_iD,instructor_id,semester_code)
-                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@semester_code);
+                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@current_semester_code);
          END
          ELSE
          BEGIN
