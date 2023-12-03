@@ -865,7 +865,19 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
         return (select * from Request where advisor_id =@advisor_id)
     GO
 
-
+CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
+    RETURNS DATETIME 
+    AS
+    BEGIN
+            DECLARE @output_datetime DATETIME
+            SELECT TOP 1 @output_datetime=I.deadline 
+            FROM Payment P
+            INNER JOIN Installment I 
+            ON P.payment_id = I.payment_id
+            WHERE P.student_id = @StudentID AND I.status='notPaid'
+            ORDER BY P.deadline ,I.deadline
+        RETURN @output_datetime
+    END
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
     @Advisor_ID INT 
@@ -881,6 +893,7 @@ CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @mobile_number VARCHAR(40)
     AS
         INSERT INTO Student_Phone VALUES (@StudentID,@mobile_number);
+
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
