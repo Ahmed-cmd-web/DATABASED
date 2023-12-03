@@ -753,9 +753,6 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         ON mc.course_id = c.course_id;
     GO
 
---NOTE: Optional Courses: courses from the current semester or upcoming semesters 
---  (Student is allowed to take the optional course if he/she satisfied their prerequisites).
-
 CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse 
     @StudentID INT,
     @Current_semester_code VARCHAR(40)
@@ -773,31 +770,43 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
         Courses_in_his_major AS(
             SELECT C.course_id ,S.semester as student_sem_num , C.semester course_sem_num
             FROM Student S, Course C
-            WHERE S.student_id = @StudentID AND S.major = C.major
+            WHERE S.student_id = @StudentID AND S.major = C.major AND C.is_offered = 1
         ),
         Courses_in_his_major_ODD AS(
             SELECT CM.course_id
             FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id = CS.course_id
             WHERE CM.course_sem_num%2 <> 0 AND NOT EXISTS (SELECT * FROM Taken_Courses) 
-            AND CS.semester_code <> @Current_semester_code
+            AND CS.semester_code <> @Current_semester_code 
         ),
         Courses_in_his_major_EVEN AS(
             SELECT CM.course_id
-            FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id = CS.course_id
+            FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id= CS.course_id
             WHERE CM.course_sem_num%2 = 0 AND NOT EXISTS (SELECT * FROM Taken_Courses)
             AND CS.semester_code <> @Current_semester_code
         )
       
-            SELECT *
-            ,Optional_Courses=
+            SELECT C.*
+            ,--Optional_Courses=
             CASE
             WHEN @is_studentSemester_odd = 1
             THEN (SELECT course_id
-                    FROM Courses_in_his_major_ODD
+                    FROM Courses_in_his_major_ODD CMO
+                    WHERE EXISTS (
+                        SELECT course_id
+                        FROM PreqCourse_course PC
+                        WHERE PC.prerequisite_course_id IN (SELECT * FROM Taken_Courses)
+                            AND PC.course_id = CMO.course_id 
+                    )
                     )
             WHEN @is_studentSemester_odd = 0
                     THEN (SELECT course_id
-                    FROM Courses_in_his_major_EVEN
+                    FROM Courses_in_his_major_EVEN CME
+                    WHERE EXISTS (
+                        SELECT course_id
+                        FROM PreqCourse_course PC
+                        WHERE PC.prerequisite_course_id IN (SELECT * FROM Taken_Courses)
+                            AND PC.course_id = CME.course_id
+                    )
                     )
             ELSE 'student not found'
             END  
@@ -819,7 +828,7 @@ CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
  GO
 
 
-
+ 
 
 
 
