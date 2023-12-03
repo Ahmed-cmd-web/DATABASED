@@ -775,6 +775,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
+        where Instructor.instructor_id = @Instructor_id
         );
     GO
 
@@ -845,6 +846,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
            inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
            inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
            inner join Course on Course.course_id = Gradplan_Course.course_id)
+           where Student.student_id = @Student_id
         GO
 
 
@@ -1007,3 +1009,12 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
                     WHERE student_id=@student_id
             END
     GO
+CREATE PROC[Procedures_AdvisorApproveRejectCHRequest]
+@RequestID int,
+@Current_semester_code varchar (40)
+AS
+
+
+
+
+GO
