@@ -1193,16 +1193,44 @@ SET @output = dbo.FN_AdvisorLogin(1,'password')
 PRINT (@output)
 
 EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@sem_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
-
 EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
-EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.s
+EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.t
+EXEC Procedures_AdvisorDeleteFromGP @studentID=1, @semester_code='W23' , @course_ID=1 --2.3.u
 
+SELECT * FROM dbo.FN_Advisors_Requests(1) --2.3.v
 
+EXEC Procedures_AdvisorApproveRejectCHRequest @RequestID=1, @Current_semester_code='W23' --2.3.w
+EXEC Procedures_AdvisorViewAssignedStudents @AdvisorID=1 ,@major='MET'  --2.3.x
+EXEC Procedures_AdvisorApproveRejectCourseRequest @RequestID=1, @current_semester_code='W23' --2.3.y
+EXEC Procedures_AdvisorViewPendingRequests @Advisor_ID =1 --2.3.z
 
+DECLARE @output BIT --2.3.aa
+SET @output = dbo.FN_StudentLogin(1,'password')
+PRINT (@output)
 
+EXEC Procedures_StudentaddMobile @StudentID=1, @mobile_number='123-456-789' --2.3.bb
 
+SELECT * FROM dbo.FN_SemsterAvailableCourses --2.3.cc
 
+EXEC Procedures_StudentSendingCourseRequest @Student_ID=1, @course_ID=1 , @type='CR', @comment='NICE'  --2.3.dd
+EXEC Procedures_StudentSendingCHRequest @Student_ID=1, @credit_hours=2, @type='CH' , @comment='NICE2'  --2.3.ee
 
-EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=2,@Course_ID=3  --2.3.oo
-EXEC Procedures_ViewMS @Student_ID=1 --2.3.nn
+SELECT * FROM dbo.FN_StudentViewGP(1) --2.3.ff
+
+DECLARE @output BIT --2.3.gg
+SET @output = dbo.FN_StudentUpcoming_installment(1) 
+PRINT (@output)
+
+SELECT * FROM dbo.FN_StudentViewSlot(1,1) -- 2.3.hh
+
+EXEC Procedures_StudentRegisterFirstMakeup @StudentID=1, @courseID=1, @Student_Current_Semester ='W23' -- 2.3.ii
+
+DECLARE @output BIT --2.3.jj
+SET @output = dbo.FN_StudentCheckSMEligiability(1)
+PRINT (@output)
+
+EXEC Procedures_StudentRegisterSecondMakeup @StudentID=1, @courseID=1, @Student_Current_Semester='W23' -- 2.3.kk
+EXEC Procedures_ViewRequiredCourses @StudentID=1,@Current_semester_code='W23' -- 2.3.ll
 EXEC Procedures_ViewOptionalCourse  @Student_ID=1,@Current_Semester_Code='W23' -- 2.3.mm
+EXEC Procedures_ViewMS @Student_ID=1 --2.3.nn
+EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=2,@Course_ID=3  --2.3.oo
