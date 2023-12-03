@@ -3,7 +3,7 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-3
 
---CREATE DATABASE Advising_Team_119;
+CREATE DATABASE Advising_Team_119;
 
 USE Advising_Team_119;
     GO
@@ -652,7 +652,7 @@ SELECT @installment_amount=amount/n_installments, @start_date=start_date, @deadl
 FROM Payment
 WHERE payment_id=@paymentID
 
-WHILE (@start_date<=@deadline)
+WHILE (@start_date<@deadline)
             BEGIN
     INSERT INTO Installment
     VALUES
@@ -843,7 +843,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
-        where Instructor.instructor_id = @Instructor_id and Course.course_id = @CourseID
+        where Instructor.instructor_id = @InstructorID and Course.course_id = @CourseID
         );
     GO
 
@@ -1189,7 +1189,7 @@ SELECT * FROM all_Pending_Requests --2.3.o
 EXEC Procedures_AdminDeleteSlots @current_semester='W23' --2.3.p
 
 DECLARE @output BIT --2.3.q
-SET @output = dbo.FN_AdvisorLogin(1,'password')
+SET @output = dbo.FN_AdvisorLogin(1,'password1')
 PRINT (@output)
 
 EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@sem_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
