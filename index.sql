@@ -1,15 +1,12 @@
 -- Description : Milestone_2_Database_Project
 -- Team : 119
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
--- Due_Date : 2023-12-1
+-- Due_Date : 2023-12-3
 
 --CREATE DATABASE Advising_Team_119;
 
-USE Advising_Team_119;
-
+--USE Advising_Team_119;
     GO
-
-
 CREATE OR ALTER PROCEDURE CreateAllTables
 AS
 CREATE TABLE Advisor
@@ -31,11 +28,11 @@ CREATE TABLE Student
     email VARCHAR(40) NOT NULL,
     major VARCHAR(40) NOT NULL,
     password VARCHAR(40) NOT NULL,
-    financial_status  AS dbo.is_blocked(student_id) ,
+    financial_status BIT default 1,
     semester INT NOT NULL,
-    acquired_hours INT          ,
-    assigned_hours INT          ,
-    advisor_id INT          ,
+    acquired_hours INT,
+    assigned_hours INT,
+    advisor_id INT,
     CONSTRAINT advisor_FK_Student FOREIGN KEY (advisor_id) REFERENCES Advisor ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -92,7 +89,7 @@ CREATE TABLE Student_Instructor_Course_Take
     semester_code VARCHAR(40) NOT NULL,
     exam_type VARCHAR(40) DEFAULT 'Normal' CHECK (exam_type IN ('Normal','First_makeup','Second_makeup')),
     grade VARCHAR(40) DEFAULT  NULL CHECK (grade     IN ('A','A+','A-','B','B+','B-',
-                                                                              'C','C+','C-','D','D+','F','FF')),
+                                                                              'C','C+','C-','D','D+','F','FF','FA')),
     CONSTRAINT course_id_semester_code_student_id              PRIMARY KEY (course_id,semester_code,student_id),
     CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
@@ -198,9 +195,8 @@ CREATE TABLE Payment
     student_id INT NOT NULL,
     semester_code VARCHAR(40) NOT NULL,
     CONSTRAINT student_FK_Payment       FOREIGN KEY (student_id)    REFERENCES Student (student_id) ON UPDATE CASCADE,
-    --NOTE: Should we add "ON DELETE CASCADE" also?!
     CONSTRAINT semester_code_FK_Payment FOREIGN KEY (semester_code) REFERENCES Semester             ON UPDATE CASCADE,
-    --NOTE: Should we add "ON DELETE CASCADE" also?!
+
 );
 
 
@@ -270,6 +266,9 @@ CREATE OR ALTER PROCEDURE clearAllTables
 AS
 EXEC DropAllTables
 EXEC CreateAllTables
+    GO
+
+EXEC CreateAllTables;
     GO
 
 CREATE OR ALTER VIEW view_Course_prerequisites
@@ -353,7 +352,6 @@ Create OR ALTER FUNCTION is_blocked(@student_id int) RETURNS BIT
         END
     GO
 
-
 CREATE OR ALTER TRIGGER set_student_status ON Installment FOR INSERT,UPDATE,DELETE
     AS
         UPDATE Student
@@ -409,12 +407,12 @@ FROM Student
     GO
 
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
-As
-    Select g.*,
-        a.name AS Advisor_name
-    FROM Graduation_plan g
-        FULL OUTER JOIN Advisor a
-        ON g.advisor_id = a.Advisor_id
+    AS
+        Select g.*,
+            a.name AS Advisor_name
+        FROM Graduation_plan g
+            FULL OUTER JOIN Advisor a
+            ON g.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
@@ -441,7 +439,6 @@ INSERT INTO Course
 VALUES
     (@major, @semester, @credit_hours, @course_name, @offered)
     GO
-
 
 CREATE OR ALTER VIEW view_Students
 AS
@@ -480,14 +477,47 @@ VALUES
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
     @Current_semester_code Varchar(40)
-AS
-SELECT c.*
-FROM Course c
-    JOIN Student_Instructor_Course_Take sict
-    ON sict.course_id=c.course_id
-WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
-    GO
+    AS
 
+        DECLARE @sem_start_date DATE;
+            SELECT @sem_start_date=start_date FROM Semester
+                WHERE semester_code=@Current_semester_code;
+
+            WITH previous_semesters AS
+            (
+                SELECT * FROM Semester
+                WHERE start_date < @sem_start_date
+            ),
+
+            previous_semesters_courses AS (
+                SELECT cs.*
+                FROM previous_semesters ps
+                INNER JOIN Course_Semester cs
+                ON ps.semester_code=cs.semester_code
+            ),
+            unattended_courses_ids AS (
+                SELECT psc.course_id
+                FROM previous_semesters_courses psc
+                EXCEPT (
+                    SELECT sic.course_id
+                    FROM Student_Instructor_Course_Take sic
+                    WHERE sic.student_id=@StudentID
+                )
+            )
+
+        (SELECT c.*
+        FROM Course c
+            JOIN Student_Instructor_Course_Take sict
+            ON sict.course_id=c.course_id
+        WHERE sict.student_id=@StudentID AND
+            (sict.grade IN ('F','FF','FA') AND dbo.FN_StudentCheckSMEligiability(c.course_id,@StudentID)=0) AND
+            c.major=(SELECT major FROM Student WHERE student_id=@StudentID)
+        UNION
+        SELECT c.* FROM Course c
+            INNER JOIN unattended_courses_ids
+                ON c.course_id=unattended_courses_ids.course_id
+            WHERE c.major=(SELECT major FROM Student WHERE student_id=@StudentID))
+    GO
 
 CREATE OR ALTER FUNCTION FN_StudentCheckSMEligiability(
     @CourseID INT,
@@ -505,6 +535,7 @@ CREATE OR ALTER FUNCTION FN_StudentCheckSMEligiability(
         RETURN IIF((@grade=NULL OR @grade IN ('F','FF')) AND @failed_courses_count<=2,1,0)
     END
     GO
+
 CREATE OR ALTER PROCEDURE Procedures_AdvisorCreateGP
     @semester_code VARCHAR(40),
     @expected_graduation_date DATE,
@@ -548,25 +579,20 @@ CREATE OR ALTER VIEW all_Pending_Requests
 CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor
     @Student_ID INT,
     @Instructor_ID INT,
-    @Course_ID INT
+    @Course_ID INT,
+    @current_semester_code VARCHAR(40)
     AS
     BEGIN
        IF EXISTS(
-               SELECT *
+                SELECT *
                 FROM Instructor_Course IC
                 WHERE IC.course_id = @Course_ID AND IC.instructor_id = @Instructor_ID
                )
          BEGIN
-                DECLARE @semester_code VARCHAR(40);
+                UPDATE Student_Instructor_Course_Take
+                SET instructor_id = @Instructor_ID
+                WHERE semester_code=@current_semester_code AND student_id=@Student_ID AND course_id = @Course_ID
 
-                SELECT @semester_code = GP.semester_code
-                FROM Graduation_plan GP
-                INNER JOIN GradPlan_Course GPC
-                ON GP.plan_id=GPC.plan_id AND GP.semester_code=GPC.semester_code
-                WHERE GP.student_id=@Student_ID AND GPC.course_id=@Course_ID
-
-                INSERT INTO Student_Instructor_Course_Take (student_id,course_iD,instructor_id,semester_code)
-                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@semester_code);
          END
          ELSE
          BEGIN
@@ -591,19 +617,21 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
     @Student_Current_Semester VARCHAR(40)
         AS
             DECLARE @sem_start_date DATE;
-            DECLARE @sem_end_date DATE;
-            SELECT @sem_start_date=start_date , @sem_end_date=end_date FROM Semester
+            SELECT @sem_start_date=start_date FROM Semester
                 WHERE semester_code=@Student_Current_Semester
 
             DECLARE @exam INT;
             SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
-                WHERE (ME.date BETWEEN @sem_start_date AND @sem_end_date)
-                            AND ME.course_id=@courseID AND ME.type='First_makeup'
+                WHERE (ME.date >= @sem_start_date
+                            AND ME.course_id=@courseID AND ME.type='First_makeup')
+            IF @exam IS NULL
+                BEGIN
+                    PRINT 'No first makeup exam for this course'
+                    RETURN
+                END
             INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
-        GO
-
-
-
+            INSERT INTO Student_Instructor_Course_Take VALUES (@StudentID,@courseID,NULL,@Student_Current_Semester,'First_makeup',NULL);
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminDeleteCourse
     @courseID INT
@@ -644,8 +672,6 @@ DELETE s FROM Slot s
         WHERE cs.semester_code=@current_semester AND c.is_offered=0
     GO
 
-
-
 CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
     @expected_grad_date DATE,
     @studentID INT
@@ -659,17 +685,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
             WHERE student_id=@studentID
         ELSE
             PRINT 'expected semester or student does not exist'
-    GO
-
-CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
-    RETURNS Table
-    AS
-        RETURN
-        (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name AS Instructor_name,Course.name AS Course_name
-        from Slot
-        inner join Instructor on Slot.instructor_id = Instructor.instructor_id
-        inner join Course on Slot.course_id = Course.course_id
-        );
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
@@ -692,9 +707,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
                 SET instructor_id = @InstructorId , course_id = @courseId
                 WHERE slot_id = @slotID
             END
-
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
@@ -706,8 +719,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
         VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
     GO
 
-
-
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
     @advisorID INT
@@ -716,7 +727,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
             SET advisor_id=@advisorID
             WHERE student_id=@studentID
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_ViewMS
     @StudentID INT
@@ -751,30 +761,89 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
+    @StudentID INT,
+    @Current_semester_code VARCHAR(40)
+    AS
+        DECLARE @is_studentSemester_odd BIT;
+        SELECT @is_studentSemester_odd = S.semester%2
+        FROM Student S
+        WHERE S.student_id = @StudentID;
+
+        WITH Taken_Courses AS(
+            SELECT SICT.course_id
+            FROM Student_Instructor_Course_Take SICT
+            WHERE SICT.student_id = @StudentID
+        ),
+        Courses_in_his_major AS(
+            SELECT C.course_id ,S.semester as student_sem_num , C.semester course_sem_num
+            FROM Student S, Course C
+            WHERE S.student_id = @StudentID AND S.major = C.major AND C.is_offered = 1
+        ),
+        Courses_in_his_major_ODD AS(
+            SELECT CM.course_id
+            FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id = CS.course_id
+            WHERE CM.course_sem_num%2 <> 0 AND NOT EXISTS (SELECT * FROM Taken_Courses)
+            AND CS.semester_code <> @Current_semester_code
+        ),
+        Courses_in_his_major_EVEN AS(
+            SELECT CM.course_id
+            FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id= CS.course_id
+            WHERE CM.course_sem_num%2 = 0 AND NOT EXISTS (SELECT * FROM Taken_Courses)
+            AND CS.semester_code <> @Current_semester_code
+        )
+
+            SELECT C.*
+            ,--Optional_Courses=
+            CASE
+            WHEN @is_studentSemester_odd = 1
+            THEN (SELECT course_id
+                    FROM Courses_in_his_major_ODD CMO
+                    WHERE EXISTS (
+                        SELECT course_id
+                        FROM PreqCourse_course PC
+                        WHERE PC.prerequisite_course_id IN (SELECT * FROM Taken_Courses)
+                            AND PC.course_id = CMO.course_id
+                    )
+                    )
+            WHEN @is_studentSemester_odd = 0
+                    THEN (SELECT course_id
+                    FROM Courses_in_his_major_EVEN CME
+                    WHERE EXISTS (
+                        SELECT course_id
+                        FROM PreqCourse_course PC
+                        WHERE PC.prerequisite_course_id IN (SELECT * FROM Taken_Courses)
+                            AND PC.course_id = CME.course_id
+                    )
+                    )
+            ELSE 'student not found'
+            END
+            FROM Courses_in_his_major CM
+            INNER JOIN Course C
+            ON CM.course_id=C.course_id;
+    GO
+
 CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
     @student_id int
  AS
     UPDATE s
-          set s.financial_status= 0
-          from Payment p inner join Installment i on(i.payment_id = p.payment_id)
-               inner join Student s on (s.student_id = p.student_id)
+         set s.financial_status = 0
+         from Payment p inner join Installment i on(i.payment_id = p.payment_id)
+              inner join Student s on (s.student_id = p.student_id)
 
     where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id
- GO
-
-
-
-
-
+    GO
 
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
         RETURN
-        (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name AS Instructor_name,Course.name AS Course_name
+        (select Slot.slot_id,Slot.location,Slot.time,slot.day,Course.name AS Course_name,Instructor.name AS Instructor_name
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
+        where Instructor.instructor_id = @Instructor_id and Course.course_id = @CourseID
         );
     GO
 
@@ -791,7 +860,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
             END
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
     @student_ID int,
@@ -801,8 +869,6 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
         INSERT INTO Student_Instructor_Course_Take(student_id, course_id, instructor_id, semester_code)
         VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
     GO
-
-
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
@@ -832,21 +898,20 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorAddCourseGP
             (plan_id,semester_code,course_id)
         values
             (@Plan_id, @semester_code, @course_id)
-
     GO
 
 CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
     RETURNS TABLE
         AS
            RETURN
-           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Student.advisor_id,Graduation_plan.plan_id,Graduation_plan.semester_credit_hours,Graduation_plan.expected_grad_date,Course.course_id,
-           Course.name,Graduation_Plan.semester_code
+           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Graduation_plan.plan_id,Course.course_id,Course.name as Course_Name,Graduation_Plan.semester_code,Graduation_plan.expected_grad_date,Graduation_plan.semester_credit_hours,
+           Student.advisor_id
            from Student
            inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
            inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
-           inner join Course on Course.course_id = Gradplan_Course.course_id)
-        GO
-
+           inner join Course on Course.course_id = Gradplan_Course.course_id
+           where Student.student_id = @Student_id)
+    GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorDeleteFromGP
     @student_id int,
@@ -879,6 +944,7 @@ CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
             RETURN @output_datetime
         END
     GO
+    
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
     @Advisor_ID INT
     AS
@@ -893,7 +959,6 @@ CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @mobile_number VARCHAR(40)
     AS
         INSERT INTO Student_Phone VALUES (@StudentID,@mobile_number);
-
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
@@ -909,13 +974,11 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
         WHERE s.advisor_id = @AdvisorID AND s.major = @major;
     GO
 
-
 CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
     RETURNS Table
     AS
         return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
     GO
-
 
 CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
     RETURNS BIT
@@ -930,7 +993,6 @@ CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40)
         END
     GO
 
-
 CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
     @StudentID INT,
     @credit_hours INT,
@@ -942,7 +1004,6 @@ CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
         VALUES
             (@type,@comment,@credit_hours,@StudentID,(SELECT advisor_id FROM Student WHERE student_id=@StudentID))
     GO
-
 
 CREATE OR ALTER PROCEDURE Procedures_StudentSendingCourseRequest
     @StudentID INT,
@@ -1025,10 +1086,65 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterSecondMakeup
                     WHERE (ME.date >= @sem_start_date)
                                 AND ME.course_id=@courseID AND ME.type='Second_makeup'
                 INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
-                INSERT INTO Student_Instructor_Course_Take VALUES (@StudentID,@courseID,NULL,@Student_Current_Semester,'First_makeup',NULL);
+                INSERT INTO Student_Instructor_Course_Take VALUES (@StudentID,@courseID,NULL,@Student_Current_Semester,'Second_makeup',NULL);
             END
         ELSE
             BEGIN
                 PRINT 'Student is not eligible for second makeup exam'
+            END
+    GO
+
+CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
+    @RequestID int,
+    @Current_semester_code varchar (40)
+    AS
+        DECLARE @student_id INT;
+        DECLARE @student_assigned_hours INT;
+        DECLARE @requested_hours INT;
+        DECLARE @is_student_eligible BIT;
+
+        -- get studentID
+        SELECT @student_id=student_id FROM Request
+                WHERE request_id=@RequestID AND status='pending'
+
+        -- get current assigned hours of the student
+        SELECT @student_assigned_hours=assigned_hours FROM Student
+                WHERE student_id=@student_id
+        -- get requested hours
+        SELECT @requested_hours=credit_hours FROM Request
+                WHERE request_id=@RequestID
+
+        -- check if the student is eligible to take the requested hours
+        SET @is_student_eligible=IIF(@student_assigned_hours+@requested_hours>34,0,1)
+
+        IF @is_student_eligible=0 OR @requested_hours>3
+            BEGIN
+                UPDATE Request
+                SET status='rejected'
+                WHERE request_id=@RequestID
+            END
+        ELSE
+            BEGIN
+                UPDATE Request
+                SET status='accepted'
+                WHERE request_id=@RequestID
+
+                UPDATE Student
+                    SET assigned_hours=@student_assigned_hours + @requested_hours
+                    WHERE student_id=@student_id
+
+                -- add 1000 for each requested hour to the students upcoming payment
+                UPDATE Payment
+                    SET amount=amount+@requested_hours*1000
+                    WHERE student_id=@student_id AND semester_code=@Current_semester_code
+                -- add 1000 for the first upcoming installment
+                UPDATE Installment
+                    SET amount=amount+1000
+                    WHERE payment_id=(SELECT payment_id FROM Payment
+                                        WHERE student_id=@student_id AND semester_code=@Current_semester_code)
+                                        AND start_date=(SELECT MIN(start_date) FROM Installment
+                                                            WHERE payment_id=(SELECT payment_id FROM Payment
+                                                                                WHERE student_id=@student_id AND semester_code=@Current_semester_code)
+                                                                                AND start_date>GETDATE())
             END
     GO
