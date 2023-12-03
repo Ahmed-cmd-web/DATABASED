@@ -90,7 +90,7 @@ CREATE TABLE Student_Instructor_Course_Take
     semester_code VARCHAR(40) NOT NULL,
     exam_type VARCHAR(40) DEFAULT 'Normal' CHECK (exam_type IN ('Normal','First_makeup','Second_makeup')),
     grade VARCHAR(40) DEFAULT  NULL CHECK (grade     IN ('A','A+','A-','B','B+','B-',
-                                                                              'C','C+','C-','D','D+','F','FF')),
+                                                                              'C','C+','C-','D','D+','F','FF','FA')),
     CONSTRAINT course_id_semester_code_student_id              PRIMARY KEY (course_id,semester_code,student_id),
     CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
@@ -478,15 +478,51 @@ VALUES
     (@start_date, @end_date, @semester_code)
     GO
 
+
 CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
     @StudentID INT,
     @Current_semester_code Varchar(40)
-AS
-SELECT c.*
-FROM Course c
-    JOIN Student_Instructor_Course_Take sict
-    ON sict.course_id=c.course_id
-WHERE sict.student_id=@StudentID AND sict.semester_code=@Current_semester_code
+    AS
+
+        DECLARE @sem_start_date DATE;
+            SELECT @sem_start_date=start_date FROM Semester
+                WHERE semester_code=@Current_semester_code;
+
+            WITH previous_semesters AS
+            (
+                SELECT * FROM Semester
+                WHERE start_date < @sem_start_date
+            ),
+
+            previous_semesters_courses AS (
+                SELECT cs.*
+                FROM previous_semesters ps
+                INNER JOIN Course_Semester cs
+                ON ps.semester_code=cs.semester_code
+            ),
+            unattended_courses_ids AS (
+                SELECT psc.course_id
+                FROM previous_semesters_courses psc
+                EXCEPT (
+                    SELECT sic.course_id
+                    FROM Student_Instructor_Course_Take sic
+                    WHERE sic.student_id=@StudentID
+                )
+            )
+
+        (SELECT c.*
+        FROM Course c
+            JOIN Student_Instructor_Course_Take sict
+            ON sict.course_id=c.course_id
+        WHERE sict.student_id=@StudentID AND
+            (sict.grade IN ('F','FF','FA') AND dbo.FN_StudentCheckSMEligiability(c.course_id,@StudentID)=0) AND
+            c.major=(SELECT major FROM Student WHERE student_id=@StudentID)
+        UNION
+        SELECT c.* FROM Course c
+            INNER JOIN unattended_courses_ids
+                ON c.course_id=unattended_courses_ids.course_id
+            WHERE c.major=(SELECT major FROM Student WHERE student_id=@StudentID))
+
     GO
 
 
@@ -817,11 +853,6 @@ CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
     where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
  GO
 
-
- 
-
-
-
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
@@ -923,13 +954,13 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     GO
  
 CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
-    RETURNS DATETIME 
+    RETURNS DATETIME
     AS
     BEGIN
             DECLARE @output_datetime DATETIME
-            SELECT TOP 1 @output_datetime=I.deadline 
+            SELECT TOP 1 @output_datetime=I.deadline
             FROM Payment P
-            INNER JOIN Installment I 
+            INNER JOIN Installment I
             ON P.payment_id = I.payment_id
             WHERE P.student_id = @StudentID AND I.status='notPaid'
             ORDER BY P.deadline ,I.deadline
@@ -938,14 +969,14 @@ CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
-    @Advisor_ID INT 
+    @Advisor_ID INT
     AS
         SELECT R.*
         FROM Request R
-        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
-        AND R.student_id IS NOT NULL        
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID
+        AND R.student_id IS NOT NULL
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @StudentID INT,
     @mobile_number VARCHAR(40)
