@@ -589,8 +589,10 @@ CREATE OR ALTER PROCEDURE Procedures_ChooseInstructor
                 WHERE IC.course_id = @Course_ID AND IC.instructor_id = @Instructor_ID
                )
          BEGIN
-                INSERT INTO Student_Instructor_Course_Take (student_id,course_iD,instructor_id,semester_code)
-                VALUES (@Student_ID,@Course_ID,@Instructor_ID,@current_semester_code);
+                UPDATE Student_Instructor_Course_Take
+                SET instructor_id = @Instructor_ID
+                WHERE semester_code=@current_semester_code AND student_id=@Student_ID AND course_id = @Course_ID
+                
          END
          ELSE
          BEGIN
