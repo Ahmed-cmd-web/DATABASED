@@ -768,6 +768,14 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
         return (select * from Request where advisor_id =@advisor_id)
     GO
 
+
+CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
+    @StudentID INT,
+    @mobile_number VARCHAR(40)
+    AS
+        INSERT INTO Student_Phone VALUES (@StudentID,@mobile_number);
+    GO
+
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
     @AdvisorID INT,
     @major VARCHAR(40)
@@ -862,3 +870,4 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
                     WHERE student_id=@student_id
             END
     GO
+
