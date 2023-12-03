@@ -159,8 +159,8 @@ CREATE TABLE Request
     status VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
     credit_hours INT,
     student_id INT NOT NULL,
-    advisor_id INT ,
-    course_id INT ,
+    advisor_id INT,
+    course_id INT,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
@@ -658,9 +658,9 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
             SET expected_grad_date=@expected_grad_date
             WHERE student_id=@studentID
         ELSE
-            PRINT 'expected semester or student does not exist'    
+            PRINT 'expected semester or student does not exist'
     GO
-            
+
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
@@ -673,13 +673,13 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
-    @InstructorId int, 
+    @InstructorId int,
     @courseId int,
     @slotID int
     AS
         IF EXISTS (SELECT * FROM Instructor_Course WHERE course_id = @courseId AND instructor_id = @InstructorId )
             BEGIN
-                UPDATE Slot 
+                UPDATE Slot
                 SET instructor_id = @InstructorId , course_id = @courseId
                 WHERE slot_id = @slotID
             END
@@ -688,12 +688,12 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
             BEGIN
                 INSERT INTO Instructor_Course(course_id,instructor_id)
                 VALUES(@courseId,@InstructorId)
-                UPDATE Slot 
+                UPDATE Slot
                 SET instructor_id = @InstructorId , course_id = @courseId
                 WHERE slot_id = @slotID
-            END            
+            END
 
-    GO      
+    GO
 
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
@@ -764,17 +764,17 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
-    @InstructorId int, 
+    @InstructorId int,
     @courseId int,
     @slotID int
-    AS  
-       
+    AS
+
             BEGIN
-                UPDATE Slot 
+                UPDATE Slot
                 SET instructor_id = @InstructorId , course_id = @courseId
                 WHERE slot_id = @slotID
-            END 
-    GO     
+            END
+    GO
 
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
@@ -870,22 +870,39 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents
             ON sict.course_id = c.course_id
         WHERE s.advisor_id = @AdvisorID AND s.major = @major;
     GO
+
+
 CREATE OR ALTER FUNCTION FN_SemsterAvailableCourses (@semster_code varchar (40))
     RETURNS Table
-    as
-    return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+    AS
+        return (SELECT s.* from Course s inner join Course_Semester c on (s.course_id=c.course_id) where c.semester_code=@semster_code)
+    GO
 
-GO
+
 CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40))
     RETURNS BIT
-    BEGIN
-     DECLARE @OUTPUT BIT
-     if exists (select * from Student where student_id = @Student_id and password = @password)
-     set @OUTPUT = '1'
-     ELSE
-     set @OUTPUT = '0'
-    RETURN @OUTPUT
-    END
+    AS
+        BEGIN
+        DECLARE @OUTPUT BIT
+        if exists (select * from Student where student_id = @Student_id and password = @password)
+        set @OUTPUT = '1'
+        ELSE
+        set @OUTPUT = '0'
+        RETURN @OUTPUT
+        END
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_StudentSendingCHRequest
+    @StudentID INT,
+    @credit_hours INT,
+    @type VARCHAR(40),
+    @comment VARCHAR(40)
+    AS
+        INSERT INTO Request
+            (type,comment,credit_hours,student_id,advisor_id)
+        VALUES
+            (@type,@comment,@credit_hours,@StudentID,(SELECT advisor_id FROM Student WHERE student_id=@StudentID))
     GO
 
 
@@ -900,7 +917,7 @@ CREATE OR ALTER PROCEDURE Procedures_StudentSendingCourseRequest
         FROM Student
         WHERE student_id = @StudentID),@courseID);
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
     @RequestID INT,
     @current_semester_code VARCHAR(40)
@@ -952,4 +969,3 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
                     WHERE student_id=@student_id
             END
     GO
-
