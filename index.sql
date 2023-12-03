@@ -211,7 +211,7 @@ CREATE TABLE Installment
     CONSTRAINT payment_id_FK_Installment             FOREIGN KEY (payment_id) REFERENCES Payment ON UPDATE CASCADE ON DELETE CASCADE,
 );
     GO
-   
+
 CREATE OR ALTER PROCEDURE DROPALLKEYCONSTRAINTS
 AS
 DECLARE @command VARCHAR(255)
@@ -713,7 +713,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
                 WHERE slot_id = @slotID
             END
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
     @Instructor_Id int,
     @student_ID int,
@@ -752,7 +752,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
             SELECT ac.course_id
             FROM AllCourses_InStudentGradPlan ac
             LEFT JOIN TakenCourses tc
-            ON ac.course_id = tc.course_id 
+            ON ac.course_id = tc.course_id
             WHERE tc.grade IN ('F','FF','FA') OR tc.grade IS NULL
         )
         SELECT
@@ -767,7 +767,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         ON mc.course_id = c.course_id;
     GO
 
-CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse 
+CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
     @StudentID INT,
     @Current_semester_code VARCHAR(40)
     AS
@@ -779,7 +779,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
         WITH Taken_Courses AS(
             SELECT SICT.course_id
             FROM Student_Instructor_Course_Take SICT
-            WHERE SICT.student_id = @StudentID         
+            WHERE SICT.student_id = @StudentID
         ),
         Courses_in_his_major AS(
             SELECT C.course_id ,S.semester as student_sem_num , C.semester course_sem_num
@@ -789,8 +789,8 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
         Courses_in_his_major_ODD AS(
             SELECT CM.course_id
             FROM Courses_in_his_major CM INNER JOIN Course_Semester CS ON CM.course_id = CS.course_id
-            WHERE CM.course_sem_num%2 <> 0 AND NOT EXISTS (SELECT * FROM Taken_Courses) 
-            AND CS.semester_code <> @Current_semester_code 
+            WHERE CM.course_sem_num%2 <> 0 AND NOT EXISTS (SELECT * FROM Taken_Courses)
+            AND CS.semester_code <> @Current_semester_code
         ),
         Courses_in_his_major_EVEN AS(
             SELECT CM.course_id
@@ -798,7 +798,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
             WHERE CM.course_sem_num%2 = 0 AND NOT EXISTS (SELECT * FROM Taken_Courses)
             AND CS.semester_code <> @Current_semester_code
         )
-      
+
             SELECT C.*
             ,--Optional_Courses=
             CASE
@@ -809,7 +809,7 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
                         SELECT course_id
                         FROM PreqCourse_course PC
                         WHERE PC.prerequisite_course_id IN (SELECT * FROM Taken_Courses)
-                            AND PC.course_id = CMO.course_id 
+                            AND PC.course_id = CMO.course_id
                     )
                     )
             WHEN @is_studentSemester_odd = 0
@@ -823,21 +823,21 @@ CREATE OR ALTER PROCEDURE Procedures_ViewOptionalCourse
                     )
                     )
             ELSE 'student not found'
-            END  
-            FROM Courses_in_his_major CM 
-            INNER JOIN Course C 
+            END
+            FROM Courses_in_his_major CM
+            INNER JOIN Course C
             ON CM.course_id=C.course_id;
     GO
 
 CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
     @student_id int
  AS
-    UPDATE s  
-         set s.financial_status = 0  
+    UPDATE s
+         set s.financial_status = 0
          from Payment p inner join Installment i on(i.payment_id = p.payment_id)
               inner join Student s on (s.student_id = p.student_id)
-            
-    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
+
+    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id
     GO
 
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
@@ -934,7 +934,7 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     AS
         return (select * from Request where advisor_id =@advisor_id)
     GO
- 
+
 CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
     RETURNS DATETIME
     AS
@@ -1073,10 +1073,58 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
                     WHERE student_id=@student_id
             END
     GO
-    
+
 CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
     @RequestID int,
     @Current_semester_code varchar (40)
     AS
-    GO
+        DECLARE @student_id INT;
+        DECLARE @student_assigned_hours INT;
+        DECLARE @requested_hours INT;
+        DECLARE @is_student_eligible BIT;
 
+        -- get studentID
+        SELECT @student_id=student_id FROM Request
+                WHERE request_id=@RequestID AND status='pending'
+
+        -- get current assigned hours of the student
+        SELECT @student_assigned_hours=assigned_hours FROM Student
+                WHERE student_id=@student_id
+        -- get requested hours
+        SELECT @requested_hours=credit_hours FROM Request
+                WHERE request_id=@RequestID
+
+        -- check if the student is eligible to take the requested hours
+        SET @is_student_eligible=IIF(@student_assigned_hours+@requested_hours>34,0,1)
+
+        IF @is_student_eligible=0 AND @requested_hours<=3
+            BEGIN
+                UPDATE Request
+                SET status='rejected'
+                WHERE request_id=@RequestID
+            END
+        ELSE
+            BEGIN
+                UPDATE Request
+                SET status='accepted'
+                WHERE request_id=@RequestID
+
+                UPDATE Student
+                    SET assigned_hours=@student_assigned_hours + @requested_hours
+                    WHERE student_id=@student_id
+
+                -- add 1000 for each requested hour to the students upcoming payment
+                UPDATE Payment
+                    SET amount=amount+@requested_hours*1000
+                    WHERE student_id=@student_id AND semester_code=@Current_semester_code
+                -- add 1000 for the first upcoming installment
+                UPDATE Installment
+                    SET amount=amount+1000
+                    WHERE payment_id=(SELECT payment_id FROM Payment
+                                        WHERE student_id=@student_id AND semester_code=@Current_semester_code)
+                                        AND start_date=(SELECT MIN(start_date) FROM Installment
+                                                            WHERE payment_id=(SELECT payment_id FROM Payment
+                                                                                WHERE student_id=@student_id AND semester_code=@Current_semester_code)
+                                                                                AND start_date>GETDATE())
+            END
+    GO
