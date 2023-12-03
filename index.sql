@@ -119,7 +119,7 @@ CREATE TABLE Slot
 (
     slot_id INT PRIMARY KEY IDENTITY,
     day VARCHAR(40) NOT NULL,
-    time INT NOT NULL CHECK(time IN (1,2,3,4,5)),
+    time VARCHAR(40) NOT NULL CHECK(time IN ('First','Second','Third','Fourth','Fifth')),
     location VARCHAR(40) NOT NULL,
     course_id INT,
     instructor_id INT,
@@ -158,9 +158,9 @@ CREATE TABLE Request
     comment VARCHAR(40),
     status VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
     credit_hours INT,
-    student_id INT NOT NULL,
-    advisor_id INT,
-    course_id INT,
+    student_id INT ,
+    advisor_id INT ,
+    course_id INT ,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
@@ -784,6 +784,21 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
+    @student_id int
+ AS
+    UPDATE s  
+          set s.financial_status= 0  
+          from Payment p inner join Installment i on(i.payment_id = p.payment_id)
+               inner join Student s on (s.student_id = p.student_id)
+            
+    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
+ GO
+
+
+
+
+
 
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
@@ -883,12 +898,35 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
         return (select * from Request where advisor_id =@advisor_id)
     GO
 
+CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
+    RETURNS DATETIME 
+    AS
+    BEGIN
+            DECLARE @output_datetime DATETIME
+            SELECT TOP 1 @output_datetime=I.deadline 
+            FROM Payment P
+            INNER JOIN Installment I 
+            ON P.payment_id = I.payment_id
+            WHERE P.student_id = @StudentID AND I.status='notPaid'
+            ORDER BY P.deadline ,I.deadline
+        RETURN @output_datetime
+    END
 
+CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
+    @Advisor_ID INT 
+    AS
+        SELECT R.*
+        FROM Request R
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
+        AND R.student_id IS NOT NULL        
+    GO
+    
 CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @StudentID INT,
     @mobile_number VARCHAR(40)
     AS
         INSERT INTO Student_Phone VALUES (@StudentID,@mobile_number);
+
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewAssignedStudents

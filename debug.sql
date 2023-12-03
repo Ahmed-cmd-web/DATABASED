@@ -1,8 +1,8 @@
-Use Advising_Team_119
+--Use Advising_Team_119
 
-EXEC DropAllTables
+--EXEC DropAllTables
 
-EXEC CreateAllTables
+--EXEC CreateAllTables
 
 
 INSERT INTO Advisor (name, email, office, password)
@@ -82,7 +82,7 @@ INSERT INTO Course_Semester VALUES  (1, 'Winter 2018 à W18'),
 
 
 INSERT INTO Slot (day, time, location, course_id, instructor_id)
-VALUES ('Monday', 1, 'Room 101', 1, 1);
+VALUES ('Monday', 'First', 'Room 101', 1, 1);
 
 INSERT INTO Graduation_plan (semester_code, semester_credit_hours, expected_grad_date, advisor_id, student_id)
 VALUES ('Winter 2018 à W18', 22, '2025-1-1', 1, 1);
@@ -108,10 +108,13 @@ INSERT INTO Exam_Student (exam_id, student_id, course_id)
 VALUES (1, 1, 1);
 
 INSERT INTO Payment (amount, deadline, n_installments, status, fund_percentage, student_id, semester_code, start_date)
-VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à W18', '2018-09-01 10:34:23.55');
+VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à W18', '2018-09-01 10:34:23.55'),
+(1000.00, '2021-11-29 10:34:23.55', 2, 'notPaid', 50.00, 1, 'Winter 2021 à W21', '2021-10-01 6:00:23.55');
+
 
 INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2018-09-01 10:34:23.55'),
 								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22'),
-								(1, '2018-06-01 10:34:23.55', 500.00, 'notPaid', '2018-10-01 10:43:20.22')
-
+								(1, '2018-06-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22'),
+								(2, '2021-12-27 4:31:23.55', 500.00, 'notPaid', '2021-11-29 2:34:23.55'),
+								(2, '2022-2-17 6:04:23.55', 500.00, 'notPaid', '2022-1-1 7:03:20.22')
 
