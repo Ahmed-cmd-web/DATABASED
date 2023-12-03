@@ -771,11 +771,11 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
     AS
         RETURN
-        (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name AS Instructor_name,Course.name AS Course_name
+        (select Slot.slot_id,Slot.location,Slot.time,slot.day,Course.name AS Course_name,Instructor.name AS Instructor_name
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
-        where Instructor.instructor_id = @Instructor_id
+        where Instructor.instructor_id = @Instructor_id and Course.course_id = @CourseID
         );
     GO
 
@@ -840,8 +840,8 @@ CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
     RETURNS TABLE
         AS
            RETURN
-           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Student.advisor_id,Graduation_plan.plan_id,Graduation_plan.semester_credit_hours,Graduation_plan.expected_grad_date,Course.course_id,
-           Course.name,Graduation_Plan.semester_code
+           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Graduation_plan.plan_id,Course.course_id,Course.name,Graduation_Plan.semester_code,Graduation_plan.expected_grad_date,Graduation_plan.semester_credit_hours,
+           Student.advisor_id
            from Student
            inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
            inner join Gradplan_Course on Gradplan_Course.plan_id = Graduation_plan.plan_id
