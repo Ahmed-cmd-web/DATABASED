@@ -6,10 +6,13 @@ EXEC CreateAllTables
 
 
 INSERT INTO Advisor (name, email, office, password)
-VALUES ('John Doe', 'johndoe@example.com', 'Office 1', 'password123');
+VALUES ('John Doe', 'johndoe@example.com', 'Office 1', 'password123'),
+		  ('Jane Smith', 'janesmith@example.com', 'Office 2', 'password456');
 
 INSERT INTO Student (f_name, l_name, gpa, faculty, email, major, password, semester, acquired_hours, assigned_hours, advisor_id)
-VALUES ('Marc', 'Bass', 3.5, 'Engineering', 'janedoe@example.com', 'MET', 'password123', 1, 30, 30, 1);
+VALUES ('Marc', 'Bass', 3.5, 'Engineering', 'janedoe@example.com', 'MET', 'password123', 1, 30, 30, 1),
+		  ('John', 'Doe', 1.5, 'Applied ARTS', 'johndoe@example.com', 'Computer Science', 'pass456', 1, 30, 13, 1),
+		  ('Jane', 'Smith', 3.8, 'Science', 'janesmith@example.com', 'Biology', 'password456', 2, 60, 60, 2);
 
 INSERT INTO Course VALUES ('Database 1', 'MET', 1, 6, 5),
 						  ('Database 2', 'MET', 1, 6, 6),
@@ -48,7 +51,9 @@ INSERT INTO Student_Instructor_Course_Take VALUES (1, 1, 1, 'Winter 2018 à W18'
 												  (1, 4, 1, 'Spring 2019 à S19', 'Normal', 'A'),
 												  (1, 5, 1, 'Winter 2021 à W21', 'Normal', 'B'),
 												  (1, 6, 1, 'Spring 2022 à S22', 'Normal', 'D'),
-												  (1, 7, 1, 'Winter 2024 à W24', 'Normal', NULL);
+												  (1, 7, 1, 'Winter 2024 à W24', 'Normal', NULL),
+												  (2, 3, 1, 'Fall 2018 à W18', 'Normal', NULL),
+												  (2, 8, 1, 'Summer 2018 à W18', 'Normal', NULL);
 
 
 INSERT INTO Semester (semester_code, start_date, end_date) VALUES ('Winter 2018 à W18',   '2018-09-01', '2019-1-1'),
@@ -108,3 +113,5 @@ VALUES (1000.00, '2018-01-01 10:34:23.55', 2, 'Paid', 50.00, 1, 'Winter 2018 à 
 INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2018-09-01 10:34:23.55'),
 								(1, '2018-05-01 10:34:23.55', 500.00, 'Paid', '2018-10-01 10:43:20.22'),
 								(1, '2018-06-01 10:34:23.55', 500.00, 'notPaid', '2018-10-01 10:43:20.22')
+
+
