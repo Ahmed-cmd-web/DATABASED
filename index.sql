@@ -119,7 +119,7 @@ CREATE TABLE Slot
 (
     slot_id INT PRIMARY KEY IDENTITY,
     day VARCHAR(40) NOT NULL,
-    time INT NOT NULL CHECK(time IN (1,2,3,4,5)),
+    time VARCHAR(40) NOT NULL CHECK(time IN ('First','Second','Third','Fourth','Fifth')),
     location VARCHAR(40) NOT NULL,
     course_id INT,
     instructor_id INT,
@@ -158,9 +158,9 @@ CREATE TABLE Request
     comment VARCHAR(40),
     status VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
     credit_hours INT,
-    student_id INT NOT NULL,
-    advisor_id INT,
-    course_id INT,
+    student_id INT ,
+    advisor_id INT ,
+    course_id INT ,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
@@ -851,6 +851,16 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     GO
 
 
+
+CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
+    @Advisor_ID INT 
+    AS
+        SELECT R.*
+        FROM Request R
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
+        AND R.student_id IS NOT NULL        
+    GO
+    
 CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @StudentID INT,
     @mobile_number VARCHAR(40)

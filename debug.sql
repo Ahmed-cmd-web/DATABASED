@@ -1,8 +1,8 @@
-Use Advising_Team_119
+--Use Advising_Team_119
 
-EXEC DropAllTables
+--EXEC DropAllTables
 
-EXEC CreateAllTables
+--EXEC CreateAllTables
 
 
 INSERT INTO Advisor (name, email, office, password)
@@ -82,7 +82,7 @@ INSERT INTO Course_Semester VALUES  (1, 'Winter 2018 à W18'),
 
 
 INSERT INTO Slot (day, time, location, course_id, instructor_id)
-VALUES ('Monday', 1, 'Room 101', 1, 1);
+VALUES ('Monday', 'First', 'Room 101', 1, 1);
 
 INSERT INTO Graduation_plan (semester_code, semester_credit_hours, expected_grad_date, advisor_id, student_id)
 VALUES ('Winter 2018 à W18', 22, '2025-1-1', 1, 1);
