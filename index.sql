@@ -1196,3 +1196,13 @@ EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='
 
 EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
 EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.s
+
+
+
+
+
+
+
+EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=2,@Course_ID=3  --2.3.oo
+EXEC Procedures_ViewMS @Student_ID=1 --2.3.nn
+EXEC Procedures_ViewOptionalCourse  @Student_ID=1,@Current_Semester_Code='W23' -- 2.3.mm
