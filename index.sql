@@ -944,7 +944,7 @@ CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
             RETURN @output_datetime
         END
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
     @Advisor_ID INT
     AS
@@ -1113,7 +1113,12 @@ CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
         -- get requested hours
         SELECT @requested_hours=credit_hours FROM Request
                 WHERE request_id=@RequestID
-
+        -- check if requested ours is null
+        IF @requested_hours IS NULL
+            BEGIN
+                PRINT 'This is not a credit hours request'
+                RETURN
+            END
         -- check if the student is eligible to take the requested hours
         SET @is_student_eligible=IIF(@student_assigned_hours+@requested_hours>34,0,1)
 
