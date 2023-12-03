@@ -659,17 +659,7 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
             WHERE student_id=@studentID
         ELSE
             PRINT 'expected semester or student does not exist'
-    GO
 
-CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
-    RETURNS Table
-    AS
-        RETURN
-        (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name AS Instructor_name,Course.name AS Course_name
-        from Slot
-        inner join Instructor on Slot.instructor_id = Instructor.instructor_id
-        inner join Course on Slot.course_id = Course.course_id
-        );
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
