@@ -1203,5 +1203,5 @@ EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --
 
 
 EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=1,@Course_ID=1,@current_semester_code='W23'  --2.3.oo
-EXEC Procedures_ViewMS @Student_ID=1 --2.3.nn
+EXEC Procedures_ViewMS @StudentID=1 --2.3.nn
 EXEC Procedures_ViewOptionalCourse  @StudentID=1,@Current_Semester_Code='W23' -- 2.3.mm
