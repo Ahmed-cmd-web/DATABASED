@@ -159,11 +159,12 @@ CREATE TABLE Request
     status VARCHAR(40) DEFAULT 'pending' CHECK (status IN ('pending','accepted','rejected')),
     credit_hours INT,
     student_id INT NOT NULL,
-    advisor_id INT NOT NULL,
+    advisor_id INT ,
     course_id INT ,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
     CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
+    CHECK ( (credit_hours IS NULL AND course_id IS NOT NULL) OR (credit_hours IS NOT NULL AND course_id IS NULL))    -- NOTE: This is a XOR constraint (either credit_hours or course_id is NULL)
 );
 
 CREATE TABLE MakeUp_Exam
@@ -798,6 +799,18 @@ CREATE OR ALTER FUNCTION FN_StudentLogin (@Student_id int,@password varchar (40)
     GO
 
 
+CREATE OR ALTER PROCEDURE Procedures_StudentSendingCourseRequest
+    @StudentID INT,
+    @courseID INT,
+    @type VARCHAR(40),
+    @comment VARCHAR(40)
+    AS
+        INSERT INTO Request (type,comment,student_id,advisor_id,course_id)
+        VALUES (@type,@comment,@StudentID,(SELECT advisor_id
+        FROM Student
+        WHERE student_id = @StudentID),@courseID);
+    GO
+    
 CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
     @RequestID INT,
     @current_semester_code VARCHAR(40)
