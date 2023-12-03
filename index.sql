@@ -63,7 +63,7 @@ CREATE TABLE PreqCourse_course
     course_id INT ,
     CONSTRAINT prerequisite_course_id_course_id_PK_PreqCourse_course PRIMARY KEY (prerequisite_course_id,course_id),
     CONSTRAINT prerequisite_course_id_FK_PreqCourse_course           FOREIGN KEY (prerequisite_course_id) REFERENCES Course,
-    CONSTRAINT course_id_FK_PreqCourse_course                        FOREIGN KEY (course_id)              REFERENCES Course
+    CONSTRAINT course_id_FK_PreqCourse_course                        FOREIGN KEY (course_id)              REFERENCES Course,
 );
 
 CREATE TABLE Instructor
@@ -94,7 +94,7 @@ CREATE TABLE Student_Instructor_Course_Take
     grade VARCHAR(40) DEFAULT  NULL CHECK (grade     IN ('A','A+','A-','B','B+','B-',
                                                                               'C','C+','C-','D','D+','F','FF')),
     CONSTRAINT course_id_instructor_id_student_id              PRIMARY KEY (instructor_id,course_id,student_id),
-    CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course,
+    CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
     CONSTRAINT student_id_FK_Student_Instructor_Course_Take    FOREIGN KEY (student_id)    REFERENCES Student (student_id)
 );
@@ -160,10 +160,10 @@ CREATE TABLE Request
     credit_hours INT,
     student_id INT NOT NULL,
     advisor_id INT NOT NULL,
-    course_id INT NOT NULL,
+    course_id INT ,
     CONSTRAINT student_id_FK_Request FOREIGN KEY (student_id) REFERENCES Student (student_id),
     CONSTRAINT advisor_id_FK_Request FOREIGN KEY (advisor_id) REFERENCES Advisor,
-    CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course,
+    CONSTRAINT course_id_FK_Request  FOREIGN KEY (course_id)  REFERENCES Course ON DELETE SET NULL,
 );
 
 CREATE TABLE MakeUp_Exam
@@ -171,8 +171,8 @@ CREATE TABLE MakeUp_Exam
     exam_id INT PRIMARY KEY IDENTITY NOT NULL,
     date DATE NOT NULL,
     type VARCHAR(40) NOT NULL,
-    course_id INT NOT NULL,
-    CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course,
+    course_id INT ,
+    CONSTRAINT course_id_FK_MakeUp_Exam FOREIGN KEY (course_id) REFERENCES Course ON DELETE CASCADE,
 );
 
 CREATE TABLE Exam_Student
@@ -181,7 +181,7 @@ CREATE TABLE Exam_Student
     student_id INT NOT NULL,
     course_id INT NOT NULL,
     CONSTRAINT student_id_exam_id_PK_Exam_Student PRIMARY KEY (student_id,exam_id),
-    CONSTRAINT exam_id_FK_Exam_Student            FOREIGN KEY (exam_id)    REFERENCES MakeUp_Exam          ON UPDATE CASCADE,
+    CONSTRAINT exam_id_FK_Exam_Student            FOREIGN KEY (exam_id)    REFERENCES MakeUp_Exam          ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT student_id_FK_Exam_Student         FOREIGN KEY (student_id) REFERENCES Student (student_id) ON UPDATE CASCADE,
 );
 
@@ -601,12 +601,15 @@ CREATE OR ALTER PROCEDURE Procedures_StudentRegisterFirstMakeup
             INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
         GO
 
-CREATE OR ALTER VIEW all_Pending_Requests
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminDeleteCourse
+    @courseID INT
     AS
-        Select r.*, s.f_name +' '+ s.l_name as Student_name, a.name as Advisor_name
-        from Request r inner join Student s on (r.student_id = s.student_id)
-                    inner join Advisor a on (a.advisor_id = r.advisor_id)
-        where r.status='pending';
+        DELETE FROM PreqCourse_course WHERE course_id=@courseID OR prerequisite_course_id=@courseID
+        DELETE FROM Course WHERE course_id=@courseID
+        DELETE FROM Slot WHERE course_id=@courseID
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminIssueInstallment
