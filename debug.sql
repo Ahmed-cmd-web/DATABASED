@@ -115,6 +115,3 @@ INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2
 								(1, '2018-06-01 10:34:23.55', 500.00, 'notPaid', '2018-10-01 10:43:20.22')
 
 
-SELECT * from slot
-EXEC Procedures_AdminDeleteCourse @courseID=1
-SELECT * from slot
