@@ -80,7 +80,6 @@ INSERT INTO Course_Semester VALUES  (1, 'Winter 2018 à W18'),
 									(7, 'Winter 2024 à W24'), --math5
 									(8, 'Winter 2018 à W18');
 
-
 INSERT INTO Slot (day, time, location, course_id, instructor_id)
 VALUES ('Monday', 'First', 'Room 101', 1, 1);
 
