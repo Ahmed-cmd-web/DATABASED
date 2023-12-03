@@ -751,6 +751,21 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
         INNER JOIN Course c
         ON mc.course_id = c.course_id;
     GO
+CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
+    @student_id int
+ AS
+    UPDATE s  
+          set s.financial_status= 0  
+          from Payment p inner join Installment i on(i.payment_id = p.payment_id)
+               inner join Student s on (s.student_id = p.student_id)
+            
+    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
+ GO
+
+
+
+
+
 
 CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
     RETURNS Table
