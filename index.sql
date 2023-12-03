@@ -754,12 +754,12 @@ CREATE OR ALTER PROCEDURE Procedures_ViewMS
 CREATE OR ALTER PROCEDURE Procedure_AdminUpdateStudentStatus
     @student_id int
  AS
-    UPDATE s  
-          set s.financial_status= 0  
+    UPDATE s
+          set s.financial_status= 0
           from Payment p inner join Installment i on(i.payment_id = p.payment_id)
                inner join Student s on (s.student_id = p.student_id)
-            
-    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id             
+
+    where i.status='NotPaid' and i.deadline< CURRENT_TIMESTAMP  and p.student_id=@student_id
  GO
 
 
@@ -866,28 +866,28 @@ CREATE OR ALTER FUNCTION FN_Advisors_Requests (@advisor_id int)
     GO
 
 CREATE OR ALTER FUNCTION FN_StudentUpcoming_installment(@StudentID INT)
-    RETURNS DATETIME 
+    RETURNS DATETIME
     AS
-    BEGIN
-            DECLARE @output_datetime DATETIME
-            SELECT TOP 1 @output_datetime=I.deadline 
-            FROM Payment P
-            INNER JOIN Installment I 
-            ON P.payment_id = I.payment_id
-            WHERE P.student_id = @StudentID AND I.status='notPaid'
-            ORDER BY P.deadline ,I.deadline
-        RETURN @output_datetime
-    END
-
+        BEGIN
+                DECLARE @output_datetime DATETIME
+                SELECT TOP 1 @output_datetime=I.deadline
+                FROM Payment P
+                INNER JOIN Installment I
+                ON P.payment_id = I.payment_id
+                WHERE P.student_id = @StudentID AND I.status='notPaid'
+                ORDER BY P.deadline ,I.deadline
+            RETURN @output_datetime
+        END
+    GO
 CREATE OR ALTER PROCEDURE Procedures_AdvisorViewPendingRequests
-    @Advisor_ID INT 
+    @Advisor_ID INT
     AS
         SELECT R.*
         FROM Request R
-        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID 
-        AND R.student_id IS NOT NULL        
+        WHERE R.status = 'pending' AND R.advisor_id = @Advisor_ID
+        AND R.student_id IS NOT NULL
     GO
-    
+
 CREATE OR ALTER PROCEDURE Procedures_StudentaddMobile
     @StudentID INT,
     @mobile_number VARCHAR(40)
@@ -1005,5 +1005,30 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorApproveRejectCourseRequest
                 UPDATE Student
                     SET assigned_hours=@student_assigned_hours + @course_hours
                     WHERE student_id=@student_id
+            END
+    GO
+
+
+CREATE OR ALTER PROCEDURE Procedures_StudentRegisterSecondMakeup
+    @StudentID INT,
+    @courseID INT,
+    @Student_Current_Semester VARCHAR(40)
+    AS
+      IF dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID)=1
+            BEGIN
+                DECLARE @sem_start_date DATE;
+                SELECT @sem_start_date=start_date FROM Semester
+                    WHERE semester_code=@Student_Current_Semester
+
+                DECLARE @exam INT;
+                SELECT @exam=ME.exam_id FROM MakeUp_Exam ME
+                    WHERE (ME.date >= @sem_start_date)
+                                AND ME.course_id=@courseID AND ME.type='Second_makeup'
+                INSERT INTO Exam_Student VALUES (@StudentID,@exam,@courseID)
+                INSERT INTO Student_Instructor_Course_Take VALUES (@StudentID,@courseID,NULL,@Student_Current_Semester,'First_makeup',NULL);
+            END
+        ELSE
+            BEGIN
+                PRINT 'Student is not eligible for second makeup exam'
             END
     GO
