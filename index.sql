@@ -453,7 +453,7 @@ AS
 CREATE OR ALTER VIEW Students_Courses_transcript
 AS
 
-    SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type, i.name AS INSTRUCTOR_NAME
+    SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type,x.grade, i.name AS INSTRUCTOR_NAME
     From Student_Instructor_Course_Take x
         inner JOIN Student s On (x.student_id= s.student_id)
         inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
@@ -1107,3 +1107,19 @@ AS
 
 GO
 
+
+Exec CreateAllTables --2.1.2 
+Exec DropAllTables   --2.1.3
+Exec clearAllTables  --2.1.4 
+
+Select * from view_Students --2.2.a
+Select * from view_Course_prerequisites --2.2.b
+Select * from Instructors_AssignedCourses --2.2.c
+Select * from Student_Payment --2.2.d
+Select * from Courses_Slots_Instructor --2.2.e
+Select * from Courses_MakeupExams --2.2.f
+Select * from Students_Courses_transcript --2.2.g
+Select * from Semster_offered_Courses --2.2.h
+Select * from Advisors_Graduation_Plan --2.2.i
+
+Exec Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m'
