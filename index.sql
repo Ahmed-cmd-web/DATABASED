@@ -121,8 +121,8 @@ CREATE TABLE Slot
     day VARCHAR(40) NOT NULL,
     time INT NOT NULL CHECK(time IN (1,2,3,4,5)),
     location VARCHAR(40) NOT NULL,
-    course_id INT NOT NULL,
-    instructor_id INT NOT NULL,
+    course_id INT,
+    instructor_id INT,
     CONSTRAINT course_id_FK_Slot     FOREIGN KEY (course_id)     REFERENCES Course     ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Slot FOREIGN KEY (instructor_id) REFERENCES Instructor ON UPDATE CASCADE ON DELETE CASCADE,
 );
@@ -658,7 +658,63 @@ CREATE OR ALTER PROCEDURE Procedures_AdvisorUpdateGP
             SET expected_grad_date=@expected_grad_date
             WHERE student_id=@studentID
         ELSE
-            PRINT 'expected semester or student doesnot exist'
+            PRINT 'expected semester or student does not exist'    
+    GO
+            
+CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
+    RETURNS Table
+    AS
+        RETURN
+        (select Slot.time,Slot.location,slot.day,Slot.slot_id,Instructor.name AS Instructor_name,Course.name AS Course_name
+        from Slot
+        inner join Instructor on Slot.instructor_id = Instructor.instructor_id
+        inner join Course on Slot.course_id = Course.course_id
+        );
+    GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
+    @InstructorId int, 
+    @courseId int,
+    @slotID int
+    AS
+        IF EXISTS (SELECT * FROM Instructor_Course WHERE course_id = @courseId AND instructor_id = @InstructorId )
+            BEGIN
+                UPDATE Slot 
+                SET instructor_id = @InstructorId , course_id = @courseId
+                WHERE slot_id = @slotID
+            END
+
+        ELSE
+            BEGIN
+                INSERT INTO Instructor_Course(course_id,instructor_id)
+                VALUES(@courseId,@InstructorId)
+                UPDATE Slot 
+                SET instructor_id = @InstructorId , course_id = @courseId
+                WHERE slot_id = @slotID
+            END            
+
+    GO      
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
+    @Instructor_Id int,
+    @student_ID int,
+    @course_ID int,
+    @semester_code varchar (40)
+    AS
+        INSERT INTO Student_Instructor_Course_Take(student_id, course_id, instructor_id, semester_code)
+        VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
+    GO
+
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
+    @studentID INT,
+    @advisorID INT
+    AS
+        UPDATE Student
+            SET advisor_id=@advisorID
+            WHERE student_id=@studentID
     GO
 
 
@@ -706,6 +762,32 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         inner join Course on Slot.course_id = Course.course_id
         );
     GO
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkInstructor
+    @InstructorId int, 
+    @courseId int,
+    @slotID int
+    AS  
+       
+            BEGIN
+                UPDATE Slot 
+                SET instructor_id = @InstructorId , course_id = @courseId
+                WHERE slot_id = @slotID
+            END 
+    GO     
+
+
+CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudent
+    @Instructor_Id int,
+    @student_ID int,
+    @course_ID int,
+    @semester_code varchar (40)
+    AS
+        INSERT INTO Student_Instructor_Course_Take(student_id, course_id, instructor_id, semester_code)
+        VALUES(@student_ID, @course_ID, @Instructor_Id, @semester_code)
+    GO
+
+
 
 CREATE OR ALTER PROCEDURE Procedures_AdminLinkStudentToAdvisor
     @studentID INT,
