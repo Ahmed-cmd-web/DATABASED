@@ -3,9 +3,9 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-3
 
---CREATE DATABASE Advising_Team_119;
+CREATE DATABASE Advising_Team_119;
 
---USE Advising_Team_119;
+USE Advising_Team_119;
     GO
 CREATE OR ALTER PROCEDURE CreateAllTables
 AS
@@ -407,12 +407,12 @@ FROM Student
     GO
 
 CREATE OR ALTER VIEW Advisors_Graduation_Plan
-    AS
-        Select g.*,
-            a.name AS Advisor_name
-        FROM Graduation_plan g
-            FULL OUTER JOIN Advisor a
-            ON g.advisor_id = a.Advisor_id
+As
+    Select g.*,
+        a.name AS Advisor_name
+    FROM Graduation_plan g
+        INNER        JOIN Advisor a
+        ON g.advisor_id = a.Advisor_id
     GO
 
 CREATE OR ALTER PROCEDURE Procedures_AdminListAdvisors
@@ -449,7 +449,7 @@ AS
 CREATE OR ALTER VIEW Students_Courses_transcript
 AS
 
-    SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type, i.name AS INSTRUCTOR_NAME
+    SELECT x.student_id, s.f_name+' '+s.l_name as Student_Name, x.course_id, c.name AS Course_NAME, s.semester, x.exam_type,x.grade, i.name AS INSTRUCTOR_NAME
     From Student_Instructor_Course_Take x
         inner JOIN Student s On (x.student_id= s.student_id)
         inner JOIN Instructor i on (x.instructor_id = i.instructor_id)
@@ -652,7 +652,7 @@ SELECT @installment_amount=amount/n_installments, @start_date=start_date, @deadl
 FROM Payment
 WHERE payment_id=@paymentID
 
-WHILE (@start_date<=@deadline)
+WHILE (@start_date<@deadline)
             BEGIN
     INSERT INTO Installment
     VALUES
@@ -843,7 +843,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
-        where Instructor.instructor_id = @Instructor_id and Course.course_id = @CourseID
+        where Instructor.instructor_id = @InstructorID and Course.course_id = @CourseID
         );
     GO
 
@@ -1153,3 +1153,91 @@ CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
                                                                                 AND start_date>GETDATE())
             END
     GO
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+EXEC CreateAllTables --2.1.2 
+EXEC DropAllTables   --2.1.3
+EXEC clearAllTables  --2.1.4 
+
+SELECT * FROM view_Students --2.2.a
+SELECT * FROM view_Course_prerequisites --2.2.b
+SELECT * FROM Instructors_AssignedCourses --2.2.c
+SELECT * FROM Student_Payment --2.2.d
+SELECT * FROM Courses_Slots_Instructor --2.2.e
+SELECT * FROM Courses_MakeupExams --2.2.f
+SELECT * FROM Students_Courses_transcript --2.2.g
+SELECT * FROM Semster_offered_Courses --2.2.h
+SELECT * FROM Advisors_Graduation_Plan --2.2.i
+
+DECLARE @output1 INT --2.3.a
+EXEC Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m',@email='lol',@major='MET',@Semester =1 ,@id = @ID OUTPUT 
+PRINT (@output1)
+
+DECLARE @output2 INT --2.3.b
+EXEC Procedures_AdvisorRegistration @advisor_name='john', @password='wordpass',@email='lol',@office = ':D' ,@id = @ID OUTPUT 
+PRINT (@output2)
+
+EXEC Procedures_AdminListStudents --2.3.c
+EXEC Procedures_AdminListAdvisors --2.3.d
+EXEC AdminListStudentsWithAdvisors --2.3.e
+EXEC AdminAddingSemester @start_date ='6-1-9999', @end_date= '7-1-9999', @semester_code= 'reymysterio' --2.3.f
+EXEC Procedures_AdminAddingCourse @major='MET',@semester=1,@credit_hours=99 ,@course_name= 'ladder', @offered= 1 --2.3.g
+EXEC Procedures_AdminLinkInstructor @InstructorId = 1, @courseId=1,@slotID=1 --2.3.h
+EXEC Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =4 ,@course_ID = 9,@semester_code= 'ladder' --2.3.i
+EXEC Procedures_AdminLinkStudentToAdvisor @studentID = 4, @advisorID=3 --2.3.j
+EXEC Procedures_AdminAddExam @Type = 'normal',@date= '1-2-2021', @courseID= 9 --2.3.k
+EXEC Procedures_AdminIssueInstallment @paymentID =1 --2.3.l
+EXEC Procedures_AdminDeleteCourse @courseID =4 --2.3.m
+EXEC Procedure_AdminUpdateStudentStatus @student_id = 1 --2.3.n
+
+SELECT * FROM all_Pending_Requests --2.3.o
+
+EXEC Procedures_AdminDeleteSlots @current_semester='W23' --2.3.p
+
+DECLARE @output3 BIT --2.3.q
+SET @output3 = dbo.FN_AdvisorLogin(1,'password1')
+PRINT (@output3)
+
+EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@semester_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
+EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
+EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.t
+
+EXEC Procedures_AdvisorDeleteFromGP @student_id=1, @semester_code='W23' , @course_ID=1 --2.3.u
+
+SELECT * FROM dbo.FN_Advisors_Requests (2) --2.3.v
+
+EXEC Procedures_AdvisorApproveRejectCHRequest @RequestID=1, @Current_semester_code='W23' --2.3.w
+select * from Student
+EXEC Procedures_AdvisorViewAssignedStudents @AdvisorID=1 ,@major='MET'  --2.3.x
+EXEC Procedures_AdvisorApproveRejectCourseRequest @RequestID=1, @current_semester_code='W23' --2.3.y
+EXEC Procedures_AdvisorViewPendingRequests @Advisor_ID =1 --2.3.z
+
+DECLARE @output4 BIT --2.3.aa
+SET @output4 = dbo.FN_StudentLogin(1,'password')
+PRINT (@output4)
+
+EXEC Procedures_StudentaddMobile @StudentID=1, @mobile_number='123-456-789' --2.3.bb
+
+SELECT * FROM dbo.FN_SemsterAvailableCourses('W23') --2.3.cc
+
+EXEC Procedures_StudentSendingCourseRequest @StudentID=1, @courseID=1 , @type='CR', @comment='NICE'  --2.3.dd
+EXEC Procedures_StudentSendingCHRequest @StudentID=1, @credit_hours=2, @type='CH' , @comment='NICE2'  --2.3.ee
+select * from Request
+SELECT * FROM dbo.FN_StudentViewGP(1) --2.3.ff
+
+DECLARE @output5 DATETIME --2.3.gg
+SET @output5 = dbo.FN_StudentUpcoming_installment(1) 
+PRINT (@output5)
+
+SELECT * FROM dbo.FN_StudentViewSlot(1,1) -- 2.3.hh
+
+EXEC Procedures_StudentRegisterFirstMakeup @StudentID=1, @courseID=1, @Student_Current_Semester ='W23' -- 2.3.ii
+
+DECLARE @output6 BIT --2.3.jj
+SET @output6 = dbo.FN_StudentCheckSMEligiability(1,1)
+PRINT (@output6)
+
+EXEC Procedures_StudentRegisterSecondMakeup @StudentID=1, @courseID=1, @Student_Current_Semester='W23' -- 2.3.kk
+EXEC Procedures_ViewRequiredCourses @StudentID=1,@Current_semester_code='W23' -- 2.3.ll
+EXEC Procedures_ViewOptionalCourse  @StudentID=1,@Current_Semester_Code='W23' -- 2.3.mm
+EXEC Procedures_ViewMS @StudentID=1 --2.3.nn
+EXEC Procedures_ChooseInstructor @Student_ID=1,@Instructor_ID=1,@Course_ID=1,@current_semester_code='W23'  --2.3.oo

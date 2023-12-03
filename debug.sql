@@ -1,8 +1,8 @@
---Use Advising_Team_119
+Use Advising_Team_119
 
 --EXEC DropAllTables
 
---EXEC CreateAllTables
+EXEC CreateAllTables
 
 
 INSERT INTO Advisor (name, email, office, password)
@@ -98,7 +98,7 @@ INSERT INTO GradPlan_Course (plan_id, semester_code, course_id) VALUES (1, 'Wint
 
 
 INSERT INTO Request (type, comment, status, credit_hours, student_id, advisor_id, course_id)
-VALUES ('Type 1', 'Comment 1', 'pending', 3, 1, 1, 1);
+VALUES ('Type 1', 'Comment 1', 'pending', 3, 1, 1, null);
 
 INSERT INTO MakeUp_Exam (date, type, course_id)
 VALUES ('2022-01-01', 'Type 1', 1);
