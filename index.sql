@@ -830,7 +830,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewGP (@Student_id int)
     RETURNS TABLE
         AS
            RETURN
-           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Graduation_plan.plan_id,Course.course_id,Course.name,Graduation_Plan.semester_code,Graduation_plan.expected_grad_date,Graduation_plan.semester_credit_hours,
+           (select Student.student_id,concat(Student.f_name,Student.l_name)AS Student_name,Graduation_plan.plan_id,Course.course_id,Course.name as Course_Name,Graduation_Plan.semester_code,Graduation_plan.expected_grad_date,Graduation_plan.semester_credit_hours,
            Student.advisor_id
            from Student
            inner join Graduation_plan on Graduation_plan.student_id = Student.student_id
