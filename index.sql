@@ -5,7 +5,7 @@
 
 --CREATE DATABASE Advising_Team_119;
 
---USE Advising_Team_119;
+USE Advising_Team_119;
     GO
 CREATE OR ALTER PROCEDURE CreateAllTables
 AS
@@ -414,7 +414,7 @@ As
     Select g.*,
         a.name AS Advisor_name
     FROM Graduation_plan g
-        FULL OUTER JOIN Advisor a
+        INNER        JOIN Advisor a
         ON g.advisor_id = a.Advisor_id
     GO
 
@@ -1122,4 +1122,23 @@ Select * from Students_Courses_transcript --2.2.g
 Select * from Semster_offered_Courses --2.2.h
 Select * from Advisors_Graduation_Plan --2.2.i
 
-Exec Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m'
+declare @ID int
+Exec Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m',@email='lol',@major='MET',@Semester =1 ,@id = @ID OUTPUT 
+print (@ID)
+
+declare @ID int
+Exec Procedures_AdvisorRegistration @advisor_name='john', @password='wordpass',@email='lol',@office = ':D' ,@id = @ID OUTPUT 
+print (@ID)
+
+Exec Procedures_AdminListStudents
+Exec Procedures_AdminListAdvisors
+Exec AdminListStudentsWithAdvisors
+Exec AdminAddingSemester @start_date ='6-1-9999', @end_date= '7-1-9999', @semester_code= 'reymysterio'
+Exec Procedures_AdminAddingCourse @major='MET',@semester=1,@credit_hours=99 ,@course_name= 'ladder', @offered= 1
+Exec Procedures_AdminLinkInstructor @InstructorId = 1, @courseId=1,@slotID=1
+Exec Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =4 ,@course_ID = 9,@semester_code= 'ladder'
+Exec Procedures_AdminLinkStudentToAdvisor @studentID = 4, @advisorID=3
+Exec Procedures_AdminAddExam @Type = 'normal',@date= '1-2-2021', @courseID= 9
+Exec Procedures_AdminIssueInstallment @paymentID =1
+Exec Procedures_AdminDeleteCourse @courseID =4
+Exec Procedure_AdminUpdateStudentStatus @student_id = 1
