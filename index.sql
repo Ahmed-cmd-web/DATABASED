@@ -3,7 +3,7 @@
 -- Authors : Ahmed Said, Ahmed Mohammed, Mostafa Ahmed , Ahmed Hossam , Mohammed Youssef
 -- Due_Date : 2023-12-3
 
---CREATE DATABASE Advising_Team_119;
+CREATE DATABASE Advising_Team_119;
 
 USE Advising_Team_119;
     GO
@@ -652,7 +652,7 @@ SELECT @installment_amount=amount/n_installments, @start_date=start_date, @deadl
 FROM Payment
 WHERE payment_id=@paymentID
 
-WHILE (@start_date<=@deadline)
+WHILE (@start_date<@deadline)
             BEGIN
     INSERT INTO Installment
     VALUES
@@ -843,7 +843,7 @@ CREATE OR ALTER FUNCTION FN_StudentViewSlot(@CourseID int,@InstructorID int)
         from Slot
         inner join Instructor on Slot.instructor_id = Instructor.instructor_id
         inner join Course on Slot.course_id = Course.course_id
-        where Instructor.instructor_id = @Instructor_id and Course.course_id = @CourseID
+        where Instructor.instructor_id = @InstructorID and Course.course_id = @CourseID
         );
     GO
 
@@ -1177,9 +1177,10 @@ Exec AdminListStudentsWithAdvisors
 Exec AdminAddingSemester @start_date ='6-1-9999', @end_date= '7-1-9999', @semester_code= 'reymysterio'
 Exec Procedures_AdminAddingCourse @major='MET',@semester=1,@credit_hours=99 ,@course_name= 'ladder', @offered= 1
 Exec Procedures_AdminLinkInstructor @InstructorId = 1, @courseId=1,@slotID=1
-Exec Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =4 ,@course_ID = 9,@semester_code= 'ladder'
+Exec Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =11 ,@course_ID = 9,@semester_code= 'ladder'
 Exec Procedures_AdminLinkStudentToAdvisor @studentID = 4, @advisorID=3
 Exec Procedures_AdminAddExam @Type = 'normal',@date= '1-2-2021', @courseID= 9
-Exec Procedures_AdminIssueInstallment @paymentID =1
+Exec Procedures_AdminIssueInstallment @paymentID =15
 Exec Procedures_AdminDeleteCourse @courseID =4
 Exec Procedure_AdminUpdateStudentStatus @student_id = 1
+
