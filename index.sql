@@ -1097,7 +1097,7 @@ CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
         -- check if the student is eligible to take the requested hours
         SET @is_student_eligible=IIF(@student_assigned_hours+@requested_hours>34,0,1)
 
-        IF @is_student_eligible=0 AND @requested_hours<=3
+        IF @is_student_eligible=0 OR @requested_hours>3
             BEGIN
                 UPDATE Request
                 SET status='rejected'
