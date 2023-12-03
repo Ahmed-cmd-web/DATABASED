@@ -92,7 +92,7 @@ CREATE TABLE Student_Instructor_Course_Take
     semester_code VARCHAR(40) NOT NULL,
     exam_type VARCHAR(40) DEFAULT 'Normal' CHECK (exam_type IN ('Normal','First_makeup','Second_makeup')),
     grade VARCHAR(40) DEFAULT  NULL CHECK (grade     IN ('A','A+','A-','B','B+','B-',
-                                                                              'C','C+','C-','D','D+','F','FF')),
+                                                                              'C','C+','C-','D','D+','F','FF','FA')),
     CONSTRAINT course_id_semester_code_student_id              PRIMARY KEY (course_id,semester_code,student_id),
     CONSTRAINT course_id_FK_Student_Instructor_Course_Take     FOREIGN KEY (course_id)     REFERENCES Course ON DELETE CASCADE,
     CONSTRAINT instructor_id_FK_Student_Instructor_Course_Take FOREIGN KEY (instructor_id) REFERENCES Instructor,
@@ -477,26 +477,29 @@ VALUES
     (@start_date, @end_date, @semester_code)
     GO
 
-CREATE OR ALTER FUNCTION get_Unattended_Courses
-    (@StudentID INT,
-    @Current_semester_code VARCHAR(40))
-    RETURNS TABLE
+
+CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
+    @StudentID INT,
+    @Current_semester_code Varchar(40)
     AS
-        BEGIN
-            DECLARE @sem_start_date DATE;
+
+        DECLARE @sem_start_date DATE;
             SELECT @sem_start_date=start_date FROM Semester
-                WHERE semester_code=@Current_semester_code
-            WITH previous_semesters AS (
+                WHERE semester_code=@Current_semester_code;
+
+            WITH previous_semesters AS
+            (
                 SELECT * FROM Semester
                 WHERE start_date < @sem_start_date
-            )
-            WITH previous_semesters_courses AS (
+            ),
+
+            previous_semesters_courses AS (
                 SELECT cs.*
                 FROM previous_semesters ps
                 INNER JOIN Course_Semester cs
                 ON ps.semester_code=cs.semester_code
-            )
-            WITH unattended_courses_ids AS (
+            ),
+            unattended_courses_ids AS (
                 SELECT psc.course_id
                 FROM previous_semesters_courses psc
                 EXCEPT (
@@ -505,26 +508,16 @@ CREATE OR ALTER FUNCTION get_Unattended_Courses
                     WHERE sic.student_id=@StudentID
                 )
             )
-            WITH unattended_courses AS (
-            SELECT * FROM Course, unattended_courses_ids
-            WHERE Course.course_id=unattended_courses_ids.course_id
-            )
-            RETURN unattended_courses
-        END
-    GO
 
-CREATE OR ALTER PROCEDURE Procedures_ViewRequiredCourses
-    @StudentID INT,
-    @Current_semester_code Varchar(40)
-    AS
-        -- SELECT c.*
-        -- FROM Course c
-        --     JOIN Student_Instructor_Course_Take sict
-        --     ON sict.course_id=c.course_id
-        -- WHERE sict.student_id=@StudentID AND (sict.grade IN ('F','FF','FA') AND -- not eligible for second
-        -- )
-
-        SELECT * FROM dbo.get_Unattended_Courses(@StudentID,@Current_semester_code)
+        (SELECT c.*
+        FROM Course c
+            JOIN Student_Instructor_Course_Take sict
+            ON sict.course_id=c.course_id
+        WHERE sict.student_id=@StudentID AND (sict.grade IN ('F','FF','FA') AND dbo.FN_StudentCheckSMEligiability(c.course_id,@StudentID)=0)
+        UNION
+        SELECT c.* FROM Course c
+            INNER JOIN unattended_courses_ids
+                ON c.course_id=unattended_courses_ids.course_id)
 
     GO
 
