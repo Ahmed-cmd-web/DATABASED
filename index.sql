@@ -1148,38 +1148,51 @@ CREATE OR ALTER PROCEDURE  Procedures_AdvisorApproveRejectCHRequest
                                                                                 AND start_date>GETDATE())
             END
     GO
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+EXEC CreateAllTables --2.1.2 
+EXEC DropAllTables   --2.1.3
+EXEC clearAllTables  --2.1.4 
 
-Exec CreateAllTables --2.1.2 
-Exec DropAllTables   --2.1.3
-Exec clearAllTables  --2.1.4 
+SELECT * FROM view_Students --2.2.a
+SELECT * FROM view_Course_prerequisites --2.2.b
+SELECT * FROM Instructors_AssignedCourses --2.2.c
+SELECT * FROM Student_Payment --2.2.d
+SELECT * FROM Courses_Slots_Instructor --2.2.e
+SELECT * FROM Courses_MakeupExams --2.2.f
+SELECT * FROM Students_Courses_transcript --2.2.g
+SELECT * FROM Semster_offered_Courses --2.2.h
+SELECT * FROM Advisors_Graduation_Plan --2.2.i
 
-Select * from view_Students --2.2.a
-Select * from view_Course_prerequisites --2.2.b
-Select * from Instructors_AssignedCourses --2.2.c
-Select * from Student_Payment --2.2.d
-Select * from Courses_Slots_Instructor --2.2.e
-Select * from Courses_MakeupExams --2.2.f
-Select * from Students_Courses_transcript --2.2.g
-Select * from Semster_offered_Courses --2.2.h
-Select * from Advisors_Graduation_Plan --2.2.i
+DECLARE @output INT --2.3.a
+EXEC Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m',@email='lol',@major='MET',@Semester =1 ,@id = @ID OUTPUT 
+PRINT (@output)
 
-declare @ID int
-Exec Procedures_StudentRegistration @first_name='john', @last_name= 'cena', @password='wordpass',@faculty ='m',@email='lol',@major='MET',@Semester =1 ,@id = @ID OUTPUT 
-print (@ID)
+DECLARE @output INT --2.3.b
+EXEC Procedures_AdvisorRegistration @advisor_name='john', @password='wordpass',@email='lol',@office = ':D' ,@id = @ID OUTPUT 
+PRINT (@output)
 
-declare @ID int
-Exec Procedures_AdvisorRegistration @advisor_name='john', @password='wordpass',@email='lol',@office = ':D' ,@id = @ID OUTPUT 
-print (@ID)
+EXEC Procedures_AdminListStudents --2.3.c
+EXEC Procedures_AdminListAdvisors --2.3.d
+EXEC AdminListStudentsWithAdvisors --2.3.e
+EXEC AdminAddingSemester @start_date ='6-1-9999', @end_date= '7-1-9999', @semester_code= 'reymysterio' --2.3.f
+EXEC Procedures_AdminAddingCourse @major='MET',@semester=1,@credit_hours=99 ,@course_name= 'ladder', @offered= 1 --2.3.g
+EXEC Procedures_AdminLinkInstructor @InstructorId = 1, @courseId=1,@slotID=1 --2.3.h
+EXEC Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =4 ,@course_ID = 9,@semester_code= 'ladder' --2.3.i
+EXEC Procedures_AdminLinkStudentToAdvisor @studentID = 4, @advisorID=3 --2.3.j
+EXEC Procedures_AdminAddExam @Type = 'normal',@date= '1-2-2021', @courseID= 9 --2.3.k
+EXEC Procedures_AdminIssueInstallment @paymentID =1 --2.3.l
+EXEC Procedures_AdminDeleteCourse @courseID =4 --2.3.m
+EXEC Procedure_AdminUpdateStudentStatus @student_id = 1 --2.3.n
 
-Exec Procedures_AdminListStudents
-Exec Procedures_AdminListAdvisors
-Exec AdminListStudentsWithAdvisors
-Exec AdminAddingSemester @start_date ='6-1-9999', @end_date= '7-1-9999', @semester_code= 'reymysterio'
-Exec Procedures_AdminAddingCourse @major='MET',@semester=1,@credit_hours=99 ,@course_name= 'ladder', @offered= 1
-Exec Procedures_AdminLinkInstructor @InstructorId = 1, @courseId=1,@slotID=1
-Exec Procedures_AdminLinkStudent @Instructor_Id = 1, @student_ID =4 ,@course_ID = 9,@semester_code= 'ladder'
-Exec Procedures_AdminLinkStudentToAdvisor @studentID = 4, @advisorID=3
-Exec Procedures_AdminAddExam @Type = 'normal',@date= '1-2-2021', @courseID= 9
-Exec Procedures_AdminIssueInstallment @paymentID =1
-Exec Procedures_AdminDeleteCourse @courseID =4
-Exec Procedure_AdminUpdateStudentStatus @student_id = 1
+SELECT * FROM all_Pending_Requests --2.3.o
+
+EXEC Procedures_AdminDeleteSlots @current_semester='W23' --2.3.p
+
+DECLARE @output BIT --2.3.q
+SET @output = dbo.FN_AdvisorLogin(1,'password')
+PRINT (@output)
+
+EXEC Procedures_AdvisorCreateGP @Semester_code='W23',@expected_graduation_date='2023-6-20',@sem_credit_hours=2,@advisor_id=1,@student_id=1 --2.3.r
+
+EXEC Procedures_AdvisorAddCourseGP @student_id=1, @Semester_code='W23',@course_name ='Math' --2.3.s
+EXEC Procedures_AdvisorUpdateGP @expected_grad_date='2023-4-23', @studentID=1 --2.3.s
