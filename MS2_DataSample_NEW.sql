@@ -1,10 +1,4 @@
-﻿--Use Advising_Team_119
-
---EXEC DropAllTables
-
---EXEC CreateAllTables
-
--- Adding 10 records to the Course table
+﻿-- Adding 10 records to the Course table
 INSERT INTO Course(name, major, is_offered, credit_hours, semester)  VALUES
 ( 'Mathematics 2', 'Science', 1, 3, 2),
 ( 'CSEN 2', 'Engineering', 1, 4, 2),
@@ -179,14 +173,14 @@ INSERT INTO GradPlan_Course(plan_id, semester_code, course_id) VALUES
 -- Adding 10 records to the Request table
 INSERT INTO Request (type, comment, status, credit_hours, course_id, student_id, advisor_id) VALUES 
 ( 'course', 'Request for additional course', 'pending', null, 1, 1, 2),
-( 'course', 'Need to change course', 'accepted', null, 2, 2, 2),
+( 'course', 'Need to change course', 'approved', null, 2, 2, 2),
 ( 'credit_hours', 'Request for extra credit hours', 'pending', 3, null, 3, 3),
-( 'credit_hours', 'Request for reduced credit hours', 'accepted', 1, null, 4, 5),
+( 'credit_hours', 'Request for reduced credit hours', 'approved', 1, null, 4, 5),
 ( 'course', 'Request for special course', 'rejected', null, 5, 5, 5),
 ( 'credit_hours', 'Request for extra credit hours', 'pending', 4, null, 6, 7),
-( 'course', 'Request for course withdrawal', 'accepted', null, 7, 7, 7),
+( 'course', 'Request for course withdrawal', 'approved', null, 7, 7, 7),
 ( 'course', 'Request for course addition', 'rejected', null, 8, 8, 8),
-( 'credit_hours', 'Request for reduced credit hours', 'accepted', 2, null, 9, 8),
+( 'credit_hours', 'Request for reduced credit hours', 'approved', 2, null, 9, 8),
 ( 'course', 'Request for course substitution', 'pending', null, 10, 10, 10);
 
 -- Adding 10 records to the MakeUp_Exam table
