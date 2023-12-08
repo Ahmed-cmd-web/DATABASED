@@ -20,6 +20,9 @@
             <br />
             <asp:Button ID="BTN_login" runat="server" OnClick="BTN_login_onClick" Text="login" Width="223px" />
         </div>
+        <p>
+            <asp:Button ID="BTN_register" runat="server" OnClick="BTN_register_onClick" Text="register" Width="224px" />
+        </p>
     </form>
 </body>
 </html>

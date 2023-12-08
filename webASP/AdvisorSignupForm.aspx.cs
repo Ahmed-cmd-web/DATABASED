@@ -17,8 +17,8 @@ namespace webASP
 
         }
 
-        protected void BTN_login_onClick(object sender, EventArgs e)
-        {
+        protected void BTN_login_onClick(object sender, EventArgs e) {
+
             int advisor_id;
 
             try
@@ -64,6 +64,12 @@ namespace webASP
             else {
                 Response.Write("Error : Advisor is not found!");
             }
+        }
+        protected void BTN_register_onClick(object sender, EventArgs e) {
+
+            Response.Write("Register Advisor!");
+            Response.Redirect("AdvisorRegisterForm.aspx");
+
         }
     }
 }
