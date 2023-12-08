@@ -11,7 +11,7 @@ namespace webASP
 {
 
 
-    public partial class WebForm1
+    public partial class AdvisorRegisterForm
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace webASP
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// advisor_ID control.
+        /// advisor_name control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox advisor_ID;
+        protected global::System.Web.UI.WebControls.TextBox advisor_name;
 
         /// <summary>
         /// advisor_password control.
@@ -42,21 +42,39 @@ namespace webASP
         protected global::System.Web.UI.WebControls.TextBox advisor_password;
 
         /// <summary>
-        /// BTN_login control.
+        /// advisor_email control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button BTN_login;
+        protected global::System.Web.UI.WebControls.TextBox advisor_email;
 
         /// <summary>
-        /// BTN_register control.
+        /// advisor_office control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button BTN_register;
+        protected global::System.Web.UI.WebControls.TextBox advisor_office;
+
+        /// <summary>
+        /// BTN_Create_New_Advisor_Account control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button BTN_Create_New_Advisor_Account;
+
+        /// <summary>
+        /// BTN_I_Have_One control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button BTN_I_Have_One;
     }
 }
