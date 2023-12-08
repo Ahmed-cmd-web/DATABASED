@@ -59,7 +59,9 @@ namespace webASP
 
             if (returnVal) 
             {
+                Session["user"] = advisor_id;
                 Response.Write("Hello Advisor");
+                Response.Redirect("AdvisorMainForm.aspx");
             }
             else {
                 Response.Write("Error : Advisor is not found!");

@@ -15,7 +15,7 @@
     <AssemblyName>webASP</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -67,11 +67,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AdvisorMainForm.aspx" />
     <Content Include="AdvisorRegisterForm.aspx" />
     <Content Include="Web.config" />
     <Content Include="AdvisorSignupForm.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdvisorMainForm.aspx.cs">
+      <DependentUpon>AdvisorMainForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AdvisorMainForm.aspx.designer.cs">
+      <DependentUpon>AdvisorMainForm.aspx</DependentUpon>
+    </Compile>
     <Compile Include="AdvisorRegisterForm.aspx.cs">
       <DependentUpon>AdvisorRegisterForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
