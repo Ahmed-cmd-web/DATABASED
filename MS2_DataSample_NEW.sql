@@ -1,4 +1,6 @@
-﻿-- Adding 10 records to the Course table
+﻿Use Advising_System
+
+-- Adding 10 records to the Course table
 INSERT INTO Course(name, major, is_offered, credit_hours, semester)  VALUES
 ( 'Mathematics 2', 'Science', 1, 3, 2),
 ( 'CSEN 2', 'Engineering', 1, 4, 2),
