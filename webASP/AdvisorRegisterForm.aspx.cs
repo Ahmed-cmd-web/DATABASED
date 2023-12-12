@@ -57,7 +57,7 @@ namespace webASP
             conn.Close();
 
             try {
-                Response.Write("Your New Advisor ID : "+Advisor_id.Value);
+                Response.Write("Now login with Your New Advisor ID : "+Advisor_id.Value);
 
             }catch(Exception ex)
             {
