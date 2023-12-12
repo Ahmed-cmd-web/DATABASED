@@ -11,6 +11,10 @@
         <div>
             <asp:Label ID="welcome_label" runat="server" Text="Welcome to the main form, Advisor " BackColor="White" Font-Bold="True" Font-Size="X-Large"></asp:Label>
             <asp:Button ID="logout" runat="server" OnClick="logout_onClick" Text="logout" Height="25px" Width="148px" />
+            <asp:Button ID="BTN_ViewByMajor_ID" runat="server" OnClick="viewByMajor_onClick" Text="View By Major" Height="25px" Width="148px" />
+
+            <asp:Button ID="BTN_ViewRequests_ID" runat="server" Text="View Requests" OnClick="BTN_ViewRequests_ID_Click" />
+
         </div>
 
 

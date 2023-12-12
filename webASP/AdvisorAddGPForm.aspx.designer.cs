@@ -33,48 +33,66 @@ namespace webASP
         protected global::System.Web.UI.WebControls.Label title_gp;
 
         /// <summary>
-        /// TextBox1 control.
+        /// BTN_backToMain_ID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
+        protected global::System.Web.UI.WebControls.Button BTN_backToMain_ID;
 
         /// <summary>
-        /// TextBox2 control.
+        /// semCode_textboxID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox2;
+        protected global::System.Web.UI.WebControls.TextBox semCode_textboxID;
 
         /// <summary>
-        /// TextBox3 control.
+        /// date_textboxID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox3;
+        protected global::System.Web.UI.WebControls.TextBox date_textboxID;
 
         /// <summary>
-        /// TextBox4 control.
+        /// CH_textboxID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox4;
+        protected global::System.Web.UI.WebControls.TextBox CH_textboxID;
 
         /// <summary>
-        /// TextBox5 control.
+        /// advisorID_textboxID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox5;
+        protected global::System.Web.UI.WebControls.TextBox advisorID_textboxID;
+
+        /// <summary>
+        /// studentID_textboxID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox studentID_textboxID;
+
+        /// <summary>
+        /// BTN_Insert_graduation_plan control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button BTN_Insert_graduation_plan;
     }
 }

@@ -114,5 +114,15 @@ namespace webASP
         //        return;
         //    }
         }
+
+        protected void viewByMajor_onClick(object sender, EventArgs e)
+        {
+            Response.Redirect("AdvisorViewStudentMajor.aspx");
+        }
+
+        protected void BTN_ViewRequests_ID_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("AdvisorMainRequests.aspx");
+        }
     }
 }

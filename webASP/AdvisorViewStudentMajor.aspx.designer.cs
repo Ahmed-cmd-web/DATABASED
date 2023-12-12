@@ -11,7 +11,7 @@ namespace webASP
 {
 
 
-    public partial class AdvisorDeleteCourseForm
+    public partial class AdvisorViewStudentMajor
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace webASP
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// Title_Label_id control.
+        /// welcome_label control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Title_Label_id;
+        protected global::System.Web.UI.WebControls.Label welcome_label;
 
         /// <summary>
         /// BTN_backToMain_ID control.
@@ -42,39 +42,39 @@ namespace webASP
         protected global::System.Web.UI.WebControls.Button BTN_backToMain_ID;
 
         /// <summary>
-        /// studentID_textboxID control.
+        /// GridView1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox studentID_textboxID;
+        protected global::System.Web.UI.WebControls.GridView GridView1;
 
         /// <summary>
-        /// semCode_textboxID control.
+        /// Label1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox semCode_textboxID;
+        protected global::System.Web.UI.WebControls.Label Label1;
 
         /// <summary>
-        /// CourseID_TextBoxID control.
+        /// major_textboxID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox CourseID_TextBoxID;
+        protected global::System.Web.UI.WebControls.TextBox major_textboxID;
 
         /// <summary>
-        /// BTN_Delete_course control.
+        /// BTN_filterID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button BTN_Delete_course;
+        protected global::System.Web.UI.WebControls.Button BTN_filterID;
     }
 }
