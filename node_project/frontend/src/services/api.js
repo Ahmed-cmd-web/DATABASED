@@ -20,6 +20,8 @@ const getSlotsOfCourseGivenInstructor = async (id, instructorId) =>
 const getCourseWithPrerequisites = async () =>
   await api.get(`/courses-with-prerequisites/`)
 
+const getInstructorsAlongWithTheirCourses = async () => await api.get(`/instructors-along-with-their-courses/`)
+
 export default {
   getGraduationPlan,
   getUpcomingUnpaidInstallment,
@@ -27,4 +29,5 @@ export default {
   getCourseSlotsInstructors,
   getSlotsOfCourseGivenInstructor,
   getCourseWithPrerequisites,
+  getInstructorsAlongWithTheirCourses
 }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import api from '../../api'
+import api from '../../services/api'
 import DisplayData from '../DisplayTable/index'
 
 const GraduationPlan = () => {

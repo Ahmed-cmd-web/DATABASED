@@ -36,4 +36,9 @@ module.exports = [
     query: (_) => `SELECT * FROM view_Course_prerequisites`,
     type: 'get',
   },
+  {
+    path: '/instructors-along-with-their-courses',
+    query: (_) => 'SELECT * FROM Instructors_AssignedCourses',
+    type: 'get',
+  },
 ]

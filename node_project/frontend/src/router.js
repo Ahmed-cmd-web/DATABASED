@@ -18,7 +18,7 @@ const router = createBrowserRouter([
       { path: 'all-courses-exams/', element: <AllCourseExam /> },
       { path: 'courses-slots-instructors/', element: <CourseSlotInstructor /> },
       {
-        path: 'slots-of-course-given-instructor/:studentId/:instructorId',
+        path: 'slots-of-course-given-instructor/',
         element: <SlotOfCourseGivenInstructor />,
       },
       {
