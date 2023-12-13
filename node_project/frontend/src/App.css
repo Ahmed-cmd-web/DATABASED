@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+}
+
+.App {
+  color: white;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: url('./assets/background.jpeg');
+  background-size: cover;
+}

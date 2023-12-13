@@ -1,0 +1,25 @@
+.coursesTable {
+  width: 90%;
+  border-collapse: collapse;
+  margin: 0 10%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  font-size: 18px;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  text-align: center;
+  background-color: white;
+}
+.coursesTable th,
+.coursesTable td {
+  border: 1px solid black;
+  text-align: left;
+  padding: 8px;
+}
+tr > th {
+  background-color: #dddddd;
+}
+.coursesTable tr:nth-child(even) {
+  background-color: #dddddd;
+}
