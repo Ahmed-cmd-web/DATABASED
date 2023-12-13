@@ -23,6 +23,7 @@ namespace webASP
             String input_password;
             String input_email;
             String input_office;
+
             try
             {
                 input_name = advisor_name.Text;
@@ -33,6 +34,16 @@ namespace webASP
             catch (Exception ex)
             {
                 Response.Write("Input Error : "+ex.Message);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(input_name) || 
+                string.IsNullOrWhiteSpace(input_password) || 
+                string.IsNullOrWhiteSpace(input_email) ||
+                string.IsNullOrWhiteSpace(input_office)
+                )
+            {
+                Response.Write("Input Error : There input is either null, empty, or contains only white spaces.");
                 return;
             }
 
