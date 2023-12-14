@@ -75,10 +75,10 @@
 
                     <asp:TemplateField HeaderText="Actions">
                         <ItemTemplate>
-                            <asp:ImageButton ImageUrl="~/images/addCourseBtnIcon.png" runat="server" CommandName="add_course" PostBackUrl="AdvisorAddCourseForm.aspx" ToolTip="Add Course" Width="40px" Height="40px" />
-                            <asp:ImageButton ImageUrl="~/images/addGpBtnIcon.png" runat="server" CommandName="add_gp" PostBackUrl="AdvisorAddGPForm.aspx" ToolTip="Add Graduation Plan" Width="40px" Height="40px" />
-                            <asp:ImageButton ImageUrl="~/images/deleteCourseBtnIcon.png" runat="server" CommandName="delete_course" PostBackUrl="AdvisorDeleteCourseForm.aspx" ToolTip="Delete Course" Width="40px" Height="40px" />
-                            <asp:ImageButton ImageUrl="~/images/updateDateGPBtnIcon.png" runat="server" CommandName="update_date_gp" PostBackUrl="AdvisorUpdateExpectedGPDateForm.aspx" ToolTip="Update Expected Graudation Plan Date" Width="40px" Height="40px" />
+                            <asp:ImageButton ImageUrl="~/advisorComponent/images/addCourseBtnIcon.png" runat="server" CommandName="add_course" PostBackUrl="AdvisorAddCourseForm.aspx" ToolTip="Add Course" Width="40px" Height="40px" />
+                            <asp:ImageButton ImageUrl="~/advisorComponent/images/addGpBtnIcon.png" runat="server" CommandName="add_gp" PostBackUrl="AdvisorAddGPForm.aspx" ToolTip="Add Graduation Plan" Width="40px" Height="40px" />
+                            <asp:ImageButton ImageUrl="~/advisorComponent/images/deleteCourseBtnIcon.png" runat="server" CommandName="delete_course" PostBackUrl="AdvisorDeleteCourseForm.aspx" ToolTip="Delete Course" Width="40px" Height="40px" />
+                            <asp:ImageButton ImageUrl="~/advisorComponent/images/updateDateGPBtnIcon.png" runat="server" CommandName="update_date_gp" PostBackUrl="AdvisorUpdateExpectedGPDateForm.aspx" ToolTip="Update Expected Graudation Plan Date" Width="40px" Height="40px" />
                         </ItemTemplate>
                         <EditItemTemplate>
 

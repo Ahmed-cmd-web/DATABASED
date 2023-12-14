@@ -95,7 +95,7 @@
                     <ItemTemplate>
 
                         <asp:ImageButton 
-                            ImageUrl="~/images/approve-rejectBtnIcon.png"
+                            ImageUrl="~/advisorComponent/images/approve-rejectBtnIcon.png"
                             runat="server"
                             ToolTip="Approve/Reject Request"
                             Width="60px"

@@ -77,92 +77,92 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AdvisorAddCourseForm.aspx" />
-    <Content Include="AdvisorAddGPForm.aspx" />
-    <Content Include="AdvisorApproveRejectRequest.aspx" />
-    <Content Include="AdvisorDeleteCourseForm.aspx" />
-    <Content Include="AdvisorMainForm.aspx" />
-    <Content Include="AdvisorMainRequests.aspx" />
-    <Content Include="AdvisorRegisterForm.aspx" />
-    <Content Include="AdvisorUpdateExpectedGPDateForm.aspx" />
-    <Content Include="AdvisorViewStudentMajor.aspx" />
-    <Content Include="images\addCourseBtnIcon.png" />
-    <Content Include="images\addGpBtnIcon.png" />
-    <Content Include="images\approve-rejectBtnIcon.png" />
-    <Content Include="images\deleteCourseBtnIcon.png" />
-    <Content Include="images\updateDateGPBtnIcon.png" />
+    <Content Include="advisorComponent\AdvisorAddCourseForm.aspx" />
+    <Content Include="advisorComponent\AdvisorAddGPForm.aspx" />
+    <Content Include="advisorComponent\AdvisorApproveRejectRequest.aspx" />
+    <Content Include="advisorComponent\AdvisorDeleteCourseForm.aspx" />
+    <Content Include="advisorComponent\AdvisorMainForm.aspx" />
+    <Content Include="advisorComponent\AdvisorMainRequests.aspx" />
+    <Content Include="advisorComponent\AdvisorRegisterForm.aspx" />
+    <Content Include="advisorComponent\AdvisorUpdateExpectedGPDateForm.aspx" />
+    <Content Include="advisorComponent\AdvisorViewStudentMajor.aspx" />
+    <Content Include="advisorComponent\images\addCourseBtnIcon.png" />
+    <Content Include="advisorComponent\images\addGpBtnIcon.png" />
+    <Content Include="advisorComponent\images\approve-rejectBtnIcon.png" />
+    <Content Include="advisorComponent\images\deleteCourseBtnIcon.png" />
+    <Content Include="advisorComponent\images\updateDateGPBtnIcon.png" />
     <Content Include="Web.config" />
-    <Content Include="AdvisorSignupForm.aspx" />
+    <Content Include="advisorComponent\AdvisorSignupForm.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdvisorAddCourseForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorAddCourseForm.aspx.cs">
       <DependentUpon>AdvisorAddCourseForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorAddCourseForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorAddCourseForm.aspx.designer.cs">
       <DependentUpon>AdvisorAddCourseForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorAddGPForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorAddGPForm.aspx.cs">
       <DependentUpon>AdvisorAddGPForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorAddGPForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorAddGPForm.aspx.designer.cs">
       <DependentUpon>AdvisorAddGPForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorApproveRejectRequest.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorApproveRejectRequest.aspx.cs">
       <DependentUpon>AdvisorApproveRejectRequest.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorApproveRejectRequest.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorApproveRejectRequest.aspx.designer.cs">
       <DependentUpon>AdvisorApproveRejectRequest.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorDeleteCourseForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorDeleteCourseForm.aspx.cs">
       <DependentUpon>AdvisorDeleteCourseForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorDeleteCourseForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorDeleteCourseForm.aspx.designer.cs">
       <DependentUpon>AdvisorDeleteCourseForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorMainForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorMainForm.aspx.cs">
       <DependentUpon>AdvisorMainForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorMainForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorMainForm.aspx.designer.cs">
       <DependentUpon>AdvisorMainForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorMainRequests.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorMainRequests.aspx.cs">
       <DependentUpon>AdvisorMainRequests.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorMainRequests.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorMainRequests.aspx.designer.cs">
       <DependentUpon>AdvisorMainRequests.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorRegisterForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorRegisterForm.aspx.cs">
       <DependentUpon>AdvisorRegisterForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorRegisterForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorRegisterForm.aspx.designer.cs">
       <DependentUpon>AdvisorRegisterForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorSignupForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorSignupForm.aspx.designer.cs">
       <DependentUpon>AdvisorSignupForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorUpdateExpectedGPDateForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorUpdateExpectedGPDateForm.aspx.cs">
       <DependentUpon>AdvisorUpdateExpectedGPDateForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorUpdateExpectedGPDateForm.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorUpdateExpectedGPDateForm.aspx.designer.cs">
       <DependentUpon>AdvisorUpdateExpectedGPDateForm.aspx</DependentUpon>
     </Compile>
-    <Compile Include="AdvisorViewStudentMajor.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorViewStudentMajor.aspx.cs">
       <DependentUpon>AdvisorViewStudentMajor.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="AdvisorViewStudentMajor.aspx.designer.cs">
+    <Compile Include="advisorComponent\AdvisorViewStudentMajor.aspx.designer.cs">
       <DependentUpon>AdvisorViewStudentMajor.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AdvisorSignupForm.aspx.cs">
+    <Compile Include="advisorComponent\AdvisorSignupForm.aspx.cs">
       <DependentUpon>AdvisorSignupForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -176,6 +176,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
