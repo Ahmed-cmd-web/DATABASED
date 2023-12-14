@@ -8,8 +8,10 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
+        <div style="display:inline">
             <asp:Label ID="welcome_label" runat="server" Text="Welcome to the main form, Advisor " BackColor="White" Font-Bold="True" Font-Size="X-Large"></asp:Label>
+         </div>
+        <div style="display:inline;margin:150px" >
             <asp:Button ID="logout" runat="server" OnClick="logout_onClick" Text="logout" Height="25px" Width="148px" />
             <asp:Button ID="BTN_ViewByMajor_ID" runat="server" OnClick="viewByMajor_onClick" Text="View By Major" Height="25px" Width="148px" />
 
@@ -18,7 +20,7 @@
         </div>
 
 
-        <div>
+        <center><div>
             <asp:GridView 
                 ID="GridView_table"
                 OnRowDataBound="GridView_table_RowDataBound"
@@ -88,7 +90,7 @@
 
 
             </asp:GridView>
-        </div>
+        </div></center>
 
 
     </form>
