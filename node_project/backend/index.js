@@ -27,6 +27,7 @@ routes.map((e) =>
     let request = new sql.Request(pool)
     try {
       let tb = await request.query(e.query(req.params))
+      if (e.extraAction) tb = await request.query(e.query(req.body))
       res.status(200).send(tb.recordset)
     } catch (error) {
       console.log(error)

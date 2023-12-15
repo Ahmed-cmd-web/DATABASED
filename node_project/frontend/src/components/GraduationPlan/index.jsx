@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
 import api from '../../services/api'
 import DisplayData from '../DisplayTable/index'
 
 const GraduationPlan = () => {
-  const { studentId } = useParams()
+  const studentId = localStorage.getItem('student_id')
 
   const [data, setData] = useState([])
   useEffect(() => {

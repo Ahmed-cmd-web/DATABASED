@@ -13,3 +13,12 @@ body {
   background: url('./assets/background.jpeg');
   background-size: cover;
 }
+
+.RegisterMakeUp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: fit-content;
+}

@@ -20,7 +20,30 @@ const getSlotsOfCourseGivenInstructor = async (id, instructorId) =>
 const getCourseWithPrerequisites = async () =>
   await api.get(`/courses-with-prerequisites/`)
 
-const getInstructorsAlongWithTheirCourses = async () => await api.get(`/instructors-along-with-their-courses/`)
+const getInstructorsAlongWithTheirCourses = async () =>
+  await api.get(`/instructors-along-with-their-courses/`)
+
+const getStudentCourses = async (id) => await api.get(`/student-courses/${id}`)
+
+const getInstructorCourses = async (course_id) =>
+  await api.get(`/instructor-courses/${course_id}`)
+
+const chooseInstructor = async (
+  student_id,
+  semester_code,
+  course_id,
+  instructor_id
+) =>
+  await api.post(`/choose-instructor-for-course`, {
+    student_id,
+    semester_code,
+    course_id,
+    instructor_id,
+  })
+const getSemester = async () => await api.get(`/get-current-semester`)
+
+const registerFirstExam = async (student_id, course_id, semester_code) =>
+  await api.post(`/first-makeup-exam`, { student_id, course_id, semester_code })
 
 export default {
   getGraduationPlan,
@@ -29,5 +52,10 @@ export default {
   getCourseSlotsInstructors,
   getSlotsOfCourseGivenInstructor,
   getCourseWithPrerequisites,
-  getInstructorsAlongWithTheirCourses
+  getInstructorsAlongWithTheirCourses,
+  getStudentCourses,
+  getInstructorCourses,
+  chooseInstructor,
+  getSemester,
+  registerFirstExam,
 }
