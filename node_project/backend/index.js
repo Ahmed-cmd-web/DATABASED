@@ -1,11 +1,12 @@
+const dotenv = require('dotenv')
+dotenv.config()
+
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const dotenv = require('dotenv')
 const routes = require('./routes')
 const sql = require('mssql')
 const config = require('./config')
-dotenv.config()
 
 const app = express()
 

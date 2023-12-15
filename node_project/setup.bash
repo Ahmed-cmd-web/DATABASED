@@ -6,13 +6,22 @@ BPurple='\033[1;35m'
 BGreen='\033[1;32m'
 NC='\033[;0m'
 
-printf "${BPurple} Please enter the mongoDB url to connect with (default:mongodb://localhost:27017,leave it empty to use default):${BYellow}"
+printf "${BPurple} Please enter the Sql server Name to connect to:${BYellow}"
 read url
-printf "${BPurple} This is going to be the connection name: ${url:=mongodb://localhost:27017}/todo\n"
+
+printf "${BPurple} Please enter the Sql server database Name to connect to:${BYellow}"
+read database
+
+printf "${BPurple} Please enter the Sql user Name to connect with:${BYellow}"
+read user
+
+printf "${BPurple} Please enter the Sql user password to connect with (if no password leave it empty):${BYellow}"
+read password
+
 printf "${BPurple} Please enter a server PORT number to use for the backend server (default:8000,leave it empty to use default):${BYellow}"
 read port
 
-echo mongoDBURL="${url:=mongodb://localhost:27017}" '\n'SERVER_PORT="${port:=8000}" > backend/.env
+echo SERVER_NAME="${url}" '\n'SERVER_PORT="${port:=8000}" '\n'DB_USER="${user:=''}" '\n'DB_PASS="${password:=''}" '\n'DATABASE="${database:=''}"  > backend/.env
 echo REACT_APP_BACKEND_URL="http://localhost:${port:=8000}" > frontend/.env
 
 cd backend
@@ -27,7 +36,7 @@ else
     choco install nodist
     nodist local 20.x
 fi
-npm install yarn
+npm install yarn --save-dev
 yarn
 
 cd ../frontend
