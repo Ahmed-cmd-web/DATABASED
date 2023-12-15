@@ -61,5 +61,10 @@ namespace webASP
         {
             Response.Redirect("viewmissingcourses.aspx");
         }
+
+        protected void Button9_Click1(object sender, EventArgs e)
+        {
+            Response.Redirect("http://localhost:3000/?student_id=" + Session["user"]);
+        }
     }
 }
