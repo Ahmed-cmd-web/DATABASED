@@ -11,7 +11,7 @@ namespace webASP
 {
 
 
-    public partial class StudentRegisterationForm
+    public partial class StudentOptions1
     {
 
         /// <summary>
@@ -24,75 +24,84 @@ namespace webASP
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// first_nameid control.
+        /// Button1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox first_nameid;
+        protected global::System.Web.UI.WebControls.Button Button1;
 
         /// <summary>
-        /// last_nameid control.
+        /// Button2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox last_nameid;
+        protected global::System.Web.UI.WebControls.Button Button2;
 
         /// <summary>
-        /// passwordid control.
+        /// Button3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox passwordid;
+        protected global::System.Web.UI.WebControls.Button Button3;
 
         /// <summary>
-        /// facultyid control.
+        /// Button4 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox facultyid;
+        protected global::System.Web.UI.WebControls.Button Button4;
 
         /// <summary>
-        /// emailid control.
+        /// Button5 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox emailid;
+        protected global::System.Web.UI.WebControls.Button Button5;
 
         /// <summary>
-        /// majorid control.
+        /// Button6 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox majorid;
+        protected global::System.Web.UI.WebControls.Button Button6;
 
         /// <summary>
-        /// semesterid control.
+        /// Button7 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox semesterid;
+        protected global::System.Web.UI.WebControls.Button Button7;
 
         /// <summary>
-        /// Registerid control.
+        /// Button8 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Registerid;
+        protected global::System.Web.UI.WebControls.Button Button8;
+
+        /// <summary>
+        /// Button9 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink Button9;
     }
 }

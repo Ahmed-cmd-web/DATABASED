@@ -65,17 +65,89 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="StudentRegisterationForm.aspx" />
+    <Content Include="NewFolder1\Addphonenumber.aspx" />
+    <Content Include="NewFolder1\CourseRequest.aspx" />
+    <Content Include="NewFolder1\CreditHourRequest.aspx" />
+    <Content Include="NewFolder1\StudentLogin.aspx" />
+    <Content Include="NewFolder1\StudentOptions1.aspx" />
+    <Content Include="NewFolder1\StudentRegisterationForm.aspx" />
+    <Content Include="NewFolder1\viewavailablecourses.aspx" />
+    <Content Include="NewFolder1\viewmissingcourses.aspx" />
+    <Content Include="NewFolder1\viewoptionalcourses.aspx" />
+    <Content Include="NewFolder1\viewrequiredcourses.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NewFolder1\Addphonenumber.aspx.cs">
+      <DependentUpon>Addphonenumber.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\Addphonenumber.aspx.designer.cs">
+      <DependentUpon>Addphonenumber.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\CourseRequest.aspx.cs">
+      <DependentUpon>CourseRequest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\CourseRequest.aspx.designer.cs">
+      <DependentUpon>CourseRequest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\CreditHourRequest.aspx.cs">
+      <DependentUpon>CreditHourRequest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\CreditHourRequest.aspx.designer.cs">
+      <DependentUpon>CreditHourRequest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\StudentLogin.aspx.cs">
+      <DependentUpon>StudentLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\StudentLogin.aspx.designer.cs">
+      <DependentUpon>StudentLogin.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StudentRegisterationForm.aspx.cs">
+    <Compile Include="NewFolder1\StudentOptions1.aspx.cs">
+      <DependentUpon>StudentOptions1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\StudentOptions1.aspx.designer.cs">
+      <DependentUpon>StudentOptions1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\StudentRegisterationForm.aspx.cs">
       <DependentUpon>StudentRegisterationForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="StudentRegisterationForm.aspx.designer.cs">
+    <Compile Include="NewFolder1\StudentRegisterationForm.aspx.designer.cs">
       <DependentUpon>StudentRegisterationForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\viewavailablecourses.aspx.cs">
+      <DependentUpon>viewavailablecourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\viewavailablecourses.aspx.designer.cs">
+      <DependentUpon>viewavailablecourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\viewmissingcourses.aspx.cs">
+      <DependentUpon>viewmissingcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\viewmissingcourses.aspx.designer.cs">
+      <DependentUpon>viewmissingcourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\viewoptionalcourses.aspx.cs">
+      <DependentUpon>viewoptionalcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\viewoptionalcourses.aspx.designer.cs">
+      <DependentUpon>viewoptionalcourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="NewFolder1\viewrequiredcourses.aspx.cs">
+      <DependentUpon>viewrequiredcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NewFolder1\viewrequiredcourses.aspx.designer.cs">
+      <DependentUpon>viewrequiredcourses.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

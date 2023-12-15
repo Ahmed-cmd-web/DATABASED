@@ -237,3 +237,5 @@ INSERT INTO Installment (payment_id, startdate, amount, status, deadline) VALUES
 ( 7,'2023-11-28', 62, 'Paid','2023-12-28'),
 ( 9,'2023-12-30', 72, 'notPaid','2024-01-30'),
 ( 10,'2023-11-30', 58, 'Paid','2023-12-30');
+
+EXEC Procedures_ViewRequiredCourses @StudentID=9,@current_semester_code='S24R2'

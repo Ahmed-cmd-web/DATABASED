@@ -79,7 +79,15 @@ namespace webASP
             Procedures_StudentRegistration.ExecuteNonQuery();
             conn.Close();
             Response.Write("thank you for registering this is your student id:"+ Student_id.Value);
+            Session["user"] = Student_id;
+            Response.Redirect("StudentOptions1.aspx");
 
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("StudentLogin.aspx");
         }
     }
 }
