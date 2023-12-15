@@ -117,3 +117,13 @@ INSERT INTO Installment  VALUES (1, '2018-01-01 10:34:23.55', 500.00, 'Paid', '2
 								(2, '2021-12-27 4:31:23.55', 500.00, 'notPaid', '2021-11-29 2:34:23.55'),
 								(2, '2022-2-17 6:04:23.55', 500.00, 'notPaid', '2022-1-1 7:03:20.22')
 
+
+
+use Advising_System
+SELECT  * from FN_StudentViewGP(100)
+
+select * from (
+Select Student.f_name +' '+ Student.l_name as Student_name , Graduation_Plan.*, GradPlan_Course.course_id, Course.name
+   from Student inner join Graduation_Plan on Student.student_id = Graduation_Plan.student_id and Student.student_id = 2
+   inner join GradPlan_Course on Graduation_Plan.plan_id = GradPlan_Course.plan_id and Graduation_Plan.semester_code = GradPlan_Course.semester_code
+   inner join Course on Course.course_id = GradPlan_Course.course_id)

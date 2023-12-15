@@ -1,0 +1,19 @@
+.SlotOfCourseGivenInstructor {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.selects {
+  display: flex;
+  justify-content: space-between;
+  width: 40%;
+}
+.selects div {
+  width: 45%;
+}
+.ant-btn:disabled {
+  background-color: gainsboro;
+}
