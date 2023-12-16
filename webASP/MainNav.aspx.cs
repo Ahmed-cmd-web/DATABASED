@@ -17,7 +17,7 @@ namespace webASP
         protected void Button1_Click(object sender, EventArgs e)
         {
             //admin part1
-            Response.Redirect("");
+            Response.Redirect("http://localhost:3000/adminPart1");
         }
 
         protected void Button2_Click(object sender, EventArgs e)
