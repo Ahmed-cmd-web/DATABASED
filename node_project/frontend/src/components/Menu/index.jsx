@@ -1,8 +1,8 @@
 import { Button } from 'antd'
 import './index.css'
-import mainMenu from '../../content/mainMenu'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect } from 'react'
+import studentMainMenu from '../../content/studentMainMenu'
 
 const Menu = () => {
   const navigate = useNavigate()
@@ -14,15 +14,14 @@ const Menu = () => {
     }
   }, [])
 
-  console.log()
   return (
     <div className='button_menu'>
-      {mainMenu.map((item, index) => (
+      {studentMainMenu.map((item, index) => (
         <Button
           key={index}
           type='primary'
           size='large'
-          onClick={() => navigate(item.path)}
+          onClick={() => navigate(`..${item.path}`)}
         >
           {item.option}
         </Button>

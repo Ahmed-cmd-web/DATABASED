@@ -45,6 +45,54 @@ const getSemester = async () => await api.get(`/get-current-semester`)
 const registerFirstExam = async (student_id, course_id, semester_code) =>
   await api.post(`/first-makeup-exam`, { student_id, course_id, semester_code })
 
+const listAdvisors = async () => await api.get(`/list-advisors`)
+
+const fetchSemestersCourses = async () =>
+  await api.get(`/fetch-semesters-courses/`)
+
+const viewInstuctorDetails = async () =>
+  await api.get(`/view-instructor-details/`)
+
+const enrollStudentInCourse = async (
+  student_id,
+  course_id,
+  semester_code,
+  instructor_id
+) =>
+  await api.post(`/enroll-student-course`, {
+    student_id,
+    course_id,
+    semester_code,
+    instructor_id,
+  })
+
+const addCourse = async (major, semester, credit_hours, name, is_offered) =>
+  await api.post(`/add-course`, {
+    major,
+    semester,
+    credit_hours,
+    name,
+    is_offered,
+  })
+
+const addSemester = async (start_date, end_date, semester_code) =>
+  await api.post(`/add-semester`, { start_date, end_date, semester_code })
+
+const listPendingRequests = async () => await api.get(`/list-pending-requests`)
+
+const listStudentsAdvisors = async () =>
+  await api.get(`/list-students-advisors`)
+
+const linkStudentToAdvisor = async (student_id, advisor_id) =>
+  await api.post('/link-student-advisor', { student_id, advisor_id })
+
+const linkInstructorToCourse = async (instructor_id, course_id, slot_id) =>
+  await api.post('/link-instructor-course', {
+    instructor_id,
+    course_id,
+    slot_id,
+  })
+
 export default {
   getGraduationPlan,
   getUpcomingUnpaidInstallment,
@@ -58,4 +106,14 @@ export default {
   chooseInstructor,
   getSemester,
   registerFirstExam,
+  listAdvisors,
+  fetchSemestersCourses,
+  viewInstuctorDetails,
+  enrollStudentInCourse,
+  addCourse,
+  addSemester,
+  listPendingRequests,
+  listStudentsAdvisors,
+  linkStudentToAdvisor,
+  linkInstructorToCourse,
 }

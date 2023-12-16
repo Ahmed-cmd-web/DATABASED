@@ -1,13 +1,17 @@
 import './App.css'
 import { Button } from 'antd'
 import { Outlet, useNavigate, useLocation, matchRoutes } from 'react-router-dom'
-import mainMenu from './content/mainMenu'
+import studentMainMenu from './content/studentMainMenu'
+import adminMainMenu from './content/adminMainMenu'
 
 function App() {
   const navigate = useNavigate()
   const loc = useLocation()
   const route = matchRoutes(
-    mainMenu.map((e) => ({ path: e.path })),
+    [
+      ...studentMainMenu.map((e) => ({ path: `student${e.path}` })),
+      ...adminMainMenu.map((e) => ({ path: `adminPart1${e.path}` })),
+    ],
     loc
   )
   return (
@@ -18,7 +22,11 @@ function App() {
         onClick={() =>
           !route
             ? (window.location.href = 'http://localhost:3003')
-            : navigate('/')
+            : navigate(
+                loc.pathname.includes('adminPart1')
+                  ? '/adminPart1/dashboard'
+                  : 'student/menu'
+              )
         }
       >
         Go back

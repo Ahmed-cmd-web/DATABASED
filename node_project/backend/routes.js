@@ -88,4 +88,78 @@ module.exports = [
             @CourseID=${course_id}`,
     type: 'post',
   },
+  {
+    path: '/list-advisors',
+    type: 'get',
+    query: (_) => `Exec Procedures_AdminListAdvisors`,
+  },
+  {
+    path: '/fetch-semesters-courses',
+    type: 'get',
+    query: (_) => `SELECT * FROM Semster_offered_Courses`,
+  },
+  {
+    path: '/view-instructor-details',
+    query: (_) => `SELECT i.*,c.* FROM Instructors_AssignedCourses i
+                    JOIN Course c ON i.course_id = c.course_id`,
+    type: 'get',
+  },
+  {
+    path: '/enroll-student-course',
+    query: (_) => '',
+    extraAction: ({ course_id, instructor_id, student_id, semester_code }) =>
+      `EXEC Procedures_AdminLinkStudent @cours_id = ${course_id},@instructor_id = ${instructor_id}, studentID = ${student_id},@semester_code = ${semester_code}`,
+    type: 'post',
+  },
+  {
+    path: '/add-course',
+    extraAction: ({ major, semester, credit_hours, name, is_offered }) =>
+      `EXEC Procedures_AdminAddingCourse
+              @major =${major},
+              @semester =${semester},
+              @credit_hours =${credit_hours},
+              @name =${name},
+              @is_offered =${is_offered}`,
+    type: 'post',
+    query: (_) => '',
+  },
+  {
+    path: '/add-semester',
+    extraAction: ({ start_date, end_date, semester_code }) =>
+      `EXEC AdminAddingSemester
+        @start_date =${start_date},
+        @end_date =${end_date},
+        @semester_code =${semester_code}`,
+    query: (_) => '',
+    type: 'post',
+  },
+  {
+    path: 'list-pending-requests',
+    query: (_) => `SELECT * FROM Pending_Requests`,
+    type: 'get',
+  },
+  {
+    path: '/list-students-advisors',
+    query: (_) => 'EXEC AdminListStudentsWithAdvisors',
+    type: 'get',
+  },
+  {
+    path: '/link-student-advisor',
+    query: (_) => '',
+    extraAction: ({ student_id, advisor_id }) =>
+      `EXEC Procedures_AdminLinkStudentToAdvisor
+        studentID =${student_id},
+        advisorid =${advisor_id}`,
+    type: 'post',
+  },
+  {
+    path: '/link-instructor-course',
+    query: (_) => '',
+    extraAction: ({ course_id, instructor_id, slot_id }) =>
+      `EXEC Procedures_AdminLinkInstructor
+        @cours_id =${course_id},
+          @instructor_id =${instructor_id},
+            @slot_id =${slot_id}`,
+    type: 'post',
+  },
 ]
