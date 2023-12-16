@@ -16,7 +16,8 @@
     <AssemblyName>webASP</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress>true</Use64BitIISExpress>
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -77,6 +78,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="adminComponentPart2\AddMakeupExam.aspx" />
+    <Content Include="adminComponentPart2\AdminPart2Main.aspx" />
+    <Content Include="adminComponentPart2\DeleteCourse.aspx" />
+    <Content Include="adminComponentPart2\DeleteSlots.aspx" />
+    <Content Include="adminComponentPart2\DetailsActiveStudent.aspx" />
+    <Content Include="adminComponentPart2\GPAdvisors.aspx" />
+    <Content Include="adminComponentPart2\IssueInstallments.aspx" />
+    <Content Include="adminComponentPart2\SemestersOfferedCourses.aspx" />
+    <Content Include="adminComponentPart2\StudentTranscriptDetails.aspx" />
+    <Content Include="adminComponentPart2\UpdateStudentStatus.aspx" />
+    <Content Include="adminComponentPart2\ViewStudentPayments.aspx" />
     <Content Include="advisorComponent\AdvisorAddCourseForm.aspx" />
     <Content Include="advisorComponent\AdvisorAddGPForm.aspx" />
     <Content Include="advisorComponent\AdvisorApproveRejectRequest.aspx" />
@@ -91,10 +103,98 @@
     <Content Include="advisorComponent\images\approve-rejectBtnIcon.png" />
     <Content Include="advisorComponent\images\deleteCourseBtnIcon.png" />
     <Content Include="advisorComponent\images\updateDateGPBtnIcon.png" />
+    <Content Include="MainNav.aspx" />
+    <Content Include="studentComponentPart1\Addphonenumber.aspx" />
+    <Content Include="studentComponentPart1\CourseRequest.aspx" />
+    <Content Include="studentComponentPart1\CreditHourRequest.aspx" />
+    <Content Include="studentComponentPart1\StudentLogin.aspx" />
+    <Content Include="studentComponentPart1\StudentOptions1.aspx" />
+    <Content Include="studentComponentPart1\StudentRegisterationForm.aspx" />
+    <Content Include="studentComponentPart1\viewavailablecourses.aspx" />
+    <Content Include="studentComponentPart1\viewmissingcourses.aspx" />
+    <Content Include="studentComponentPart1\viewoptionalcourses.aspx" />
+    <Content Include="studentComponentPart1\viewrequiredcourses.aspx" />
     <Content Include="Web.config" />
     <Content Include="advisorComponent\AdvisorSignupForm.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="adminComponentPart2\AddMakeupExam.aspx.cs">
+      <DependentUpon>AddMakeupExam.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\AddMakeupExam.aspx.designer.cs">
+      <DependentUpon>AddMakeupExam.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\AdminPart2Main.aspx.cs">
+      <DependentUpon>AdminPart2Main.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\AdminPart2Main.aspx.designer.cs">
+      <DependentUpon>AdminPart2Main.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\DeleteCourse.aspx.cs">
+      <DependentUpon>DeleteCourse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\DeleteCourse.aspx.designer.cs">
+      <DependentUpon>DeleteCourse.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\DeleteSlots.aspx.cs">
+      <DependentUpon>DeleteSlots.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\DeleteSlots.aspx.designer.cs">
+      <DependentUpon>DeleteSlots.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\DetailsActiveStudent.aspx.cs">
+      <DependentUpon>DetailsActiveStudent.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\DetailsActiveStudent.aspx.designer.cs">
+      <DependentUpon>DetailsActiveStudent.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\GPAdvisors.aspx.cs">
+      <DependentUpon>GPAdvisors.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\GPAdvisors.aspx.designer.cs">
+      <DependentUpon>GPAdvisors.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\IssueInstallments.aspx.cs">
+      <DependentUpon>IssueInstallments.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\IssueInstallments.aspx.designer.cs">
+      <DependentUpon>IssueInstallments.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\SemestersOfferedCourses.aspx.cs">
+      <DependentUpon>SemestersOfferedCourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\SemestersOfferedCourses.aspx.designer.cs">
+      <DependentUpon>SemestersOfferedCourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\StudentTranscriptDetails.aspx.cs">
+      <DependentUpon>StudentTranscriptDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\StudentTranscriptDetails.aspx.designer.cs">
+      <DependentUpon>StudentTranscriptDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\UpdateStudentStatus.aspx.cs">
+      <DependentUpon>UpdateStudentStatus.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\UpdateStudentStatus.aspx.designer.cs">
+      <DependentUpon>UpdateStudentStatus.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adminComponentPart2\ViewStudentPayments.aspx.cs">
+      <DependentUpon>ViewStudentPayments.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adminComponentPart2\ViewStudentPayments.aspx.designer.cs">
+      <DependentUpon>ViewStudentPayments.aspx</DependentUpon>
+    </Compile>
     <Compile Include="advisorComponent\AdvisorAddCourseForm.aspx.cs">
       <DependentUpon>AdvisorAddCourseForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -161,10 +261,87 @@
     <Compile Include="advisorComponent\AdvisorViewStudentMajor.aspx.designer.cs">
       <DependentUpon>AdvisorViewStudentMajor.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MainNav.aspx.cs">
+      <DependentUpon>MainNav.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MainNav.aspx.designer.cs">
+      <DependentUpon>MainNav.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="advisorComponent\AdvisorSignupForm.aspx.cs">
       <DependentUpon>AdvisorSignupForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\Addphonenumber.aspx.cs">
+      <DependentUpon>Addphonenumber.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\Addphonenumber.aspx.designer.cs">
+      <DependentUpon>Addphonenumber.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\CourseRequest.aspx.cs">
+      <DependentUpon>CourseRequest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\CourseRequest.aspx.designer.cs">
+      <DependentUpon>CourseRequest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\CreditHourRequest.aspx.cs">
+      <DependentUpon>CreditHourRequest.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\CreditHourRequest.aspx.designer.cs">
+      <DependentUpon>CreditHourRequest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentLogin.aspx.cs">
+      <DependentUpon>StudentLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentLogin.aspx.designer.cs">
+      <DependentUpon>StudentLogin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentOptions1.aspx.cs">
+      <DependentUpon>StudentOptions1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentOptions1.aspx.designer.cs">
+      <DependentUpon>StudentOptions1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentRegisterationForm.aspx.cs">
+      <DependentUpon>StudentRegisterationForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\StudentRegisterationForm.aspx.designer.cs">
+      <DependentUpon>StudentRegisterationForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewavailablecourses.aspx.cs">
+      <DependentUpon>viewavailablecourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewavailablecourses.aspx.designer.cs">
+      <DependentUpon>viewavailablecourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewmissingcourses.aspx.cs">
+      <DependentUpon>viewmissingcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewmissingcourses.aspx.designer.cs">
+      <DependentUpon>viewmissingcourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewoptionalcourses.aspx.cs">
+      <DependentUpon>viewoptionalcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewoptionalcourses.aspx.designer.cs">
+      <DependentUpon>viewoptionalcourses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewrequiredcourses.aspx.cs">
+      <DependentUpon>viewrequiredcourses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="studentComponentPart1\viewrequiredcourses.aspx.designer.cs">
+      <DependentUpon>viewrequiredcourses.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
