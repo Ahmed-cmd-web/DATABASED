@@ -9,29 +9,29 @@ go
 Go
 
 CREATE PROC [CreateAllTables]
-     AS  
+     AS
 create table Advisor (
-advisor_id int primary key identity, 
+advisor_id int primary key identity,
 advisor_name varchar(40),
 email varchar(40),
 office varchar(40),
 password varchar(40) not null
-) 
+)
 -----------------------Student Table--------------------------------------
 
      Create Table Student (
-     student_id int primary Key Identity(1,1), 
+     student_id int primary Key Identity(1,1),
      f_name Varchar(40),
      l_name Varchar(40),
-     password Varchar(40), 
+     password Varchar(40),
      gpa decimal(10,2),
      faculty Varchar(40),
      email Varchar(40),
      major Varchar(40),
      financial_status bit,
-     semester int, 
-     acquired_hours int, 
-     assigned_hours int, 
+     semester int,
+     acquired_hours int,
+     assigned_hours int,
      advisor_id int Foreign key references Advisor(advisor_id) on update cascade on delete cascade
    )
  ---------------------------Student_Phone----------------------------------
@@ -44,7 +44,7 @@ password varchar(40) not null
 ----------------------------------Graduation_Plan-----------------------------------------------
 create table Graduation_Plan (
 plan_id int not null identity(1,1),
-semester_code varchar(40) not null, 
+semester_code varchar(40) not null,
 semester_credit_hours int,
 expected_grad_date date,
 advisor_id int Foreign key references Advisor(advisor_id)  on update cascade  on delete cascade,
@@ -53,10 +53,10 @@ primary key(plan_id, semester_code)
 )
 ----------------------------Course--------------------------------------------
      Create Table Course (
-     course_id int primary key identity, 
+     course_id int primary key identity,
      name varchar(40),
-     major varchar(40), 
-     is_offered bit, 
+     major varchar(40),
+     is_offered bit,
      credit_hours int,
      semester int
      )
@@ -70,36 +70,36 @@ primary key(plan_id, semester_code)
 create table Instructor (
 instructor_id int primary key identity,
 name varchar(40),
-email varchar(40), 
-faculty varchar(40), 
+email varchar(40),
+faculty varchar(40),
 office varchar(40)
 )
 --------------------------------Instructor_Course-----------------------------------
 create table Instructor_Course (
-course_id int Foreign key references course(course_id)  on update cascade on delete cascade, 
+course_id int Foreign key references course(course_id)  on update cascade on delete cascade,
 instructor_id int Foreign key references Instructor(instructor_id)  on update cascade on delete cascade,
 primary key(course_id, instructor_id)
 )
 ----------------------------Student_Instructor_Course_take-------------------------
 create table Student_Instructor_Course_take (
 student_id int Foreign key references Student(student_id)  on update cascade on delete cascade,
-course_id int Foreign key references course(course_id)  on update cascade on delete cascade, 
-instructor_id int Foreign key references Instructor(instructor_id)  on update cascade on delete cascade, 
-semester_code varchar(40), 
-exam_type varchar(40) Default 'Normal', 
+course_id int Foreign key references course(course_id)  on update cascade on delete cascade,
+instructor_id int Foreign key references Instructor(instructor_id)  on update cascade on delete cascade,
+semester_code varchar(40),
+exam_type varchar(40) Default 'Normal',
 grade varchar(40),
 primary key(student_id, course_id, semester_code)
-)     
+)
 ------------------------Semester----------------------------------
 
 create table Semester (
 semester_code varchar(40) primary key,
-start_date date, 
+start_date date,
 end_date date
 )
 ------------------------Course_Semester-------------------------------------
 create table Course_Semester (
-course_id int Foreign key references course(course_id)  on update cascade on delete cascade , 
+course_id int Foreign key references course(course_id)  on update cascade on delete cascade ,
 semester_code varchar(40) references Semester(semester_code)  on update cascade on delete cascade,
 primary key(course_id, semester_code)
 )
@@ -115,25 +115,25 @@ primary key (course_id,plan_id, semester_code)
 )
 -------------------------------------------------------------
 ------------------------Slot-------------------------------------
-    
+
 create table Slot (
-slot_id int primary key identity, 
+slot_id int primary key identity,
 day varchar(40),
-time varchar(40), 
-location varchar(40), 
+time varchar(40),
+location varchar(40),
 course_id int Foreign key references course(course_id)  on update cascade on delete cascade,
 instructor_id int Foreign key references Instructor(instructor_id) on update cascade on delete cascade
 )
 
 ---------------------------Request-----------------------------------------
 create table Request (
-request_id int primary key identity(1,1), 
-type varchar(40), 
-comment varchar(40), 
-status varchar(40) default 'Pending', 
+request_id int primary key identity(1,1),
+type varchar(40),
+comment varchar(40),
+status varchar(40) default 'Pending',
 credit_hours int,
 course_id int,
-student_id int Foreign key references Student(student_id)  on update cascade on delete cascade, 
+student_id int Foreign key references Student(student_id)  on update cascade on delete cascade,
 advisor_id int Foreign key references Advisor(advisor_id)  /*on update cascade on delete cascade*/
 )
 --------------------------------------------------------------
@@ -142,7 +142,7 @@ advisor_id int Foreign key references Advisor(advisor_id)  /*on update cascade o
 create table MakeUp_Exam (
 exam_id int primary key identity,
 date date,
-type varchar(40), 
+type varchar(40),
 course_id int Foreign key references course(course_id)  on update cascade on delete cascade
 )
 -------------------------------Exam_Student-------------------------------
@@ -190,7 +190,7 @@ Select * from Student where financial_status = 1
 ---------------------------------courses with their prerequisites--------------------------------------------------------------
 go
 CREATE  VIEW  view_Course_prerequisites AS
-Select C1.*, C2.course_id as preRequsite_course_id, C2.name as preRequsite_course_name 
+Select C1.*, C2.course_id as preRequsite_course_id, C2.name as preRequsite_course_name
 from Course C1 inner join PreqCourse_course On C1.course_id = PreqCourse_course.course_id
 inner join course C2 on PreqCourse_course.prerequisite_course_id = c2.course_id
 go
@@ -199,13 +199,13 @@ go
 CREATE  VIEW  Instructors_AssignedCourses AS
 Select Instructor.instructor_id, Instructor.name as Instructor, Course.course_id, Course.name As Course
 from Instructor inner join Student_Instructor_Course_take t on Instructor.instructor_id = t.instructor_id
-inner join Course On Course.course_id = t.course_id 
+inner join Course On Course.course_id = t.course_id
 
 -----------------------------------all payments along with their corresponding student--------------------------------------------------
 go
 
 CREATE  VIEW  Student_Payment AS
-Select Student.student_id as studentID , Student.f_name, Student.l_name, Payment.* 
+Select Student.student_id as studentID , Student.f_name, Student.l_name, Payment.*
 from Payment Inner join Student on Payment.student_id = Student.student_id
 
 ----------------------------all courses along with their corresponding slots’ details and Instructor----------------------------------------------------------
@@ -219,7 +219,7 @@ go
 ----------------------all courses along with their exams’ details-----------------------------------------------------------------
 CREATE  VIEW  Courses_MakeupExams AS
 Select MakeUp_Exam.*, Course.name, Course.semester
-from MakeUp_Exam inner join Course on MakeUp_Exam.course_id = Course.course_id 
+from MakeUp_Exam inner join Course on MakeUp_Exam.course_id = Course.course_id
 
 ------------------------All students along with their taken courses details--------------------------------------------------------------------
 go
@@ -250,44 +250,44 @@ GO
 --drop procedure Procedures_StudentRegistration
 --------------------------[Procedures_StudentRegistration]---------------------------------------------------
 CREATE PROC [Procedures_StudentRegistration]
-     @first_name varchar(20), 
-     @last_name varchar(20), 
-     @password varchar(20), 
-     @faculty varchar(20), 
-     @email varchar(50), 
+     @first_name varchar(20),
+     @last_name varchar(20),
+     @password varchar(20),
+     @faculty varchar(20),
+     @email varchar(50),
      @major varchar(20),
      @Semester int,
      @Student_id int OUTPUT
-     AS 
-     insert into Student  (f_name,l_name,password, faculty, email, major, semester) 
+     AS
+     insert into Student  (f_name,l_name,password, faculty, email, major, semester)
      values (@first_name, @last_name, @password, @faculty, @email, @major, @Semester)
-    
-    Select @Student_id =  student_id from Student 
+
+    Select @Student_id =  student_id from Student
      where f_name = @first_name and
      l_name= @last_name and
      password = @password  and
-     email = @email 
-    
+     email = @email
+
      Go
 
    ------------------------------------Advisor Registration----------------------------------------------------
 
 Go
 CREATE PROC [Procedures_AdvisorRegistration]
-     @advisor_name varchar(20), 
-     @password varchar(20), 
-     @email varchar(50), 
+     @advisor_name varchar(20),
+     @password varchar(20),
+     @email varchar(50),
      @office varchar(20),
      @Advisor_id int OUTPUT
-     AS 
-     insert into Advisor(advisor_name,password, email, office) 
+     AS
+     insert into Advisor(advisor_name,password, email, office)
      values (@advisor_name, @password, @email, @office)
-    
-    Select @Advisor_id =  advisor_id from Advisor 
+
+    Select @Advisor_id =  advisor_id from Advisor
      where advisor_name = @advisor_name and
      password = @password  and
-     email = @email 
-    
+     email = @email
+
      Go
 
 --/////////////////////////////////////////////////////////////////////////////////
@@ -318,16 +318,16 @@ Go
 CREATE PROC [AdminAddingSemester]
 
     @start_date date,
-    @end_date date, 
+    @end_date date,
     @semester_code Varchar(40)
 
-     AS 
-     IF @start_date IS NULL or @end_date IS NULL or @semester_code IS NULL 
+     AS
+     IF @start_date IS NULL or @end_date IS NULL or @semester_code IS NULL
     print 'One of the inputs is null'
     Else
-     insert into Semester(start_date, end_date, semester_code) 
+     insert into Semester(start_date, end_date, semester_code)
      values (@start_date, @end_date, @semester_code)
-     
+
 Go
 
 
@@ -338,20 +338,20 @@ Go
 CREATE PROC [Procedures_AdminAddingCourse]
 
     @major varchar(20),
-    @semester int, 
-    @credit_hours int, 
+    @semester int,
+    @credit_hours int,
     @name varchar(30),
     @is_offered bit
 
 
-     AS 
+     AS
      IF @major IS NULL or @semester IS NULL or @name IS NULL or @credit_hours is Null or
      @is_offered is Null
     print 'One of the inputs is null'
     Else
-     insert into Course(name, major,semester,credit_hours,is_offered) 
+     insert into Course(name, major,semester,credit_hours,is_offered)
      values (@name, @major, @semester,@credit_hours,@is_offered)
-     
+
 Go
 
 -----------------------------------------------------------------------
@@ -361,17 +361,17 @@ Go
 
 CREATE PROC [Procedures_AdminLinkInstructor]
 @cours_id int,
-@instructor_id int, 
+@instructor_id int,
 @slot_id int
 As
 
-IF @cours_id IS NULL or @instructor_id IS NULL or @slot_id IS NULL 
+IF @cours_id IS NULL or @instructor_id IS NULL or @slot_id IS NULL
     print 'One of the inputs is null'
 
 Else
-update Slot 
+update Slot
 set course_id =@cours_id,
-instructor_id =@instructor_id 
+instructor_id =@instructor_id
 where slot_id = @slot_id;
 
 Go
@@ -382,7 +382,7 @@ Go
 Go
 CREATE PROC [Procedures_AdminLinkStudent]
 @cours_id int,
-@instructor_id int, 
+@instructor_id int,
 @studentID int,
 @semester_code varchar(40)
 As
@@ -391,7 +391,7 @@ IF @cours_id IS NULL or @instructor_id IS NULL or @studentID IS NULL or @semeste
     print 'One of the inputs is null'
 
 Else
-insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code) 
+insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code)
 
 Go
 
@@ -408,15 +408,15 @@ Go
 
 CREATE PROC [Procedures_AdminLinkStudentToAdvisor]
 
-@studentID int, 
+@studentID int,
 @advisorID int
 
 As
-IF @studentID IS NULL or @advisorID IS NULL 
+IF @studentID IS NULL or @advisorID IS NULL
     print 'One of the inputs is null'
 
 Else
-update Student 
+update Student
 set advisor_id = @advisorID
 where student_id = @studentID
 Go
@@ -431,7 +431,7 @@ Go
 
 CREATE PROC [Procedures_AdminAddExam]
 
-@Type varchar(40), 
+@Type varchar(40),
 @date datetime,
 @courseID int
 
@@ -446,18 +446,18 @@ Go
 ------------------------Issue installments as per the number of installments for a certain payment---------------------------------------------------------
 /*
 Issue installments as per the number of installments for a certain payment
-Name: AdminIssueInstallment 
+Name: AdminIssueInstallment
 Input: paymentID int
-Output: Nothing 
+Output: Nothing
 
  */
- 
+
 Go
 CREATE PROC [Procedures_AdminIssueInstallment]
 @payment_id int
 
 As
-Declare 
+Declare
 @payment_amount int,
 @startdate datetime,
 @deadline datetime,
@@ -482,14 +482,14 @@ set @add_month =1
 while @num_of_insertions > 0
 Begin
 
-Set @install_deadline = DATEADD(month, 1, @install_start_date)  
+Set @install_deadline = DATEADD(month, 1, @install_start_date)
 
 insert into Installment values (@payment_id, @install_start_date,@install_deadline,@installment_amount,'NotPaid')
 
-set @install_start_date = DATEADD(month, 1, @install_start_date) --@install_start_date  +1 
+set @install_start_date = DATEADD(month, 1, @install_start_date) --@install_start_date  +1
 set @num_of_insertions = @num_of_insertions -1
 
-End 
+End
 
 
 GO
@@ -503,7 +503,7 @@ CREATE PROC [Procedures_AdminDeleteCourse]
 
 As
 Delete from Course where course_id = @courseID
-update Slot 
+update Slot
 set course_id = null
 where course_id = @courseId
 
@@ -512,7 +512,7 @@ Go
  ----------------------------------[FN_AdminCheckStudentStatus]-------------------------------------
 /*
 Un/Block student based on his/her financial status {
-note that student has an attribute status which is updated based on his/her due payments. 
+note that student has an attribute status which is updated based on his/her due payments.
 If the student is blocked, he/she can’t login to the system}
 Name: AdminCheckStudentStatus
 Input: StudentID int
@@ -531,7 +531,7 @@ Declare
 @status bit,
 @install_status varchar(40)
 
-Select @install_status = Installment.status 
+Select @install_status = Installment.status
 from Installment inner join Payment on Payment.payment_id = Installment.payment_id
 and Payment.student_id = @Student_id and Installment.deadline < current_timestamp
 
@@ -546,7 +546,7 @@ END
 Go
 
 ---------------------------------------Procedure_AdminUpdateStudentStatus-------------------------------------
-go 
+go
 create proc [Procedure_AdminUpdateStudentStatus]
 @student_id int
 as
@@ -582,9 +582,9 @@ Go
 ----------------------------------------------------------------------------
 -----------------------------AdvisorLogin---------------------------------
 /*
-login using my username and password. 
+login using my username and password.
 Name: AdvisorLogin
-Input: ID int, password varchar(20) 
+Input: ID int, password varchar(20)
 Output: Success bit
 Type: Function
 */
@@ -604,8 +604,8 @@ return 0
 
 select @pass = password from Advisor where advisor_id = @advisor_Id
 if(@pass = @password)
-set @success = 1 
-else 
+set @success = 1
+else
 set @success = 0
 
 Return @success
@@ -617,36 +617,36 @@ Go
 Go
 CREATE PROC [Procedures_AdvisorCreateGP]
 
-@Semester_code varchar(40), 
-@expected_graduation_date date, 
+@Semester_code varchar(40),
+@expected_graduation_date date,
 @sem_credit_hours int,
 @advisor_id int,
 @student_id int
 
 AS
-declare @student_acquired int 
+declare @student_acquired int
 Select @student_acquired  =  Student.acquired_hours from  Student where Student.student_id = @student_id
 If(@student_acquired >=157)
-insert into Graduation_Plan values (@Semester_code, @sem_credit_hours, @expected_graduation_date, @advisor_id, @student_id) 
+insert into Graduation_Plan values (@Semester_code, @sem_credit_hours, @expected_graduation_date, @advisor_id, @student_id)
 GO
 
 ---------------------------------------------------------------------
 ------------------------Add course inside certain plan for certin student ---------------------------------
 Go
 CREATE PROC [Procedures_AdvisorAddCourseGP]
- 
+
 @student_id int,
 @Semester_code varchar(40),
 @course_name varchar(40)
 AS
-declare 
+declare
 @graduation_plan int,
 @course_id int
 
 select @graduation_plan = Graduation_Plan.plan_id from Graduation_Plan where Graduation_Plan.student_id = @student_id and Graduation_Plan.semester_code = @Semester_code
 select @course_id = Course.course_id from Course where Course.name = @course_name
 
-insert into GradPlan_Course values (@graduation_plan, @Semester_code, @course_id) 
+insert into GradPlan_Course values (@graduation_plan, @Semester_code, @course_id)
 
 GO
 
@@ -657,7 +657,7 @@ CREATE PROC [Procedures_AdvisorUpdateGP]
 @expected_grad_date date,
 @studentID int
 
-As 
+As
 Update Graduation_Plan
 set expected_grad_date = @expected_grad_date
 where student_id = @studentID
@@ -688,9 +688,9 @@ CREATE FUNCTION [FN_Advisors_Requests]
      (@advisor_id int)
    RETURNs table
    AS
-   RETURN (SELECT R.* FROM Request R inner join Advisor A 
+   RETURN (SELECT R.* FROM Request R inner join Advisor A
    on R.advisor_id = A.advisor_id and A.advisor_id = @advisor_id)
-   
+
 ------------------------Accept/Reject Credit hours request ---------------------------------
 --drop PROC Procedures_AdvisorApproveRejectCHRequest
 Go
@@ -698,9 +698,9 @@ Create PROC [Procedures_AdvisorApproveRejectCHRequest]
 @requestID int,
 @current_sem_code varchar(40)
 
-As 
+As
 
-declare 
+declare
 @requestCreditHours int,
 @type varchar(40),  -- 0 ch
 @studentGPA decimal(10,2),
@@ -720,7 +720,7 @@ set @new_studentCH = @studentCH
 
 if @type like '%credit%' and @studentCH + @requestCreditHours<=34 and @studentGPA < 3.7 and @requestCreditHours<=3
 Begin
-set @stat = 'Accept' 
+set @stat = 'Accept'
 set @new_studentCH = @studentCH + @requestCreditHours
 
 update Student
@@ -728,7 +728,7 @@ set student.assigned_hours = @new_studentCH
 where Student.student_id = @studentid
 
 select @paymentid = payment.payment_id from Payment where payment.student_id = @studentid and semester_code = @current_sem_code
-Select Top 1 @nextinstalldate =  Installment.startdate from Installment where installment.status = 'notPaid' order by Installment.startdate ASC 
+Select Top 1 @nextinstalldate =  Installment.startdate from Installment where installment.status = 'notPaid' order by Installment.startdate ASC
 
 update installment
 set installment.amount = installment.amount + (1000*@requestCreditHours)
@@ -756,7 +756,7 @@ View all students assigned to him/her from a certain major along with their curr
 Type: Stored Procedure
 Name: AdvisorViewAssignedStudents
 Input: AdvisorID int and major varchar(40)
-Output: Table 
+Output: Table
 */
 Go
 --drop proc Procedures_AdvisorViewAssignedStudents;
@@ -777,14 +777,14 @@ CREATE FUNCTION [FN_check_prerequiste]
 (@studentid int, @requestcourse_id varchar(40))
 returns bit
 Begin
-declare 
+declare
 @success bit,
 @student_id_target int
 
 set @student_id_target = -1
 
 Select @student_id_target = Student.student_id
-from Student 
+from Student
 where Student.student_id = @studentid AND  Student.student_id In(
 SELECT Student.student_id
 FROM Student
@@ -822,9 +822,9 @@ Create PROC [Procedures_AdvisorApproveRejectCourseRequest]
 @requestID int,
 @current_semester_code varchar(40)
 
-As 
+As
 
-declare 
+declare
 @type varchar(40),  -- 1 course
 @studentah  int,
 @status varchar(40),
@@ -848,7 +848,7 @@ set @new_studentah = @studentah
 
 if @type like '%course%' and @studentah >= @course_hours and @isoffered = 1 and @prerequiste = 1
 Begin
-set @status = 'Accept' 
+set @status = 'Accept'
 set @new_studentah = @new_studentah - @course_hours
 insert into Student_Instructor_Course_take (student_id, course_id,semester_code) values (@studentid,@requestcourse_id,@current_semester_code)
 select *
@@ -875,8 +875,8 @@ Output: Table of pending requests
 */
 Go
 Create PROC [Procedures_AdvisorViewPendingRequests]
-@Advisor_ID int 
-As 
+@Advisor_ID int
+As
 select *
 from Request where Request.advisor_id = @Advisor_ID and Request.status = 'Pending'
 Go
@@ -885,7 +885,7 @@ Go
 --//////////////////////////////////////////////////////////////////////////////////////////////////////
 --/////////////////////As a Student I should be able to /////////////////////////////////////////////////////////////////////////
 
-------------login using my username and password. {refer to un/block students in the admin section-------- 
+------------login using my username and password. {refer to un/block students in the admin section--------
 Go
 CREATE FUNCTION [FN_StudentLogin]
 (@Student_id int, @password varchar(40))     --Define Function Input
@@ -902,8 +902,8 @@ return 0
 
 select @pass = password from Student where Student.student_id = @Student_id and Student.financial_status = 1
 if(@pass = @password)
-set @success = 1 
-else 
+set @success = 1
+else
 set @success = 0
 
 Return @success
@@ -928,8 +928,8 @@ CREATE FUNCTION [FN_SemsterAvailableCourses]
    RETURNs table
    AS
    RETURN (
-   Select Course.name, Course.course_id 
-   from Course inner join Course_Semester 
+   Select Course.name, Course.course_id
+   from Course inner join Course_Semester
    on Course.course_id = Course_Semester.course_id and Course_Semester.semester_code = @semstercode
    )
 
@@ -938,9 +938,9 @@ CREATE FUNCTION [FN_SemsterAvailableCourses]
 
 Go
 Create PROC [Procedures_StudentSendingCourseRequest]
-@courseID int, 
-@StudentID int, 
-@type varchar(40), 
+@courseID int,
+@StudentID int,
+@type varchar(40),
 @comment varchar(40)
 AS
 declare
@@ -955,9 +955,9 @@ Go
 
 Go
 Create PROC [Procedures_StudentSendingCHRequest]
-@StudentID int, 
-@credit_hours int, 
-@type varchar(40), 
+@StudentID int,
+@credit_hours int,
+@type varchar(40),
 @comment varchar(40)
 AS
 declare
@@ -972,7 +972,7 @@ Go
 
 --Output:  Complete Graduation plan details
 
-CREATE FUNCTION [FN_StudentViewGP]
+CREATE or ALTER FUNCTION [FN_StudentViewGP]
      (@student_ID int)
    RETURNs table
    AS
@@ -985,16 +985,16 @@ CREATE FUNCTION [FN_StudentViewGP]
 --------------------------------------------------------------------
 ---------------------View first upcoming installment deadline --------------------------------------------------
 --Output: deadline date of first upcoming installment
-go 
+go
 CREATE FUNCTION [FN_StudentUpcoming_installment]
      (@student_ID int)
    RETURNs date
   Begin
-  declare @installdeadline date 
+  declare @installdeadline date
   Select top 1 @installdeadline = Installment.deadline from Installment inner join Payment
   on Payment.payment_id = Installment.payment_id and Payment.student_id = @student_ID and Installment.status='notpaid'
   where Installment.deadline > CURRENT_TIMESTAMP
- 
+
   Order by Installment.deadline ASC
 
   return @installdeadline
@@ -1009,7 +1009,7 @@ CREATE FUNCTION [FN_StudentViewSlot]
      (@CourseID int, @InstructorID int)
    RETURNs table
    AS
-   RETURN ( Select * from Courses_Slots_Instructor 
+   RETURN ( Select * from Courses_Slots_Instructor
    where Courses_Slots_Instructor.course_id = @CourseID and Courses_Slots_Instructor.instructor_id = @InstructorID
    )
 --------------------------------------------------------------------------------------------------
@@ -1019,22 +1019,22 @@ Go
 Create PROC [Procedures_StudentRegisterFirstMakeup]
 @StudentID int, @courseID int, @studentCurr_sem varchar(40)
 AS
-declare 
+declare
 @exam_id int,
 @instructor_id int
 
 
 If(not exists( Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
 = @courseID and Student_Instructor_Course_take.exam_type in ('First_makeup','Second_makeup')))
-begin 
+begin
 If(exists(Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
 = @courseID  and Student_Instructor_Course_take.exam_type = 'Normal' and Student_Instructor_Course_take.grade in ('F','FF',null)))
-begin 
+begin
 Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
-Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
-where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID 
+Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take
+where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
 insert into Exam_Student values (@exam_id, @StudentID, @courseID)
-Update Student_Instructor_Course_take 
+Update Student_Instructor_Course_take
 Set exam_type = 'first_makeup' , grade= null
 where  student_id = @StudentID and course_id = @courseID and
  semester_code = @studentCurr_sem
@@ -1051,7 +1051,7 @@ CREATE FUNCTION [FN_SemesterCodeCheck]
    declare @output varchar(40)
 if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
 set @output = 'Odd'
-else 
+else
 set @output =  'Even'
 return @output
 end
@@ -1062,7 +1062,7 @@ CREATE FUNCTION [FN_StudentCheckSMEligibility]
      (@CourseID int, @StudentID int)
    RETURNs bit
 Begin
-declare 
+declare
 @eligable bit,
 @countOfRows int,
 @Student_semester int,
@@ -1070,9 +1070,9 @@ declare
 @StudentSemesterCode varchar(40),
 @failedGradesCount int
 
-select @countOfRows = COUNT(*) 
+select @countOfRows = COUNT(*)
 from Student_Instructor_Course_take where Student_Instructor_Course_take.exam_type In ( 'First_Makeup', 'Normal') and
-Student_Instructor_Course_take.grade in ('F','FF',NULL) 
+Student_Instructor_Course_take.grade in ('F','FF',NULL)
 AND Student_Instructor_Course_take.course_id = @CourseID
 AND Student_Instructor_Course_take.student_id = @StudentID
 
@@ -1086,12 +1086,12 @@ select @Student_semester = Student.semester from Student where  Student.student_
 
 if (@Student_semester % 2) = 0
 set @StudentSemesterCode = 'Even'
-Else 
+Else
 set @StudentSemesterCode = 'Odd'
 
 select @failedGradesCount = count(*)
 from Student_Instructor_Course_take
-where dbo.FN_SemesterCodeCheck(Student_Instructor_Course_take.semester_code) = @StudentSemesterCode and 
+where dbo.FN_SemesterCodeCheck(Student_Instructor_Course_take.semester_code) = @StudentSemesterCode and
 Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.grade in ('F','FF')
 group by Student_Instructor_Course_take.grade
 
@@ -1113,7 +1113,7 @@ Go
 Create PROC [Procedures_StudentRegisterSecondMakeup]
 @StudentID int, @courseID int, @studentCurr_sem varchar(40)
 AS
-declare 
+declare
 @exam_id int,
 @instructor_id int
 if dbo.FN_StudentCheckSMEligibility(@StudentID, @courseID) = 0
@@ -1122,10 +1122,10 @@ Print 'Your are not eligible to take 2nd makeup'
 else
 begin
 Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
-Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take
 where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
 insert into Exam_Student values (@exam_id, @StudentID, @courseID)
-Update Student_Instructor_Course_take 
+Update Student_Instructor_Course_take
 Set exam_type = 'Second_makeup' , grade= null
 where  student_id = @StudentID and course_id = @courseID and
  semester_code = @studentCurr_sem
@@ -1141,9 +1141,9 @@ CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
    AS
    RETURN ( select Student_Instructor_Course_take.course_id
     from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
-    where Student_Instructor_Course_take.student_id = @StudentID and 
+    where Student_Instructor_Course_take.student_id = @StudentID and
     Student_Instructor_Course_take.grade in ('F','FF') and
-    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
+    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0
     and Course_Semester.semester_code = @current_semester_code
     )
 ---------------------------------------------------------------------------------------------
@@ -1155,7 +1155,7 @@ CREATE FUNCTION [FN_StudentUnattendedCourses]
    RETURNs table
    AS
    RETURN ( select Course_Semester.course_id
-from Course_Semester inner join Course on Course_Semester.course_id = Course.course_id 
+from Course_Semester inner join Course on Course_Semester.course_id = Course.course_id
 inner join Student on Student.major = Course.major
 where  Student.student_id= @StudentID and   Course_Semester.semester_code = @current_semester_code and course.semester < @student_semester and Course_Semester.course_id Not In (
 select Student_Instructor_Course_take.course_id
@@ -1177,8 +1177,8 @@ declare @student_semester int
 
 select @student_semester = Student.semester FROM Student where Student.student_id = @StudentID
 select Course.name, Course.course_id
-from Course 
-where Course.course_id in (select * from dbo.FN_StudentFailedAndNotEligibleCourse(@StudentID,@current_semester_code)) 
+from Course
+where Course.course_id in (select * from dbo.FN_StudentFailedAndNotEligibleCourse(@StudentID,@current_semester_code))
 or Course.course_id in (select * from dbo.FN_StudentUnattendedCourses(@StudentID,@current_semester_code,@student_semester))
 GO
 
@@ -1195,7 +1195,7 @@ select @student_semester = Student.semester FROM Student where Student.student_i
 select Course_Semester.course_id, Course.name
 from Course_Semester inner join Course on Course_Semester.course_id = Course.course_id
 where Course_Semester.semester_code = @current_semester_code AND  (Course.semester >= @student_semester and dbo.FN_check_prerequiste(@StudentID, Course_Semester.course_id) = 1 )
-GO 
+GO
 ------------------------------------------------------------------------------------------
 ----------View missing/remaining courses to specific student-------
 Go
@@ -1204,9 +1204,9 @@ Create PROC [Procedures_ViewMS]
 @StudentID int
 As
 declare @student_major varchar(40)
-Select @student_major = major from Student where student_id = @StudentID 
+Select @student_major = major from Student where student_id = @StudentID
 select Course.course_id, Course.name
-from Course 
+from Course
 where  Course.major = @student_major and   Course.course_id not in (select Student_Instructor_Course_take.course_id
 from Student_Instructor_Course_take
 where Student_Instructor_Course_take.student_id = @StudentID) OR course.course_id in (select Student_Instructor_Course_take.course_id
@@ -1227,8 +1227,8 @@ Create PROC [Procedures_Chooseinstructor]
 AS
 update Student_Instructor_Course_take
 set Student_Instructor_Course_take.instructor_id = @instrucorID
-where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @CourseID 
-and Student_Instructor_Course_take.semester_code = @current_semester_code 
+where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @CourseID
+and Student_Instructor_Course_take.semester_code = @current_semester_code
 GO
 
 
@@ -1238,4 +1238,3 @@ GO
 DECLARE @output3 BIT --2.3.q
 SET @output3 = dbo.FN_AdvisorLogin(1,'password1')
 PRINT (@output3)
-
